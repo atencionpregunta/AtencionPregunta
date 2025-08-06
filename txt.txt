@@ -1,3 +1,1 @@
-clave api: AIzaSyCw7mc_Xs-_1BgPFO4ymqSAXYSATK7yzkI
-ID_cliente: 949445157985-va6lp0f9frakjd9il9hlj3t83pbp7nk2.apps.googleusercontent.com
-secreto_cliente: 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
+
