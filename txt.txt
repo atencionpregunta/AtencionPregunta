@@ -1,8 +1,1 @@
-<<<<<<< HEAD
-clave api: AIzaSyCw7mc_Xs-_1BgPFO4ymqSAXYSATK7yzkI
-ID_cliente: 949445157985-va6lp0f9frakjd9il9hlj3t83pbp7nk2.apps.googleusercontent.com
-=======
-clave api: AIzaSyCw7mc_Xs-_1BgPFO4ymqSAXYSATK7yzkI
-ID_cliente: 949445157985-va6lp0f9frakjd9il9hlj3t83pbp7nk2.apps.googleusercontent.com
->>>>>>> b0d0739b4a8738280fab6ff4e903bcaadb565113
-secreto_cliente: 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
+
