@@ -1,42 +1,65 @@
 import sqlite3
-import random
-from datetime import datetime, timedelta
+from datetime import datetime
 
-def rellenar_bd():
+def insertar_ejemplo():
     conn = sqlite3.connect("database.db")
-    conn.execute("PRAGMA foreign_keys = ON;")
+    conn.execute("PRAGMA foreign_keys = ON")
     cursor = conn.cursor()
 
-    categorias = ["Historia", "Ciencia", "Geografía", "Deportes", "Arte", "Cultura general"]
-    dificultades = ["Fácil", "Media", "Difícil"]
+    preguntas = [
+        {
+            "pregunta": "¿Cuál es la capital de Francia?",
+            "categoria": "Geografía",
+            "dificultad": "Fácil",
+            "fecha_creacion": "2025-08-06",
+            "respuestas": [
+                ("Madrid", 0),
+                ("Roma", 0),
+                ("París", 1),
+                ("Berlín", 0)
+            ]
+        },
+        {
+            "pregunta": "¿Quién escribió 'Cien años de soledad'?",
+            "categoria": "Cultura general",
+            "dificultad": "Media",
+            "fecha_creacion": "2025-08-06",
+            "respuestas": [
+                ("Pablo Neruda", 0),
+                ("Gabriel García Márquez", 1),
+                ("Mario Vargas Llosa", 0),
+                ("Julio Cortázar", 0)
+            ]
+        },
+        {
+            "pregunta": "¿Cuál es el resultado de 9 × 8?",
+            "categoria": "Ciencia",
+            "dificultad": "Fácil",
+            "fecha_creacion": "2025-08-06",
+            "respuestas": [
+                ("72", 1),
+                ("64", 0),
+                ("81", 0),
+                ("96", 0)
+            ]
+        }
+    ]
 
-    for i in range(1, 101):
-        pregunta_texto = f"¿Cuál es la respuesta correcta a la pregunta número {i}?"
-        categoria = random.choice(categorias)
-        dificultad = random.choice(dificultades)
-        fecha_creacion = (datetime.now() - timedelta(days=random.randint(0, 1000))).strftime("%Y-%m-%d %H:%M:%S")
+    for p in preguntas:
+        cursor.execute("""
+            INSERT INTO Preguntas (pregunta, categoria, dificultad, fecha_creacion)
+            VALUES (?, ?, ?, ?)
+        """, (p["pregunta"], p["categoria"], p["dificultad"], p["fecha_creacion"]))
+        id_pregunta = cursor.lastrowid
 
-        # Insertar pregunta
-        cursor.execute('''
-            INSERT INTO Preguntas (id, pregunta, categoria, dificultad, fecha_creacion)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (i, pregunta_texto, categoria, dificultad, fecha_creacion))
-
-        # Insertar respuestas
-        correcta = random.randint(1, 4)
-        for j in range(1, 5):
-            respuesta_texto = f"Opción {j} para pregunta {i}"
-            es_correcta = int(j == correcta)  # SQLite usa 0/1 para booleanos
-            respuesta_id = (i - 1) * 4 + j
-
-            cursor.execute('''
-                INSERT INTO Respuestas (id, id_pregunta, respuesta, correcta)
-                VALUES (?, ?, ?, ?)
-            ''', (respuesta_id, i, respuesta_texto, es_correcta))
+        for respuesta, correcta in p["respuestas"]:
+            cursor.execute("""
+                INSERT INTO Respuestas (id_pregunta, respuesta, correcta)
+                VALUES (?, ?, ?)
+            """, (id_pregunta, respuesta, correcta))
 
     conn.commit()
     conn.close()
-    print("Base de datos rellenada con 100 preguntas y respuestas.")
+    print("✅ Preguntas y respuestas de ejemplo insertadas.")
 
-if __name__ == "__main__":
-    rellenar_bd()
+insertar_ejemplo()

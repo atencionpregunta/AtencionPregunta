@@ -3,11 +3,18 @@ import sqlite3
 conn = sqlite3.connect("database.db")
 cursor = conn.cursor()
 
-cursor.execute("SELECT * FROM Respuestas")
-usuarios = cursor.fetchall()
+cursor.execute("SELECT * FROM Preguntas")  # elimina todos los datos
+preguntas = cursor.fetchall()
+
+cursor.execute("SELECT * FROM respuestas")
+respuestas = cursor.fetchall()
+
 
 print("Usuarios en la base de datos:")
-for u in usuarios:
+for u in preguntas:
     print(u)
+    
+for u in respuestas:
+ print(u)
 
 conn.close()

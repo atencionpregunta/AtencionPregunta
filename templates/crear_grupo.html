@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Grupo · Reto Diario</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <main class="center-wrapper">
+        <div class="card fade-in">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <h1><i class="fa-solid fa-users-gear"></i> Crear Grupo</h1>
+            <form method="POST" action="/crear_grupo" class="formulario">
+                <div class="form-group">
+                    <label for="nombre_grupo">Nombre del grupo:</label>
+                    <input type="text" name="nombre_grupo" id="nombre_grupo" required>
+                </div>
+                <div class="form-group">
+                    <label for="contrasena_grupo">Contraseña (opcional):</label>
+                    <input type="password" name="contrasena_grupo" id="contrasena_grupo">
+                </div>
+                <button type="submit" class="btn primary-btn">
+                    <i class="fa-solid fa-plus"></i> Crear grupo
+                </button>
+                <a href="/" class="btn secondary-btn">⬅️ Volver al inicio</a>
+            </form>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
+    </footer>
+</body>
+</html>
