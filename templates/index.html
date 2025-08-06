@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -43,3 +44,50 @@
     </footer>
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio · Reto Diario</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <main class="center-wrapper">
+        <div class="card fade-in">
+            <h1>🚨 Atención Pregunta 🚨</h1>
+
+            {% if session.get("usuario_id") %}
+                <p class="welcome">Bienvenido, <strong>{{ session["usuario_nombre"] }}</strong> 👋</p>
+                <form method="POST" action="/aceptar_reto">
+                    <button class="btn primary-btn" type="submit">
+                        <i class="fa-solid fa-bolt"></i> Vamos a por esa preguntilla
+                    </button>
+                </form>
+                <a href="/logout" class="btn secondary-btn">
+                    <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+                </a>
+            {% else %}
+                <p class="info">Inicia sesión para continuar</p>
+                <a href="/login" class="btn primary-btn">
+                    <i class="fa-solid fa-user-lock"></i> Iniciar sesión
+                </a>
+                <a href="/login/google" class="btn google-btn">
+                    <i class="fa-brands fa-google"></i> Iniciar con Google
+                </a>
+                <a href="/crear_usuario" class="btn secondary-btn">
+                    <i class="fa-solid fa-user-plus"></i> Crear cuenta
+                </a>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
+    </footer>
+</body>
+</html>
+>>>>>>> b0d0739b4a8738280fab6ff4e903bcaadb565113

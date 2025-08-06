@@ -176,4 +176,9 @@ def responder():
     return f"✅ Respuesta registrada. Puntos: {puntuacion}"
 
 if __name__ == "__main__":
+<<<<<<< HEAD
+    port = int(os.environ.get("PORT", 5000))  # Render te da el puerto como variable
+    app.run(host="0.0.0.0", port=port, debug=True)
+=======
     app.run(debug=True)
+>>>>>>> b0d0739b4a8738280fab6ff4e903bcaadb565113

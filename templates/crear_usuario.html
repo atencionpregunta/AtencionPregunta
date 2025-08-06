@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -44,3 +45,51 @@
     </footer>
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Usuario · Reto Diario</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <main class="center-wrapper">
+        <div class="card fade-in">
+            <h1><i class="fa-solid fa-user-plus"></i> Crear Usuario</h1>
+            <form method="POST" action="/crear_usuario" class="formulario">
+                <div class="form-group">
+                    <label for="usuario">Nombre de usuario:</label>
+                    <input type="text" name="usuario" id="usuario" required>
+                </div>
+                <div class="form-group">
+                    <label for="mail">Email:</label>
+                    <input type="email" name="mail" id="mail" required>
+                </div>
+                <div class="form-group">
+                    <label for="contrasena">Contraseña:</label>
+                    <input type="password" name="contrasena" id="contrasena" required>
+                </div>
+                <div class="form-group">
+                    <label for="pais">País:</label>
+                    <input type="text" name="pais" id="pais">
+                </div>
+                <div class="form-group">
+                    <label for="edad">Edad:</label>
+                    <input type="number" name="edad" id="edad" min="1">
+                </div>
+                <button type="submit" class="btn primary-btn">
+                    <i class="fa-solid fa-check"></i> Crear Usuario
+                </button>
+            </form>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
+    </footer>
+</body>
+</html>
+>>>>>>> b0d0739b4a8738280fab6ff4e903bcaadb565113
