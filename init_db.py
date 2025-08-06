@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import sqlite3
 
 def init_db():
@@ -81,7 +80,6 @@ def init_db():
 if __name__ == "__main__":
     init_db()
     print("Base de datos inicializada.")
-=======
 import sqlite3
 
 def init_db():
@@ -164,4 +162,3 @@ def init_db():
 if __name__ == "__main__":
     init_db()
     print("Base de datos inicializada.")
->>>>>>> b0d0739b4a8738280fab6ff4e903bcaadb565113
