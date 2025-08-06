@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cambiar Grupo Activo · Reto Diario</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <main class="center-wrapper">
+        <div class="card fade-in">
+            <h1><i class="fa-solid fa-people-group"></i> Cambiar Grupo Activo</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% if grupos %}
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="grupo_codigo">Selecciona un grupo:</label>
+                        <select name="grupo_codigo" id="grupo_codigo" required class="btn">
+                            {% for grupo in grupos %}
+                                <option value="{{ grupo.codigo }}">{{ grupo.codigo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn primary-btn" style="margin-top: 1.5rem;">
+                        <i class="fa-solid fa-check"></i> Activar Grupo
+                    </button>
+                    <a href="/" class="btn secondary-btn">⬅️ Volver al inicio</a>
+                </form>
+            {% else %}
+                <p>No perteneces a ningún grupo.</p>
+                <a href="/unirse_grupo" class="btn primary-btn">👥 Unirse a grupo</a>
+                <a href="/crear_grupo" class="btn secondary-btn">🆕 Crear grupo</a>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
+    </footer>
+</body>
+</html>

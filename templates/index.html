@@ -7,13 +7,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script>
+        function toggleGrupoMenu() {
+            const menu = document.getElementById('grupo-options');
+            menu.classList.toggle('hidden');
+        }
+    </script>
 </head>
-<script>
-    function toggleGrupoMenu() {
-        const menu = document.getElementById('grupo-options');
-        menu.classList.toggle('hidden');
-    }
-</script>
 <body>
     <main class="center-wrapper">
         <div class="card fade-in">
@@ -21,29 +21,41 @@
 
             {% if session.get("usuario_id") %}
                 <p class="welcome">Bienvenido, <strong>{{ session["usuario_nombre"] }}</strong> 👋</p>
+
                 <form method="POST" action="/aceptar_reto">
                     <button class="btn primary-btn" type="submit">
                         <i class="fa-solid fa-bolt"></i> Vamos a por esa preguntilla
                     </button>
                 </form>
+
                 <a href="/logout" class="btn secondary-btn">
                     <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
                 </a>
-                <!-- Botón flotante de grupo -->
-                <div class="grupo-menu">
+
+                <!-- Menú desplegable de grupo -->
+                <div class="grupo-menu" style="position: absolute; top: 1rem; right: 1rem;">
                     <button class="btn primary-btn grupo-toggle" onclick="toggleGrupoMenu()">
                         <i class="fa-solid fa-users"></i> Grupo
                     </button>
-                    <div id="grupo-options" class="grupo-options hidden">
-                        <a href="/crear_grupo" class="btn secondary-btn small-btn">
-                            <i class="fa-solid fa-plus"></i> Crear grupo
-                        </a>
-                        <a href="/unirse_grupo" class="btn secondary-btn small-btn">
-                            <i class="fa-solid fa-sign-in-alt"></i> Unirse a grupo
-                        </a>
+                    <div id="grupo-options" class="grupo-options hidden" style="margin-top: 0.5rem;">
+                        {% if grupo_actual %}
+                            <p style="margin: 0.5rem 0;">🎯 <strong>Grupo activo:</strong> {{ grupo_actual }}</p>
+
+                            <form method="POST" action="/salir_grupo">
+                                <button class="btn secondary-btn small-btn" type="submit">
+                                    <i class="fa-solid fa-door-open"></i> Salir del grupo
+                                </button>
+                            </form>
+                        {% else %}
+                            <a href="/crear_grupo" class="btn secondary-btn small-btn">
+                                <i class="fa-solid fa-plus"></i> Crear grupo
+                            </a>
+                            <a href="/unirse_grupo" class="btn secondary-btn small-btn">
+                                <i class="fa-solid fa-sign-in-alt"></i> Unirse a grupo
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
-
 
             {% else %}
                 <p class="info">Inicia sesión para continuar</p>
@@ -61,7 +73,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
+        <p>&copy; 2025 · Atención Pregunta / Iker Ángel</p>
     </footer>
 </body>
 </html>

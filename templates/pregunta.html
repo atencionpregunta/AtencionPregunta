@@ -8,6 +8,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
+{% if ya_respondido %}
+  <p>Ya has respondido hoy. Solo puedes responder una vez.</p>
+  <a href="{{ url_for('ver_resultados') }}">Ver resultados</a>
+{% else %}
+  <form action="/responder" method="POST">
+      {% for respuesta in respuestas %}
+        <label>
+          <input type="radio" name="respuesta" value="{{ respuesta.id }}" required>
+          {{ respuesta.texto }}
+        </label><br>
+      {% endfor %}
+      <button type="submit">Enviar respuesta</button>
+  </form>
+{% endif %}
 <body>
     <main class="center-wrapper">
         <div class="card fade-in">
@@ -22,6 +36,8 @@
                     </label>
                 {% endfor %}
 
+                <p id="temporizador" style="font-weight: bold; margin-top: 1rem;">⏱ Tiempo restante: 30 segundos</p>
+
                 <button type="submit" class="btn primary-btn" style="margin-top: 1.5rem;">
                     <i class="fa-solid fa-paper-plane"></i> Responder
                 </button>
@@ -32,5 +48,22 @@
     <footer>
         <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
     </footer>
+
+    <script>
+        const display = document.getElementById("temporizador");
+        let segundos = 30;
+
+        const intervalo = setInterval(() => {
+            segundos--;
+            if (segundos >= 0) {
+                display.textContent = `⏱ Tiempo restante: ${segundos} segundos`;
+            }
+            if (segundos <= 0) {
+                clearInterval(intervalo);
+                const form = document.querySelector("form");
+                if (form) form.submit();
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
