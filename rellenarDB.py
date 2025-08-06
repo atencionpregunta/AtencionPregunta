@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import sqlite3
 import random
 from datetime import datetime, timedelta
@@ -41,7 +40,6 @@ def rellenar_bd():
 
 if __name__ == "__main__":
     rellenar_bd()
-=======
 import sqlite3
 import random
 from datetime import datetime, timedelta
@@ -84,4 +82,3 @@ def rellenar_bd():
 
 if __name__ == "__main__":
     rellenar_bd()
->>>>>>> b0d0739b4a8738280fab6ff4e903bcaadb565113
