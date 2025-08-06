@@ -1,0 +1,13 @@
+import sqlite3
+
+conn = sqlite3.connect("database.db")
+cursor = conn.cursor()
+
+cursor.execute("SELECT * FROM Respuestas")
+usuarios = cursor.fetchall()
+
+print("Usuarios en la base de datos:")
+for u in usuarios:
+    print(u)
+
+conn.close()
