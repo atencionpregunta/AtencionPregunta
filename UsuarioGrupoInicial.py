@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import sqlite3
 from datetime import datetime
 
@@ -92,4 +91,5 @@ cursor.execute(
 conn.commit()
 conn.close()
 print("✅ Usuario y grupo creados correctamente.")
+
 >>>>>>> b0d0739b4a8738280fab6ff4e903bcaadb565113
