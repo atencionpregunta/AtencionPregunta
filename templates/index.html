@@ -19,15 +19,30 @@
         <div class="card fade-in">
             <h1>🚨 Atención Pregunta 🚨</h1>
 
-            {% if session.get("usuario_id") %}
-                <p class="welcome">Bienvenido, <strong>{{ session["usuario_nombre"] }}</strong> 👋</p>
+                {% if session.get("usuario_id") %}
+                    <p class="welcome">Bienvenido, <strong>{{ session["usuario_nombre"] }}</strong> 👋</p>
 
-                <form method="POST" action="/aceptar_reto">
-                    <button class="btn primary-btn" type="submit">
-                        <i class="fa-solid fa-bolt"></i> Vamos a por esa preguntilla
-                    </button>
-                </form>
+                  {% if grupo_actual %}
+                    {% if ya_respondido %}
+                        <p class="info" style="margin-top: 1rem;">✅ Ya has respondido a la pregunta de hoy.</p>
+                        <a href="{{ url_for('resultados.ver_resultados', id_grupo=id_grupo) }}" class="btn primary-btn">
+                            <i class="fa-solid fa-chart-simple"></i> Ver resultados
+                        </a>
+                    {% else %}
+                        <form method="GET" action="/ver_pregunta">
+                            <button class="btn primary-btn" type="submit">
+                                <i class="fa-solid fa-bolt"></i> Vamos a por esa preguntilla
+                            </button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <p class="info" style="margin-top: 1rem;">
+                        ⚠️ Debes <strong>unirte</strong> o <strong>crear</strong> un grupo para participar.
+                    </p>
+                {% endif %}
 
+
+                <!-- Botón para cerrar sesión -->
                 <a href="/logout" class="btn secondary-btn">
                     <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
                 </a>

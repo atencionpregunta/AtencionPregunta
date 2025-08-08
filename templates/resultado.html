@@ -70,11 +70,11 @@
                 </tr>
             </thead>
             <tbody>
-                {% for participante in participantes %}
-                <tr>
-                    <td>{{ participante.nombre }}</td>
-                    <td>{{ participante.puntuacion }}</td>
-                </tr>
+                {% for r in resultados %}
+                    <tr>
+                        <td>{{ r.usuario }}</td>
+                        <td>{{ r.puntuacion }}</td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>

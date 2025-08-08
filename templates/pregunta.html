@@ -8,27 +8,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
-{% if ya_respondido %}
-  <p>Ya has respondido hoy. Solo puedes responder una vez.</p>
-  <a href="{{ url_for('ver_resultados') }}">Ver resultados</a>
-{% else %}
-  <form action="/responder" method="POST">
-      {% for respuesta in respuestas %}
-        <label>
-          <input type="radio" name="respuesta" value="{{ respuesta.id }}" required>
-          {{ respuesta.texto }}
-        </label><br>
-      {% endfor %}
-      <button type="submit">Enviar respuesta</button>
-  </form>
-{% endif %}
 <body>
     <main class="center-wrapper">
         <div class="card fade-in">
             <h1>❓ Pregunta del día</h1>
             <h2 style="font-size: 1.2rem; margin-bottom: 1.5rem;">{{ pregunta.pregunta }}</h2>
 
-            <form action="/responder" method="POST" class="formulario">
+            <form action="{{ url_for('preguntas.ver_pregunta') }}" method="POST">
                 {% for r in respuestas %}
                     <label class="radio-option">
                         <input type="radio" name="respuesta" value="{{ r.id }}" required>
@@ -46,7 +32,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
+        <p>&copy; 2025 · Atención Pregunta / Iker Ángel</p>
     </footer>
 
     <script>

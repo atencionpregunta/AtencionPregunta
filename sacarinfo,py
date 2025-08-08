@@ -4,7 +4,7 @@ conn = sqlite3.connect("database.db")
 cursor = conn.cursor()
 
 
-cursor.execute("SELECT id_usuario, fecha, puntuacion FROM Resultados WHERE DATE(fecha) = DATE('now');")
+cursor.execute("SELECT * FROM Resultados")
 a = cursor.fetchall()
 
 
