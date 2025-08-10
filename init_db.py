@@ -59,6 +59,9 @@ def init_db():
         );
     ''')
 
+    cursor.execute("INSERT INTO Respuestas (id, id_pregunta, respuesta, correcta) VALUES (0, NULL, '[TIMEOUT]', 0)")
+
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Resultados (
             fecha DATETIME,

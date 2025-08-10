@@ -2,6 +2,11 @@ import os
 from flask import Flask, session, render_template
 from flask_dance.contrib.google import make_google_blueprint
 from dotenv import load_dotenv
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+from zoneinfo import ZoneInfo  # Py>=3.9
+from utils import _seleccionar_pregunta_para_hoy
+
 
 # Cargar variables de entorno
 load_dotenv()

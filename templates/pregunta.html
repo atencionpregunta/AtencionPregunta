@@ -39,17 +39,22 @@
         const display = document.getElementById("temporizador");
         let segundos = 30;
 
+        // URL que marcará la pregunta como incorrecta y te llevará a resultados
+        const TIMEOUT_URL = "{{ url_for('preguntas.timeout', pregunta_id=pregunta.id) }}";
+
+        const pintar = () => display && (display.textContent = `⏱ Tiempo restante: ${segundos} segundos`);
+        pintar();
+
         const intervalo = setInterval(() => {
             segundos--;
-            if (segundos >= 0) {
-                display.textContent = `⏱ Tiempo restante: ${segundos} segundos`;
-            }
+            if (segundos >= 0) pintar();
             if (segundos <= 0) {
-                clearInterval(intervalo);
-                const form = document.querySelector("form");
-                if (form) form.submit();
+            clearInterval(intervalo);
+            // Ir directo a la ruta que guarda id_respuesta=99 (timeout)
+            window.location.replace(TIMEOUT_URL);
             }
         }, 1000);
     </script>
+
 </body>
 </html>
