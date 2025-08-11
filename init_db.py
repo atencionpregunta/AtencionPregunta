@@ -25,6 +25,10 @@ def init_db():
             contrasena TEXT
         );
     ''')
+
+    cursor.execute('''
+        CREATE UNIQUE INDEX IF NOT EXISTS ux_grupos_codigo ON Grupos(codigo COLLATE NOCASE);
+    ''')
     
     cursor.execute('''
        CREATE TABLE IF NOT EXISTS grupo_usuario (

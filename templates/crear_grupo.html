@@ -7,6 +7,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+      /* Mensaje bajo el input */
+      .hint { font-size:.95rem; margin-top:6px; min-height:1.2em; }
+      .hint.ok { color:#1e8543; }
+      .hint.bad { color:#c62828; }
+      .hint.neutral { color:#6b7280; }
+      .btn[disabled] { opacity:.5; cursor:not-allowed; }
+    </style>
 </head>
 <body>
     <main class="center-wrapper">
@@ -19,24 +27,88 @@
                 {% endif %}
             {% endwith %}
             <h1><i class="fa-solid fa-users-gear"></i> Crear Grupo</h1>
-            <form method="POST" action="/crear_grupo" class="formulario">
+
+            <form method="POST" action="{{ url_for('grupos.crear_grupo') }}" class="formulario" id="form-crear-grupo" novalidate>
                 <div class="form-group">
                     <label for="nombre_grupo">Nombre del grupo:</label>
-                    <input type="text" name="nombre_grupo" id="nombre_grupo" required>
+                    <input type="text" name="nombre_grupo" id="nombre_grupo" required autocomplete="off">
+                    <div id="nombre_hint" class="hint neutral">Escribe un nombre de grupo.</div>
                 </div>
+
                 <div class="form-group">
                     <label for="contrasena_grupo">Contraseña (opcional):</label>
                     <input type="password" name="contrasena_grupo" id="contrasena_grupo">
                 </div>
-                <button type="submit" class="btn primary-btn">
+
+                <button type="submit" class="btn primary-btn" id="btn-crear" disabled>
                     <i class="fa-solid fa-plus"></i> Crear grupo
                 </button>
-                <a href="/" class="btn secondary-btn">⬅️ Volver al inicio</a>
+                <a href="{{ url_for('index') }}" class="btn secondary-btn">⬅️ Volver al inicio</a>
             </form>
         </div>
     </main>
     <footer>
         <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
     </footer>
+
+    <script>
+      // Debounce básico
+      function debounce(fn, delay=300) {
+        let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
+      }
+
+      const input = document.getElementById("nombre_grupo");
+      const hint  = document.getElementById("nombre_hint");
+      const btn   = document.getElementById("btn-crear");
+      const form  = document.getElementById("form-crear-grupo");
+
+      const setState = (state, msg = "") => {
+        // state: "empty" | "checking" | "ok" | "bad"
+        if (state === "empty") {
+          hint.textContent = "Escribe un nombre de grupo.";
+          hint.className = "hint neutral";
+          btn.disabled = true;
+        } else if (state === "checking") {
+          hint.textContent = "Comprobando disponibilidad…";
+          hint.className = "hint neutral";
+          btn.disabled = true;
+        } else if (state === "ok") {
+          hint.textContent = "Nombre disponible ✔";
+          hint.className = "hint ok";
+          btn.disabled = false;
+        } else if (state === "bad") {
+          hint.textContent = msg || "Ese nombre ya existe. Prueba con otro.";
+          hint.className = "hint bad";
+          btn.disabled = true;
+        }
+      };
+
+      const checkNombre = debounce(async () => {
+        const valor = (input.value || "").trim();
+        if (!valor) return setState("empty");
+
+        setState("checking");
+        try {
+          const url = new URL("{{ url_for('grupos.check_codigo') }}", window.location.origin);
+          url.searchParams.set("codigo", valor);
+          const res = await fetch(url, { credentials: "same-origin" });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const data = await res.json();
+          if (data.available) setState("ok");
+          else setState("bad");
+        } catch (e) {
+          setState("bad", "No se pudo comprobar ahora mismo.");
+        }
+      }, 350);
+
+      input.addEventListener("input", checkNombre);
+
+      // Bloqueo extra en submit si no está ok
+      form.addEventListener("submit", (ev) => {
+        if (btn.disabled) ev.preventDefault();
+      });
+
+      setState("empty");
+    </script>
 </body>
 </html>

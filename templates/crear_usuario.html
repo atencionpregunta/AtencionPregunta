@@ -7,87 +7,142 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+      .hint { font-size:.95rem; margin-top:6px; min-height:1.2em; }
+      .hint.ok { color:#1e8543; }
+      .hint.bad { color:#c62828; }
+      .hint.neutral { color:#6b7280; }
+      .btn[disabled] { opacity:.5; cursor:not-allowed; }
+    </style>
 </head>
 <body>
     <main class="center-wrapper">
         <div class="card fade-in">
-            <h1><i class="fa-solid fa-user-plus"></i> Crear Usuario</h1>
-            <form method="POST" action="/crear_usuario" class="formulario">
-                <div class="form-group">
-                    <label for="usuario">Nombre de usuario:</label>
-                    <input type="text" name="usuario" id="usuario" required>
-                </div>
-                <div class="form-group">
-                    <label for="mail">Email:</label>
-                    <input type="email" name="mail" id="mail" required>
-                </div>
-                <div class="form-group">
-                    <label for="contrasena">Contraseña:</label>
-                    <input type="password" name="contrasena" id="contrasena" required>
-                </div>
-                <div class="form-group">
-                    <label for="pais">País:</label>
-                    <input type="text" name="pais" id="pais">
-                </div>
-                <div class="form-group">
-                    <label for="edad">Edad:</label>
-                    <input type="number" name="edad" id="edad" min="1">
-                </div>
-                <button type="submit" class="btn primary-btn">
-                    <i class="fa-solid fa-check"></i> Crear Usuario
-                </button>
-            </form>
-        </div>
-    </main>
-    <footer>
-        <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
-    </footer>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Usuario · Reto Diario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <main class="center-wrapper">
-        <div class="card fade-in">
-            <h1><i class="fa-solid fa-user-plus"></i> Crear Usuario</h1>
-            <form method="POST" action="/crear_usuario" class="formulario">
-                <div class="form-group">
-                    <label for="usuario">Nombre de usuario:</label>
-                    <input type="text" name="usuario" id="usuario" required>
-                </div>
-                <div class="form-group">
-                    <label for="mail">Email:</label>
-                    <input type="email" name="mail" id="mail" required>
-                </div>
-                <div class="form-group">
-                    <label for="contrasena">Contraseña:</label>
-                    <input type="password" name="contrasena" id="contrasena" required>
-                </div>
-                <div class="form-group">
-                    <label for="pais">País:</label>
-                    <input type="text" name="pais" id="pais">
-                </div>
-                <div class="form-group">
-                    <label for="edad">Edad:</label>
-                    <input type="number" name="edad" id="edad" min="1">
-                </div>
-                <button type="submit" class="btn primary-btn">
-                    <i class="fa-solid fa-check"></i> Crear Usuario
-                </button>
-            </form>
-        </div>
-    </main>
-    <footer>
-        <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
-    </footer>
-</body>
-</html>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
 
+            <h1><i class="fa-solid fa-user-plus"></i> Crear Usuario</h1>
+
+            <form method="POST" action="{{ url_for('auth.crear_usuario') }}" class="formulario" id="form-crear-usuario" novalidate>
+                <div class="form-group">
+                    <label for="usuario">Nombre de usuario:</label>
+                    <input type="text" name="usuario" id="usuario" required autocomplete="off" value="{{ request.form.get('usuario','') }}">
+                    <div id="usuario_hint" class="hint neutral">Elige tu nombre de usuario.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mail">Email:</label>
+                    <input type="email" name="mail" id="mail" required autocomplete="off" value="{{ request.form.get('mail','') }}">
+                    <div id="mail_hint" class="hint neutral">Introduce tu email.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="contrasena">Contraseña:</label>
+                    <input type="password" name="contrasena" id="contrasena" required>
+                    <div id="pass_hint" class="hint neutral">Mínimo 4 caracteres.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pais">País:</label>
+                    <input type="text" name="pais" id="pais" value="{{ request.form.get('pais','') }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="edad">Edad:</label>
+                    <input type="number" name="edad" id="edad" min="1" value="{{ request.form.get('edad','') }}">
+                </div>
+
+                <button type="submit" class="btn primary-btn" id="btn-crear" disabled>
+                    <i class="fa-solid fa-check"></i> Crear Usuario
+                </button>
+            </form>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
+    </footer>
+
+    <script>
+      function debounce(fn, delay=300){ let t; return (...a)=>{clearTimeout(t); t=setTimeout(()=>fn(...a),delay);} }
+      const el = {
+        form: document.getElementById("form-crear-usuario"),
+        usuario: document.getElementById("usuario"),
+        usuarioHint: document.getElementById("usuario_hint"),
+        mail: document.getElementById("mail"),
+        mailHint: document.getElementById("mail_hint"),
+        pass: document.getElementById("contrasena"),
+        passHint: document.getElementById("pass_hint"),
+        submit: document.getElementById("btn-crear"),
+      };
+
+      let usuarioOK = false, mailOK = false, passOK = false;
+
+      const setHint = (node, state, msg="")=>{
+        // state: neutral | ok | bad
+        node.className = "hint " + (state || "neutral");
+        node.textContent = msg;
+      };
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      const refreshSubmit = ()=>{
+        el.submit.disabled = !(usuarioOK && mailOK && passOK);
+      };
+
+      const checkUsuario = debounce(async ()=>{
+        const v = (el.usuario.value||"").trim();
+        if(!v){ usuarioOK=false; setHint(el.usuarioHint,"neutral","Elige tu nombre de usuario."); return refreshSubmit(); }
+        setHint(el.usuarioHint,"neutral","Comprobando disponibilidad…");
+        try{
+          const url = new URL("{{ url_for('auth.check_usuario') }}", window.location.origin);
+          url.searchParams.set("usuario", v);
+          const res = await fetch(url, { credentials:"same-origin" });
+          const data = await res.json();
+          if(data.available){ usuarioOK = true; setHint(el.usuarioHint,"ok","Nombre disponible ✔"); }
+          else { usuarioOK=false; setHint(el.usuarioHint,"bad","Ese usuario ya existe."); }
+        }catch{ usuarioOK=false; setHint(el.usuarioHint,"bad","No se pudo comprobar ahora."); }
+        refreshSubmit();
+      }, 350);
+
+      const checkMail = debounce(async ()=>{
+        const v = (el.mail.value||"").trim();
+        if(!v){ mailOK=false; setHint(el.mailHint,"neutral","Introduce tu email."); return refreshSubmit(); }
+        if(!emailRegex.test(v)){ mailOK=false; setHint(el.mailHint,"bad","Formato de email no válido."); return refreshSubmit(); }
+
+        setHint(el.mailHint,"neutral","Comprobando disponibilidad…");
+        try{
+          const url = new URL("{{ url_for('auth.check_mail') }}", window.location.origin);
+          url.searchParams.set("mail", v);
+          const res = await fetch(url, { credentials:"same-origin" });
+          const data = await res.json();
+          if(data.available){ mailOK = true; setHint(el.mailHint,"ok","Email disponible ✔"); }
+          else { mailOK=false; setHint(el.mailHint,"bad","Ese email ya está en uso."); }
+        }catch{ mailOK=false; setHint(el.mailHint,"bad","No se pudo comprobar ahora."); }
+        refreshSubmit();
+      }, 350);
+
+      const checkPass = ()=>{
+        const v = el.pass.value || "";
+        if(v.length >= 4){ passOK = true; setHint(el.passHint,"ok","OK ✔"); }
+        else { passOK=false; setHint(el.passHint,"neutral","Mínimo 4 caracteres."); }
+        refreshSubmit();
+      };
+
+      el.usuario.addEventListener("input", checkUsuario);
+      el.mail.addEventListener("input", checkMail);
+      el.pass.addEventListener("input", checkPass);
+
+      el.form.addEventListener("submit",(e)=>{
+        if(el.submit.disabled) e.preventDefault();
+      });
+
+      // Estado inicial
+      refreshSubmit();
+    </script>
+</body>
+</html>
