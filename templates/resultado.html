@@ -82,6 +82,7 @@
           {% set pos = loop.index %}
           {% set medal = '🥇' if pos==1 else ('🥈' if pos==2 else ('🥉' if pos==3 else '')) %}
           {% set is_you = (r.id_usuario == session['usuario_id']) %}
+          {% set row_class = 'me-ok' if is_you and r.correcta==1 else ('me-bad' if is_you and r.correcta==0 else '') %}
           <tr class="{{ row_class }}">
             <td class="pos">{{ pos }}</td>
             <td class="user">
@@ -90,31 +91,23 @@
               {% if is_you %}<span class="you">TÚ</span>{% endif %}
             </td>
             <td>
-            <div class="scorebar" title="Puntuación: {{ r.puntuacion }}">
-                {% set pct = (r.puntuacion / (max_p if max_p else 1) * 100) | round(0) %}
-                
-                {% if r.puntuacion == 0 %}
-                <div class="fill" style="width: 0%"></div>
-                <span style="position:absolute; left:50%; transform:translateX(-50%); font-weight:700; font-size:.85rem; color:#333">
-                    0
-                </span>
-                {% elif pct >= 15 %}
-                <div class="fill" style="width: {{ pct }}%">{{ r.puntuacion }}</div>
-                {% else %}
-                <div class="fill" style="width: {{ pct }}%"></div>
-                <span style="position:absolute; left:50%; transform:translateX(-50%); font-weight:700; font-size:.85rem; color:#333">
-                    {{ r.puntuacion }}
-                </span>
-                {% endif %}
-            </div>
+              <div class="scorebar" title="Puntuación: {{ r.puntuacion }}">
+                  {% set pct = (r.puntuacion / (max_p if max_p else 1) * 100) | round(0) %}
+                  {% if r.puntuacion == 0 %}
+                  <div class="fill" style="width: 0%"></div>
+                  <span style="position:absolute; left:50%; transform:translateX(-50%); font-weight:700; font-size:.85rem; color:#333">
+                      0
+                  </span>
+                  {% elif pct >= 15 %}
+                  <div class="fill" style="width: {{ pct }}%">{{ r.puntuacion }}</div>
+                  {% else %}
+                  <div class="fill" style="width: {{ pct }}%"></div>
+                  <span style="position:absolute; left:50%; transform:translateX(-50%); font-weight:700; font-size:.85rem; color:#333">
+                      {{ r.puntuacion }}
+                  </span>
+                  {% endif %}
+              </div>
             </td>
-            <!-- <td class="estado-col">
-              {% if is_you %}
-                {% if r.correcta == 1 %}✅ Acierto{% else %}❌ Fallo{% endif %}
-              {% else %}
-                <span class="muted">—</span>
-              {% endif %}
-            </td> -->
           </tr>
         {% endfor %}
       </tbody>
