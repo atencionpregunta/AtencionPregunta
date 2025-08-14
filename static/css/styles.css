@@ -351,20 +351,64 @@ footer {
     transform: scale(1.2);
 }
 
+/* Estilos mejorados para el menú de grupo */
 .grupo-menu {
     position: absolute;
-    top: 1rem;
+    top: 0;
     right: 1rem;
     text-align: right;
+    z-index: 1000;
+}
+
+.grupo-toggle {
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.grupo-toggle:hover {
+    background-color: #0d47a1;
+    transform: translateY(-2px);
 }
 
 .grupo-options {
-    margin-top: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.5rem;
+    background: white;
+    border-radius: 0.6rem;
+    padding: 0.8rem;
+    margin-top: 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    animation: fadeDown 0.3s ease forwards;
+    min-width: 200px;
 }
+
+.grupo-options p {
+    margin: 0.3rem 0;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.grupo-options .btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
+    border-radius: 0.4rem;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Animación */
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 
 .small-btn {
     font-size: 0.9rem;
@@ -410,4 +454,125 @@ footer {
         font-size: 1rem;
         padding: 0.9rem;
     }
+}
+
+/* Bloque de audio */
+.audio-container {
+    margin-bottom: 1.5rem;
+}
+.audio-container audio {
+    width: 100%;
+    border-radius: 8px;
+}
+
+/* Imagen de la pregunta */
+.image-container {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+.image-container img {
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Título de pregunta */
+.question-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* Lista de respuestas */
+.answers-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Temporizador */
+
+/* Mensajes flash */
+.flash {
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+.flash.success {
+    background-color: #c8e6c9;
+    color: #256029;
+}
+.flash.error {
+    background-color: #ffcdd2;
+    color: #b71c1c;
+}
+.flash.warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+/* antes */
+.center-wrapper{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  /* height:100vh;  <-- quítalo */
+  min-height:100vh;   /* <-- pon esto */
+  padding:2rem;
+  box-sizing:border-box;
+}
+
+.timer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem auto 1.25rem;
+}
+
+.timer-circle {
+  --angle: 360deg;
+  --color-main: #1976d2;
+  --color-bg: #e5e7eb;
+  --size: 88px;
+
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    var(--color-main) 0deg var(--angle),
+    var(--color-bg) var(--angle) 360deg
+  );
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s linear;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+}
+
+.timer-circle::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.timer-number {
+  position: relative;
+  z-index: 1;
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--color-main);
+}
+
+.timer-warn {
+  --color-main: #f59e0b;
+}
+
+.timer-danger {
+  --color-main: #dc2626;
 }

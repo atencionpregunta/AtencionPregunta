@@ -10,7 +10,7 @@ def ver_resultados(id_grupo):
     conn = get_conn()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT u.usuario, r.puntuacion, r.fecha
+        SELECT u.id AS id_usuario, u.usuario, r.puntuacion, r.fecha, r.correcta
         FROM Resultados r
         JOIN Usuarios u ON r.id_usuario = u.id
         WHERE r.id_grupo = ?
@@ -19,7 +19,8 @@ def ver_resultados(id_grupo):
     resultados = cursor.fetchall()
     conn.close()
 
-    return render_template("resultado.html", resultados=resultados)
+    return render_template("resultado.html", resultados=resultados, usuario_id=session["usuario_id"])
+
 
 @resultados_bp.route("/mis_resultados")
 def mis_resultados():
@@ -41,4 +42,4 @@ def mis_resultados():
     mis_resultados = cursor.fetchall()
     conn.close()
 
-    return render_template("resultado.html", resultados=mis_resultados)
+    return render_template("resultado.html", resultados=mis_resultados, usuario_id=id_usuario)

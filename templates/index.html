@@ -19,17 +19,17 @@
         <div class="card fade-in">
             <h1>🚨 Atención Pregunta 🚨</h1>
 
-                {% if session.get("usuario_id") %}
-                    <p class="welcome">Bienvenido, <strong>{{ session["usuario_nombre"] }}</strong> 👋</p>
+            {% if session.get("usuario_id") %}
+                <p class="welcome">Bienvenido, <strong>{{ session["usuario_nombre"] }}</strong> 👋</p>
 
-                  {% if grupo_actual %}
+                {% if grupo_actual %}
                     {% if ya_respondido %}
                         <p class="info" style="margin-top: 1rem;">✅ Ya has respondido a la pregunta de hoy.</p>
                         <a href="{{ url_for('resultados.ver_resultados', id_grupo=id_grupo) }}" class="btn primary-btn">
                             <i class="fa-solid fa-chart-simple"></i> Ver resultados
                         </a>
                     {% else %}
-                        <form method="GET" action="/ver_pregunta">
+                        <form method="GET" action="{{ url_for('preguntas.ver_pregunta') }}">
                             <button class="btn primary-btn" type="submit">
                                 <i class="fa-solid fa-bolt"></i> Vamos a por esa preguntilla
                             </button>
@@ -41,9 +41,8 @@
                     </p>
                 {% endif %}
 
-
                 <!-- Botón para cerrar sesión -->
-                <a href="/logout" class="btn secondary-btn">
+                <a href="{{ url_for('auth.logout') }}" class="btn secondary-btn">
                     <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
                 </a>
 
@@ -55,17 +54,16 @@
                     <div id="grupo-options" class="grupo-options hidden" style="margin-top: 0.5rem;">
                         {% if grupo_actual %}
                             <p style="margin: 0.5rem 0;">🎯 <strong>Grupo activo:</strong> {{ grupo_actual }}</p>
-
-                            <form method="POST" action="/salir_grupo">
+                            <form method="POST" action="{{ url_for('grupos.salir_grupo') }}">
                                 <button class="btn secondary-btn small-btn" type="submit">
                                     <i class="fa-solid fa-door-open"></i> Salir del grupo
                                 </button>
                             </form>
                         {% else %}
-                            <a href="/crear_grupo" class="btn secondary-btn small-btn">
+                            <a href="{{ url_for('grupos.crear_grupo') }}" class="btn secondary-btn small-btn">
                                 <i class="fa-solid fa-plus"></i> Crear grupo
                             </a>
-                            <a href="/unirse_grupo" class="btn secondary-btn small-btn">
+                            <a href="{{ url_for('grupos.unirse_grupo') }}" class="btn secondary-btn small-btn">
                                 <i class="fa-solid fa-sign-in-alt"></i> Unirse a grupo
                             </a>
                         {% endif %}
@@ -74,19 +72,29 @@
 
             {% else %}
                 <p class="info">Inicia sesión para continuar</p>
-                <a href="/login" class="btn primary-btn">
+                <a href="{{ url_for('auth.login_form') }}" class="btn primary-btn">
                     <i class="fa-solid fa-user-lock"></i> Iniciar sesión
                 </a>
-                <a href="/login/google" class="btn google-btn">
+                <a href="{{ url_for('google.login') }}" class="btn google-btn">
                     <i class="fa-brands fa-google"></i> Iniciar con Google
                 </a>
-                <a href="/crear_usuario" class="btn secondary-btn">
+                <a href="{{ url_for('auth.crear_usuario') }}" class="btn secondary-btn">
                     <i class="fa-solid fa-user-plus"></i> Crear cuenta
                 </a>
             {% endif %}
         </div>
     </main>
+    <script>
+    function toggleGrupoMenu() {
+        const menu = document.getElementById('grupo-options');
+        menu.classList.toggle('hidden');
 
+        // Forzar animación cuando se abre
+        if (!menu.classList.contains('hidden')) {
+            menu.style.animation = 'fadeDown 0.3s ease forwards';
+        }
+    }
+    </script>
     <footer>
         <p>&copy; 2025 · Atención Pregunta / Iker Ángel</p>
     </footer>

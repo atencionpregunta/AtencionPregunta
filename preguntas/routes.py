@@ -5,6 +5,8 @@ from utils import get_puntuacion_anterior, get_pregunta_del_dia,get_grupo_actual
 
 preguntas_bp = Blueprint("preguntas", __name__)
 
+
+
 @preguntas_bp.route("/ver_pregunta", methods=["GET", "POST"])
 def ver_pregunta():
     """Muestra la pregunta (GET) y procesa la respuesta (POST)"""
@@ -119,7 +121,36 @@ def ver_pregunta():
         flash("No se ha podido cargar la pregunta del día.")
         return redirect(url_for("index"))
 
-    return render_template("pregunta.html", pregunta=pregunta_actual, respuestas=respuestas)
+    # Obtenemos ruta_audio y ruta_imagen desde la BD usando el id de la pregunta
+    # (solo si tu helper no las trae ya)
+    ruta_audio = None
+    ruta_imagen = None
+    try:
+        pregunta_id = pregunta_actual["id"] if isinstance(pregunta_actual, dict) or hasattr(pregunta_actual, "keys") else pregunta_actual.id
+    except Exception:
+        # Si tu helper devuelve un Row (sqlite3.Row) funciona con ["id"]
+        pregunta_id = pregunta_actual["id"]
+
+    with db_lock:
+        with get_conn() as conn:
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT ruta_audio, ruta_imagen
+                FROM Preguntas
+                WHERE id = ?
+            """, (pregunta_id,))
+            extra = cur.fetchone()
+            if extra:
+                ruta_audio = extra["ruta_audio"]
+                ruta_imagen = extra["ruta_imagen"]
+
+    return render_template(
+        "pregunta.html",
+        pregunta=pregunta_actual,
+        respuestas=respuestas,
+        ruta_audio=ruta_audio,
+        ruta_imagen=ruta_imagen
+    )
 
 @preguntas_bp.route("/timeout/<int:pregunta_id>")
 def timeout(pregunta_id):
@@ -167,7 +198,7 @@ def timeout(pregunta_id):
                 puntuacion_anterior,
                 0,              # incorrecta
                 pregunta_id,
-                99              # código reservado timeout
+                0              # código reservado timeout
             ))
             conn.commit()
 

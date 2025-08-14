@@ -1,60 +1,109 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Pregunta del día · Reto Diario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
-    <main class="center-wrapper">
-        <div class="card fade-in">
-            <h1>❓ Pregunta del día</h1>
-            <h2 style="font-size: 1.2rem; margin-bottom: 1.5rem;">{{ pregunta.pregunta }}</h2>
+{% extends "base.html" %}
 
-            <form action="{{ url_for('preguntas.ver_pregunta') }}" method="POST">
-                {% for r in respuestas %}
-                    <label class="radio-option">
-                        <input type="radio" name="respuesta" value="{{ r.id }}" required>
-                        {{ r.respuesta }}
-                    </label>
-                {% endfor %}
+{% block content %}
+<div class="card fade-in">
+    <h1>❓ Pregunta del día</h1>
 
-                <p id="temporizador" style="font-weight: bold; margin-top: 1rem;">⏱ Tiempo restante: 30 segundos</p>
-
-                <button type="submit" class="btn primary-btn" style="margin-top: 1.5rem;">
-                    <i class="fa-solid fa-paper-plane"></i> Responder
-                </button>
-            </form>
+    {% if ruta_audio %}
+        <div class="audio-container">
+            <button id="play-audio" class="btn secondary-btn">
+                ▶ Escuchar audio
+            </button>
+            <audio id="player" preload="auto" style="display:none;">
+                <source src="{{ url_for('static', filename=ruta_audio) }}" type="audio/mpeg">
+                Tu navegador no soporta el elemento de audio.
+            </audio>
         </div>
-    </main>
 
-    <footer>
-        <p>&copy; 2025 · Atención Pregunta / Iker Ángel</p>
-    </footer>
+        <script>
+        (function () {
+            const player = document.getElementById('player');
+            const btn = document.getElementById('play-audio');
+            const LIMIT = 5; // segundos
 
-    <script>
-        const display = document.getElementById("temporizador");
-        let segundos = 30;
+            btn.addEventListener('click', () => {
+                player.currentTime = 0;
+                player.play();
+                btn.disabled = true; // opcional: evitar spam de clics
+            });
 
-        // URL que marcará la pregunta como incorrecta y te llevará a resultados
-        const TIMEOUT_URL = "{{ url_for('preguntas.timeout', pregunta_id=pregunta.id) }}";
+            // Detener a los 5 segundos
+            player.addEventListener('timeupdate', () => {
+                if (player.currentTime >= LIMIT) {
+                    player.pause();
+                    player.currentTime = 0;
+                    btn.disabled = false;
+                }
+            });
+        })();
+        </script>
+    {% endif %}
+    {% if ruta_imagen %}
+        <div class="image-container">
+            <img src="{{ url_for('static', filename=ruta_imagen) }}" alt="Imagen de la pregunta" style="max-width:100%;border-radius:8px;margin-top:1rem;">
+        </div>
+    {% endif %}
 
-        const pintar = () => display && (display.textContent = `⏱ Tiempo restante: ${segundos} segundos`);
-        pintar();
 
-        const intervalo = setInterval(() => {
-            segundos--;
-            if (segundos >= 0) pintar();
-            if (segundos <= 0) {
-            clearInterval(intervalo);
-            // Ir directo a la ruta que guarda id_respuesta=99 (timeout)
-            window.location.replace(TIMEOUT_URL);
-            }
-        }, 1000);
-    </script>
+    <h2 class="question-title">{{ pregunta["pregunta"] }}</h2>
 
-</body>
-</html>
+    <form method="POST" action="{{ url_for('preguntas.ver_pregunta') }}">
+        <div class="answers-container">
+            {% for r in respuestas %}
+            <label class="radio-option">
+                <input type="radio" name="respuesta" value="{{ r['id'] }}">
+                {{ r['respuesta'] }}
+            </label>
+            {% endfor %}
+        </div>
+
+        <div class="timer-container">
+            <div class="timer-circle" id="timer-circle">
+                <span class="timer-number" id="timer-number">30</span>
+            </div>
+         </div>
+         <button type="submit" class="btn primary-btn" style="margin-top: 1.5rem;">
+            <i class="fa-solid fa-paper-plane"></i> Responder
+        </button>
+
+    </form>
+</div>
+
+<script>
+  const TOTAL = 30;
+  let segundos = TOTAL;
+
+  const circle = document.getElementById("timer-circle");
+  const number = document.getElementById("timer-number");
+  const TIMEOUT_URL = "{{ url_for('preguntas.timeout', pregunta_id=pregunta.id) }}";
+
+  function pintar() {
+    // Calcular ángulo horario: va de 360 a 0
+    const angle = 360 * (segundos / TOTAL);
+    circle.style.setProperty('--angle', `${angle}deg`);
+    number.textContent = segundos;
+
+    if (segundos <= 5) {
+      circle.classList.add('timer-danger');
+      circle.classList.remove('timer-warn');
+    } else if (segundos <= 10) {
+      circle.classList.add('timer-warn');
+      circle.classList.remove('timer-danger');
+    } else {
+      circle.classList.remove('timer-warn', 'timer-danger');
+    }
+  }
+
+  pintar();
+  const intervalo = setInterval(() => {
+    segundos--;
+    pintar();
+    if (segundos <= 0) {
+      clearInterval(intervalo);
+      window.location.replace(TIMEOUT_URL);
+    }
+  }, 1000);
+</script>
+
+
+{% endblock %}

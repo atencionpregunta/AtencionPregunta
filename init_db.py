@@ -45,12 +45,13 @@ def init_db():
         CREATE TABLE IF NOT EXISTS Preguntas (
             id INTEGER PRIMARY KEY,
             pregunta TEXT,
-            categoria TEXT,
+            categoria TEXT,              -- p.ej. 'texto', 'audio', 'imagen', 'mixto'
             dificultad TEXT,
             fecha_creacion DATETIME,
-            fecha_mostrada DATE
+            fecha_mostrada DATE,
+            ruta_audio TEXT,             -- ej: 'audio/pregunta_12.mp3' (dentro de /static)
+            ruta_imagen TEXT             -- ej: 'img/pregunta_12.jpg'   (dentro de /static)
         );
-
     ''')
     
     cursor.execute('''

@@ -1,83 +1,128 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Resultados</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body {
-            background-color: #f4f6f9;
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: start;
-            padding-top: 60px;
-            min-height: 100vh;
-            margin: 0;
-        }
+  <meta charset="UTF-8" />
+  <title>Resultados</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#f4f6f9; --card:#fff; --text:#333; --muted:#777;
+      --line:#e5e7eb; --accent:#1976d2; --ok:#28a745; --bad:#dc3545;
+      --ok-bg:#d4edda; --bad-bg:#f8d7da;
+    }
+    body{
+      margin:0; min-height:100vh; display:flex; justify-content:center; align-items:flex-start;
+      padding:48px 16px; background:var(--bg); font-family:system-ui, Segoe UI, Inter, sans-serif; color:var(--text);
+    }
+    .card{
+      width:100%; max-width:780px; background:var(--card); border-radius:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.08); padding:24px; animation:fadeIn .5s ease;
+    }
+    h2{ margin:0 0 4px; font-size:1.6rem }
+    .sub{ color:var(--muted); margin:0 0 16px; font-size:.95rem }
 
-        .card {
-            background-color: white;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 600px;
-            animation: fadeIn 0.5s ease;
-        }
+    table{ width:100%; border-collapse:collapse; }
+    thead th{
+      text-align:left; font-weight:600; font-size:.9rem; color:#555; padding:12px 10px; border-bottom:1px solid var(--line);
+    }
+    tbody td{ padding:12px 10px; border-bottom:1px solid var(--line); vertical-align:middle; }
+    tbody tr{ opacity:0; animation:rowIn .5s ease forwards; }
+    tbody tr:nth-child(1){ animation-delay:.05s } tbody tr:nth-child(2){ animation-delay:.1s }
+    tbody tr:nth-child(3){ animation-delay:.15s } tbody tr:nth-child(4){ animation-delay:.2s }
+    tbody tr:nth-child(5){ animation-delay:.25s } tbody tr:nth-child(6){ animation-delay:.3s }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-        }
+    .pos{ width:64px; font-weight:700 }
+    .user{ display:flex; align-items:center; gap:.6rem; }
+    .medal{ font-size:1.1rem }
+    .you{ padding:.18rem .5rem; border-radius:999px; background:#eef6ff; color:#0b57d0; font-size:.75rem; font-weight:700 }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
+    .scorebar{
+      position:relative; width:100%; height:22px; background:#eee; border-radius:10px; overflow:hidden;
+    }
+    .fill{
+      height:100%; background:linear-gradient(90deg, #4caf50, #66bb6a);
+      color:#fff; font-weight:700; font-size:.85rem; line-height:22px; text-align:center;
+      transition:width .6s ease;
+    }
+    .muted{ color:var(--muted); font-size:.9rem }
 
-        th, td {
-            text-align: left;
-            padding: 12px 10px;
-            border-bottom: 1px solid #ddd;
-        }
+    /* Resaltado de tu fila según acierto */
+    .me-ok{ background:var(--ok-bg) !important; outline:2px solid var(--ok); }
+    .me-bad{ background:var(--bad-bg) !important; outline:2px solid var(--bad); }
 
-        th {
-            background-color: #f1f1f1;
-            color: #333;
-        }
+    @keyframes fadeIn{ from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
+    @keyframes rowIn{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
 
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+    /* Responsive */
+    @media (max-width:640px){
+      .pos{ width:44px }
+      .fill{ font-size:.8rem }
+      thead .estado-col{ display:none } tbody .estado-col{ display:none }
+    }
+  </style>
 </head>
 <body>
-    <div class="card">
-        <h2>📊 Clasificación de Participantes</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Puntuación</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for r in resultados %}
-                    <tr>
-                        <td>{{ r.usuario }}</td>
-                        <td>{{ r.puntuacion }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+  <div class="card">
+    <h2>📊 Clasificación</h2>
+    <p class="sub">Quién será la gente con mayor conocimiento riverlandístico.</p>
+
+    {% set max_p = (resultados | map(attribute='puntuacion') | max) if resultados else 1 %}
+
+    <table>
+      <thead>
+        <tr>
+          <th class="pos">Pos</th>
+          <th>Nombre</th>
+          <th>Puntuación</th>
+          <!-- <th class="estado-col">Estado</th> -->
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in resultados %}
+          {% set pos = loop.index %}
+          {% set medal = '🥇' if pos==1 else ('🥈' if pos==2 else ('🥉' if pos==3 else '')) %}
+          {% set is_you = (r.id_usuario == session['usuario_id']) %}
+          <tr class="{{ row_class }}">
+            <td class="pos">{{ pos }}</td>
+            <td class="user">
+              {% if medal %}<span class="medal">{{ medal }}</span>{% endif %}
+              <span>{{ r.usuario }}</span>
+              {% if is_you %}<span class="you">TÚ</span>{% endif %}
+            </td>
+            <td>
+            <div class="scorebar" title="Puntuación: {{ r.puntuacion }}">
+                {% set pct = (r.puntuacion / (max_p if max_p else 1) * 100) | round(0) %}
+                
+                {% if r.puntuacion == 0 %}
+                <div class="fill" style="width: 0%"></div>
+                <span style="position:absolute; left:50%; transform:translateX(-50%); font-weight:700; font-size:.85rem; color:#333">
+                    0
+                </span>
+                {% elif pct >= 15 %}
+                <div class="fill" style="width: {{ pct }}%">{{ r.puntuacion }}</div>
+                {% else %}
+                <div class="fill" style="width: {{ pct }}%"></div>
+                <span style="position:absolute; left:50%; transform:translateX(-50%); font-weight:700; font-size:.85rem; color:#333">
+                    {{ r.puntuacion }}
+                </span>
+                {% endif %}
+            </div>
+            </td>
+            <!-- <td class="estado-col">
+              {% if is_you %}
+                {% if r.correcta == 1 %}✅ Acierto{% else %}❌ Fallo{% endif %}
+              {% else %}
+                <span class="muted">—</span>
+              {% endif %}
+            </td> -->
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if not resultados %}
+      <p class="muted" style="margin-top:16px">Aún no hay resultados para este grupo.</p>
+    {% endif %}
+  </div>
 </body>
 </html>
