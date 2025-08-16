@@ -8,11 +8,11 @@ def get_puntuacion_anterior(id_usuario):
     with get_conn() as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT puntuacion FROM Resultados
-            WHERE id_usuario = ? AND fecha < ?
-            ORDER BY fecha DESC
-            LIMIT 1
-        """, (id_usuario, fecha_actual))
+            SELECT MAX(puntuacion) as ultimo
+            FROM Resultados
+            WHERE id_usuario = ?
+        """, 
+        (id_usuario, fecha_actual))
         resultado = cursor.fetchone()
         return resultado["puntuacion"] if resultado else None
      
