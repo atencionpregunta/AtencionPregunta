@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from datetime import datetime
 from db import get_conn, db_lock
-from utils import get_puntuacion_anterior, get_pregunta_del_dia,get_grupo_actual
+from utils import get_puntuacion_anterior, get_pregunta_del_dia,get_grupo_actual, get_id_grupo_actual
 
 preguntas_bp = Blueprint("preguntas", __name__)
 
@@ -19,7 +19,8 @@ def ver_pregunta():
             flash("No se ha seleccionado una respuesta.")
             return redirect(url_for("preguntas.ver_pregunta"))
 
-        puntuacion_anterior = get_puntuacion_anterior(usuario_id) or 0
+        id_grupo = get_id_grupo_actual(usuario_id) or None
+        puntuacion_anterior = get_puntuacion_anterior(usuario_id, id_grupo) or 0
 
         with db_lock:
             with get_conn() as conn:
