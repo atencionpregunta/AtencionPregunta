@@ -145,7 +145,7 @@ def timeout(pregunta_id):
         with get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute("PRAGMA foreign_keys = ON")
-
+            
             # Si ya respondió hoy, no duplicar
             cursor.execute("""
                 SELECT 1 FROM Resultados
