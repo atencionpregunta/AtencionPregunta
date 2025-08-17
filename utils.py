@@ -8,7 +8,7 @@ def get_puntuacion_anterior(id_usuario, id_grupo):
     with get_conn() as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT max(puntuacion) FROM Resultados
+            SELECT max(puntuacion) as puntuacion FROM Resultados
             WHERE id_usuario = ? AND id_grupo = ?
             ORDER BY fecha DESC
             LIMIT 1
