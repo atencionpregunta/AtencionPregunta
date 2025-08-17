@@ -38,7 +38,7 @@ def get_id_grupo_actual(usuario_id):
                 WHERE GU.id_usuario = ?
             """, (usuario_id,))
             row = cursor.fetchone()
-            return row["codigo"] if row else None
+            return row["id"] if row else None
 
 def login_required(f):
     @wraps(f)
