@@ -3,25 +3,38 @@ from db import get_conn
 from functools import wraps
 from flask import session, redirect, url_for, flash
 
-def get_puntuacion_anterior(id_usuario, id_grupo):
+def get_puntuacion_anterior(id_usuario):
     fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with get_conn() as conn:
         cursor = conn.cursor()
         cursor.execute("""
             SELECT MAX(puntuacion) as ultimo
-            FROM Resultados
-            WHERE id_usuario = ? and id_grupo = ?
+            FROM Resultados r
+            JOIN Grupos g on r.id_grupo = g.id_grupo
+            WHERE id_usuario = ? 
         """, 
-        (id_usuario, id_grupo))
+        (id_usuario, fecha_actual))
         resultado = cursor.fetchone()
         return resultado["puntuacion"] if resultado else None
      
-def get_grupo_actual(usuario_id):
+def get_cod_grupo_actual(usuario_id):
     with db_lock:
         with get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute("""
                 SELECT G.codigo FROM Grupos G
+                JOIN Grupo_Usuario GU ON G.id = GU.id_grupo
+                WHERE GU.id_usuario = ?
+            """, (usuario_id,))
+            row = cursor.fetchone()
+            return row["codigo"] if row else None
+        
+def get_id_grupo_actual(usuario_id):
+    with db_lock:
+        with get_conn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT G.id FROM Grupos G
                 JOIN Grupo_Usuario GU ON G.id = GU.id_grupo
                 WHERE GU.id_usuario = ?
             """, (usuario_id,))
