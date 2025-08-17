@@ -7,97 +7,111 @@ preguntas_bp = Blueprint("preguntas", __name__)
 
 @preguntas_bp.route("/ver_pregunta", methods=["GET", "POST"])
 def ver_pregunta():
+    # Requiere sesión
     if "usuario_id" not in session:
         return redirect(url_for("auth.login_form"))
 
     usuario_id = session["usuario_id"]
-    fecha_hoy = datetime.now().date().isoformat()
+    id_grupo = get_id_grupo_actual(usuario_id)
 
+    # ------------------ POST: procesar respuesta ------------------
     if request.method == "POST":
         id_respuesta = request.form.get("respuesta")
         if not id_respuesta:
             flash("No se ha seleccionado una respuesta.")
             return redirect(url_for("preguntas.ver_pregunta"))
 
-        id_grupo = get_id_grupo_actual(usuario_id) or None
-        puntuacion_anterior = get_puntuacion_anterior(usuario_id, id_grupo) or 0
-
         with db_lock:
             with get_conn() as conn:
                 cursor = conn.cursor()
                 cursor.execute("PRAGMA foreign_keys = ON")
 
-                # ¿ya respondió hoy?
-                cursor.execute("""
-                    SELECT 1 FROM Resultados
-                    WHERE id_usuario = ? AND DATE(fecha) = ?
-                """, (usuario_id, fecha_hoy))
-                if cursor.fetchone():
-                    flash("Ya has respondido hoy. Solo puedes participar una vez.")
-                    return redirect(url_for("index"))
-
-                # respuesta elegida
+                # 1) Obtener la respuesta elegida
                 cursor.execute("SELECT * FROM Respuestas WHERE id = ?", (id_respuesta,))
                 respuesta = cursor.fetchone()
                 if not respuesta:
                     flash("Respuesta no encontrada.")
                     return redirect(url_for("preguntas.ver_pregunta"))
 
-                # pregunta asociada
-                cursor.execute("SELECT * FROM Preguntas WHERE id = ?", (respuesta["id_pregunta"],))
+                pregunta_id = respuesta["id_pregunta"]
+
+                # 2) Evitar duplicado: ¿este usuario ya respondió ESTA pregunta?
+                cursor.execute("""
+                    SELECT 1
+                    FROM Resultados
+                    WHERE id_usuario = ? AND id_pregunta = ?
+                    LIMIT 1
+                """, (usuario_id, pregunta_id))
+                if cursor.fetchone():
+                    # Ya había respondido esta pregunta → redirige a resultados (si hay grupo) o al inicio
+                    flash("Ya has respondido esta pregunta. Solo se permite una vez por usuario.")
+                    return redirect(url_for("resultados.ver_resultados", id_grupo=id_grupo)) if id_grupo else redirect(url_for("index"))
+
+                # 3) (Opcional) validar que la pregunta exista
+                cursor.execute("SELECT * FROM Preguntas WHERE id = ?", (pregunta_id,))
                 pregunta_reg = cursor.fetchone()
                 if not pregunta_reg:
                     flash("Pregunta no encontrada.")
                     return redirect(url_for("preguntas.ver_pregunta"))
 
-                # grupo desde sesión (o None)
-                grupo_codigo = session.get("grupo_actual")
-                id_grupo = None
-                if grupo_codigo:
-                    cursor.execute("SELECT id FROM Grupos WHERE codigo = ?", (grupo_codigo,))
-                    grupo = cursor.fetchone()
-                    if grupo:
-                        id_grupo = grupo["id"]
-
-                # puntuación
-                correcta = int(respuesta["correcta"])
-                puntuacion = puntuacion_anterior + 1 if correcta else puntuacion_anterior
-
-                # guardar resultado
+                # 4) Puntuación previa global del usuario (último registro)
                 cursor.execute("""
-                    INSERT INTO Resultados (fecha, id_usuario, id_grupo, temporada, puntuacion, correcta, id_pregunta, id_respuesta)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    usuario_id,
-                    id_grupo,
-                    "2025-T1",
-                    puntuacion,
-                    correcta,
-                    respuesta["id_pregunta"],
-                    respuesta["id"]
-                ))
-                conn.commit()
+                    SELECT puntuacion
+                    FROM Resultados
+                    WHERE id_usuario = ?
+                    ORDER BY datetime(fecha) DESC
+                    LIMIT 1
+                """, (usuario_id,))
+                row_prev = cursor.fetchone()
+                puntuacion_anterior = row_prev["puntuacion"] if row_prev else 0
 
-        # Ya tienes id_grupo calculado arriba; NO reutilices cursor fuera del with
+                # 5) Calcular nueva puntuación
+                correcta = int(respuesta["correcta"])
+                nueva_puntuacion = puntuacion_anterior + 1 if correcta else puntuacion_anterior
+
+                # 6) Insertar resultado
+                ahora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                try:
+                    cursor.execute("""
+                        INSERT INTO Resultados
+                            (fecha, id_usuario, id_grupo, temporada, puntuacion, correcta, id_pregunta, id_respuesta)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        ahora,
+                        usuario_id,
+                        id_grupo,           # Guardamos el grupo para poder ver rankings por grupo
+                        "2025-T1",          # Ajusta si tienes cálculo dinámico de temporada
+                        nueva_puntuacion,
+                        correcta,
+                        pregunta_id,
+                        respuesta["id"]
+                    ))
+                    conn.commit()
+                except sqlite3.IntegrityError:
+                    # Por si tienes un índice único (id_usuario, id_pregunta) y hubo doble tap/carrera
+                    flash("Ya habías respondido esta pregunta.")
+                    return redirect(url_for("resultados.ver_resultados", id_grupo=id_grupo)) if id_grupo else redirect(url_for("index"))
+
+        # 7) Redirección post-inserción
         if id_grupo:
             return redirect(url_for("resultados.ver_resultados", id_grupo=id_grupo))
         else:
-            flash("Respuesta registrada. No se detectó grupo; volviendo al inicio.", "error")
+            flash("Respuesta registrada. No se detectó grupo; volviendo al inicio.")
             return redirect(url_for("index"))
 
-    # GET: mostrar pregunta
+    # ------------------ GET: mostrar pregunta ------------------
     pregunta_actual, respuestas = get_pregunta_del_dia()
     if not pregunta_actual:
         flash("No se ha podido cargar la pregunta del día.")
         return redirect(url_for("index"))
 
-    # cargar audio/imagen
+    # Obtener id de la pregunta (Row u objeto)
     try:
         pregunta_id = pregunta_actual["id"]
     except Exception:
         pregunta_id = pregunta_actual.id
 
+    # Cargar rutas de audio/imagen si existen
     with db_lock:
         with get_conn() as conn:
             cur = conn.cursor()
@@ -110,12 +124,13 @@ def ver_pregunta():
             ruta_audio = extra["ruta_audio"] if extra else None
             ruta_imagen = extra["ruta_imagen"] if extra else None
 
-    return render_template("pregunta.html",
-                           pregunta=pregunta_actual,
-                           respuestas=respuestas,
-                           ruta_audio=ruta_audio,
-                           ruta_imagen=ruta_imagen)
-
+    return render_template(
+        "pregunta.html",
+        pregunta=pregunta_actual,
+        respuestas=respuestas,
+        ruta_audio=ruta_audio,
+        ruta_imagen=ruta_imagen
+    )
 
 @preguntas_bp.route("/timeout/<int:pregunta_id>")
 def timeout(pregunta_id):
