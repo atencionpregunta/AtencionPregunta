@@ -149,7 +149,8 @@ def timeout(pregunta_id):
                     id_grupo = g["id"]
 
             # Puntuación NO aumenta en timeout
-            puntuacion_anterior = get_puntuacion_anterior(usuario_id) or 0
+            id_grupo = get_id_grupo_actual(usuario_id) or None
+            puntuacion_anterior = get_puntuacion_anterior(usuario_id, id_grupo) or 0
 
             # Insertar como incorrecta con id_respuesta=99
             cursor.execute("""
