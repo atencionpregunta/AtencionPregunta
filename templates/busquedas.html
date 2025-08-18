@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card fade-in">
+  <h2>🔎 Búsqueda de resultados</h2>
+  <div class="grid" style="gap:8px;">
+    <label>Nombre o email
+      <input id="q" type="text" placeholder="ej. iker / @gmail.com">
+    </label>
+    <label>Desde
+      <input id="desde" type="date">
+    </label>
+    <label>Hasta
+      <input id="hasta" type="date">
+    </label>
+  </div>
+  <button id="btn-buscar" class="btn primary-btn" style="margin-top:10px;">Buscar</button>
+  <pre id="salida" class="mono" style="white-space:pre-wrap; max-height:280px; overflow:auto; margin-top:10px;"></pre>
+</div>
+
+<script>
+(function(){
+  const run = document.getElementById("btn-buscar");
+  const out = document.getElementById("salida");
+
+  run.addEventListener("click", async () => {
+    const body = {
+      q: document.getElementById("q").value.trim(),
+      desde: document.getElementById("desde").value,
+      hasta: document.getElementById("hasta").value
+    };
+    out.textContent = "Buscando...";
+    const resp = await fetch("{{ url_for('busquedas.api_busquedas') }}", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(body)
+    });
+    if (!resp.ok) {
+      out.textContent = "Error " + resp.status;
+      return;
+    }
+    const data = await resp.json();
+    out.textContent = data.data.map(r =>
+      `${r.fecha} — ${r.usuario}: ${r.puntuacion}`
+    ).join("\n") || "Sin resultados.";
+  });
+})();
+</script>
+{% endblock %}

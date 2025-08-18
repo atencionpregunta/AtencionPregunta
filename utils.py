@@ -1,6 +1,7 @@
 from datetime import datetime
 from db import get_conn
 from functools import wraps
+import os
 from flask import session, redirect, url_for, flash
 
 def get_puntuacion_anterior(id_usuario, id_grupo):
@@ -39,6 +40,40 @@ def get_id_grupo_actual(usuario_id):
             """, (usuario_id,))
             row = cursor.fetchone()
             return row["id"] if row else None
+
+ALLOWED_SEARCH_EMAILS = {
+    e.strip().lower() for e in os.getenv("ALLOWED_SEARCH_EMAILS", "").split(",") if e.strip()
+}
+
+def email_puede_buscar(email: str) -> bool:
+    return bool(email) and email.lower() in ALLOWED_SEARCH_EMAILS
+        
+def usuario_puede_buscar(usuario_id: int) -> bool:
+    """Permite ver la pestaña/usar la API de búsquedas."""
+    if not usuario_id:
+        return False
+    with db_lock, get_conn() as conn:
+        cur = conn.cursor()
+        # Si tu tabla Grupo_Usuario tiene columna 'rol', restringe a admin/moderador.
+        cur.execute("PRAGMA table_info(Grupo_Usuario)")
+        cols = [r["name"] for r in cur.fetchall()]
+        if "rol" in cols:
+            cur.execute("""
+                SELECT 1
+                FROM Grupo_Usuario
+                WHERE id_usuario = ? AND rol IN ('admin','moderador')
+                LIMIT 1
+            """, (usuario_id,))
+            if cur.fetchone():
+                return True
+        # Fallback: cualquier miembro de algún grupo
+        cur.execute("""
+            SELECT 1
+            FROM Grupo_Usuario
+            WHERE id_usuario = ?
+            LIMIT 1
+        """, (usuario_id,))
+        return cur.fetchone() is not None
 
 def login_required(f):
     @wraps(f)

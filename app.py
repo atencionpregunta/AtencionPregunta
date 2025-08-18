@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from zoneinfo import ZoneInfo  # Py>=3.9
-from utils import _seleccionar_pregunta_para_hoy
+from utils import _seleccionar_pregunta_para_hoy, email_puede_buscar
 
 
 # Cargar variables de entorno
@@ -33,11 +33,13 @@ from auth import auth_bp
 from grupos import grupos_bp
 from preguntas import preguntas_bp
 from resultados import resultados_bp
+from busquedas.routes import busquedas_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(grupos_bp)
-app.register_blueprint(preguntas_bp)  # ✅ Añadir url_prefix
+app.register_blueprint(preguntas_bp)  
 app.register_blueprint(resultados_bp)
+app.register_blueprint(busquedas_bp)
 
 # Ruta principal
 @app.route("/")
@@ -49,6 +51,8 @@ def index():
     usuario_id = session.get("usuario_id")
     grupo_actual = get_grupo_actual(usuario_id) if usuario_id else None
     ya_respondido = False
+    usuario_email = session.get("usuario_email")
+    puede_buscar_por_email = email_puede_buscar(usuario_email)
 
     if usuario_id:
         fecha_hoy = datetime.now().date().isoformat()
@@ -73,7 +77,8 @@ def index():
         "index.html",
         grupo_actual=grupo_actual,
         ya_respondido=ya_respondido,
-        id_grupo=id_grupo
+        id_grupo=id_grupo,
+        puede_buscar_por_email = puede_buscar_por_email
     )
 
 
