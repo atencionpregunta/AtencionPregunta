@@ -42,7 +42,6 @@ def get_id_grupo_actual(usuario_id):
             return row["id"] if row else None
 
 def email_puede_buscar(email: str) -> bool:
-    load_dotenv()  # por si en local dependes del .env
     allowed = {
         e.strip().lower()
         for e in os.getenv("ALLOWED_SEARCH_EMAILS", "").split(",")
