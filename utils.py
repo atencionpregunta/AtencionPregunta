@@ -41,12 +41,15 @@ def get_id_grupo_actual(usuario_id):
             row = cursor.fetchone()
             return row["id"] if row else None
 
-ALLOWED_SEARCH_EMAILS = {
-    e.strip().lower() for e in os.getenv("ALLOWED_SEARCH_EMAILS", "").split(",") if e.strip()
-}
-
 def email_puede_buscar(email: str) -> bool:
-    return bool(email) and email.lower() in ALLOWED_SEARCH_EMAILS
+    load_dotenv()  # por si en local dependes del .env
+    allowed = {
+        e.strip().lower()
+        for e in os.getenv("ALLOWED_SEARCH_EMAILS", "").split(",")
+        if e.strip()
+    }
+    return bool(email) and email.lower() in allowed
+
         
 def usuario_puede_buscar(usuario_id: int) -> bool:
     """Permite ver la pestaña/usar la API de búsquedas."""

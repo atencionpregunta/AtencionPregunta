@@ -1,3 +1,4 @@
+# busquedas/routes.py
 from flask import Blueprint, request, jsonify, session, abort, render_template
 from db import get_conn, db_lock
 from utils import email_puede_buscar, get_id_grupo_actual
@@ -5,9 +6,14 @@ from utils import email_puede_buscar, get_id_grupo_actual
 busquedas_bp = Blueprint("busquedas", __name__, url_prefix="/busquedas")
 
 def _check_perm():
-    usuario_email = session.get("usuario_email")  # asegúrate de guardarlo al hacer login
-    if not usuario_email or not email_puede_buscar(usuario_email):
-        abort(403)
+    # 1) Debe haber sesión
+    usuario_email = session.get("usuario_email")
+    if not usuario_email:
+        abort(401)  # no logueado
+
+    # 2) El email debe estar permitido (allowlist en .env)
+    if not email_puede_buscar(usuario_email):
+        abort(403)  # logueado pero sin permiso
 
 @busquedas_bp.route("/")
 def pagina_busquedas():
