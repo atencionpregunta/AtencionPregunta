@@ -2,21 +2,30 @@ import os
 from flask import Flask, session, render_template
 from flask_dance.contrib.google import make_google_blueprint
 from dotenv import load_dotenv
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.cron import CronTrigger
-from zoneinfo import ZoneInfo  # Py>=3.9
-from utils import _seleccionar_pregunta_para_hoy
+# (Opcional) si luego activas tareas programadas:
+# from apscheduler.schedulers.background import BackgroundScheduler
+# from apscheduler.triggers.cron import CronTrigger
+# from zoneinfo import ZoneInfo
+from utils import _seleccionar_pregunta_para_hoy  # si no lo usas aún, puedes quitarlo
 
-
+# ----------------------------
 # Cargar variables de entorno
+# ----------------------------
 load_dotenv()
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
-
+# ----------------------------
+# ÚNICA instancia de Flask
+# ----------------------------
 app = Flask(__name__)
-app.secret_key = os.getenv("FLASK_SECRET_KEY", "clave_por_defecto")
+# Clave de sesión (firmado de cookies)
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "I2k4e1r22001!")
+# Contraseña de administrador (separada de la secret_key)
+app.config["ADMIN_PASSWORD"] = os.getenv("ADMIN_PASSWORD", "I2k4e1r22001!")
 
-# Blueprint de Google OAuth
+# ----------------------------
+# Google OAuth (Flask-Dance)
+# ----------------------------
 google_bp = make_google_blueprint(
     client_id=os.getenv("GOOGLE_CLIENT_ID"),
     client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
@@ -24,28 +33,33 @@ google_bp = make_google_blueprint(
     scope=[
         "openid",
         "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile"
-    ]
+        "https://www.googleapis.com/auth/userinfo.profile",
+    ],
 )
+# Asegurar nombre del endpoint "google" (por si acaso)
+google_bp.name = "google"
+
+# Registra ANTES de rutas que renderizan plantillas
 app.register_blueprint(google_bp, url_prefix="/login")
 
-app = Flask(__name__)
-app.secret_key = "I2k4e1r22001!"
-
-# Importar y registrar Blueprints de tus módulos
+# ----------------------------
+# Blueprints propios
+# ----------------------------
 from auth import auth_bp
 from grupos import grupos_bp
 from preguntas import preguntas_bp
 from resultados import resultados_bp
-from admin import admin_bp
+from admin.routes import admin_bp  # import directo desde routes para evitar ciclos
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(grupos_bp)
-app.register_blueprint(preguntas_bp)  # ✅ Añadir url_prefix
+app.register_blueprint(preguntas_bp)   # si quieres prefix, ponlo en el propio blueprint
 app.register_blueprint(resultados_bp)
-app.register_blueprint(admin_bp, url_prefix="/admin")
+app.register_blueprint(admin_bp)       # SIN url_prefix; las rutas ya empiezan por /admin
 
+# ----------------------------
 # Ruta principal
+# ----------------------------
 @app.route("/")
 def index():
     from utils import get_grupo_actual
@@ -60,12 +74,15 @@ def index():
         fecha_hoy = datetime.now().date().isoformat()
         with get_conn() as conn:
             cursor = conn.cursor()
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT 1 FROM Resultados
                 WHERE id_usuario = ? AND DATE(fecha) = ?
-            """, (usuario_id, fecha_hoy))
+                """,
+                (usuario_id, fecha_hoy),
+            )
             ya_respondido = cursor.fetchone() is not None
-            
+
     id_grupo = None
     if grupo_actual:
         with get_conn() as conn:
@@ -79,12 +96,13 @@ def index():
         "index.html",
         grupo_actual=grupo_actual,
         ya_respondido=ya_respondido,
-        id_grupo=id_grupo
+        id_grupo=id_grupo,
     )
 
-
-# Ejecutar la app
+# ----------------------------
+# Arranque local
+# ----------------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    print(app.url_map)
+    print(app.url_map)  # para verificar endpoints (deberías ver google.login y admin.*)
     app.run(host="0.0.0.0", port=port, debug=True)
