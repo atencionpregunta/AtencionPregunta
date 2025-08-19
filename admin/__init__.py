@@ -1,5 +1,4 @@
-from flask import Blueprint
+# admin/__init__.py
+from .routes import admin_bp
 
-resultados_bp = Blueprint("admin", __name__)
-
-from . import routes
+__all__ = ["admin_bp"]

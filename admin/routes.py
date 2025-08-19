@@ -1,5 +1,8 @@
-from flask import render_template, request, redirect, url_for, session, flash
-from . import admin_bp
+# admin/routes.py
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+
+# SIN prefix, como pediste
+admin_bp = Blueprint("admin", __name__)
 
 @admin_bp.route("/admin")
 def panel_admin():
