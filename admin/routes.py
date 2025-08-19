@@ -8,7 +8,7 @@ admin_bp = Blueprint("admin", __name__)
 def panel_admin():
     # Si no está logueado como admin, muestra el formulario de acceso
     if not session.get("is_admin"):
-        return render_template("admin/panel_login.html")
+        return render_template("admin/login_admin.html")
     # Si ya es admin, muestra el panel real
     return render_template("admin/panel.html")
 
