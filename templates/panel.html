@@ -1,26 +1,68 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="card fade-in">
-  <h1>👑 Panel de Administración</h1>
-  <p>Bienvenido, administrador.</p>
+  <h1>👑 Panel de Administración — SQL</h1>
+  <p>Modo lectura por defecto: permite <code>SELECT/WITH/EXPLAIN</code> en una sola sentencia. Marca “Escritura” para ejecutar scripts con <code>INSERT/UPDATE/DELETE/...</code>.</p>
 
-  <div class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:16px;">
-    <div class="card" style="padding:16px;">
-      <h3>Acciones rápidas</h3>
-      <ul>
-        <li><a href="#">📊 Ver preguntas del día</a></li>
-        <li><a href="#">👥 Revisar grupos</a></li>
-        <li><a href="#">📜 Usuarios recientes</a></li>
-      </ul>
+  <form method="post" action="{{ url_for('admin.panel_admin') }}" class="card" style="padding:12px;">
+    <div style="margin-bottom:8px;">
+      <label for="sql">SQL</label>
+      <textarea id="sql" name="sql" rows="10"
+        style="width:100%;font-family:ui-monospace,Consolas,monospace;" spellcheck="false">{{ sql }}</textarea>
     </div>
-    <div class="card" style="padding:16px;">
-      <h3>Estado</h3>
-      <p>✅ Todo en orden</p>
-    </div>
-  </div>
 
-  <a href="{{ url_for('admin.logout_admin') }}" class="btn secondary-btn" style="margin-top:20px;">
-    Cerrar sesión
-  </a>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+      <label>Filas máx. a mostrar:
+        <input type="number" min="1" max="5000" name="limit" value="{{ limit }}" style="width:100px;">
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;">
+        <input type="checkbox" name="allow_write" {% if allow_write %}checked{% endif %}>
+        Permitir escritura (¡peligroso!)
+      </label>
+      <button type="submit" class="btn">Ejecutar</button>
+      <a class="btn secondary-btn" href="{{ url_for('admin.panel_admin') }}">Reset</a>
+      <a class="btn secondary-btn" href="{{ url_for('admin.logout_admin') }}">Cerrar sesión</a>
+    </div>
+  </form>
+
+  {% if error %}
+    <div class="card" style="background:#ffe5e5;border:1px solid #f5a3a3;margin-top:12px;padding:12px;">
+      <strong>Error:</strong> {{ error }}
+    </div>
+  {% endif %}
+
+  {% if message %}
+    <div class="card" style="background:#e8fff0;border:1px solid #9be2b0;margin-top:12px;padding:12px;">
+      {{ message }}{% if elapsed_ms is not none %} — {{ elapsed_ms }} ms{% endif %}
+    </div>
+  {% endif %}
+
+  {% if rows and columns %}
+    <div style="overflow:auto;margin-top:12px;">
+      <table class="table" style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr>
+            {% for c in columns %}
+              <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px 8px;">{{ c }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+            <tr>
+              {% for c in columns %}
+                <td style="border-bottom:1px solid #f1f1f1;padding:6px 8px;">
+                  {{ r[c] if r is mapping else r[loop.index0] }}
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p style="opacity:.7;margin-top:6px;">Mostrando hasta {{ limit }} filas.</p>
+    </div>
+  {% elif elapsed_ms is not none and not error %}
+    <p style="margin-top:12px;opacity:.7;">La consulta no devolvió filas.</p>
+  {% endif %}
 </div>
 {% endblock %}
