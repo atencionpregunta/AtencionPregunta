@@ -14,8 +14,18 @@ def ver_resultados(id_grupo):
         FROM Resultados r
         JOIN Usuarios u ON r.id_usuario = u.id
         WHERE r.id_grupo = ?
-        ORDER BY r.puntuacion DESC, r.fecha ASC
-    """, (id_grupo,))
+        AND NOT EXISTS (
+            SELECT 1
+            FROM Resultados r2
+            WHERE r2.id_grupo   = r.id_grupo
+            AND r2.id_usuario = r.id_usuario
+            AND (
+                r2.fecha > r.fecha
+                OR (r2.fecha = r.fecha AND r2.id > r.id)
+            )
+        )
+        ORDER BY r.puntuacion DESC, r.fecha DESC, u.usuario ASC
+        """, (id_grupo,))
     resultados = cursor.fetchall()
     conn.close()
 
