@@ -1,12 +1,11 @@
-
 {% extends "base.html" %}
 {% block content %}
-<div class="card fade-in" style="max-width:420px;margin:0 auto;">
-  <h2>🔐 Acceso administrador</h2>
-  <form method="POST" class="form">
-    <div class="form-row">
-      <input type="password" name="password" placeholder="Contraseña" required class="input">
-    </div>
+<div class="card fade-in" style="max-width:420px;margin:auto;">
+  <h1>🔐 Modo administrador</h1>
+  <form action="{{ url_for('admin.login_admin') }}" method="post" class="card" style="padding:16px;">
+    <label for="admin_password">Contraseña</label>
+    <input id="admin_password" type="password" name="admin_password" required
+           style="width:100%;padding:8px;margin:8px 0;">
     <button type="submit" class="btn">Entrar</button>
   </form>
 </div>
