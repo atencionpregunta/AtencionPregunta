@@ -10,21 +10,23 @@ def ver_resultados(id_grupo):
     conn = get_conn()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT u.id AS id_usuario, u.usuario, r.puntuacion, r.fecha, r.correcta
-        FROM Resultados r
-        JOIN Usuarios u ON r.id_usuario = u.id
-        WHERE r.id_grupo = ?
-        AND NOT EXISTS (
-            SELECT 1
+        SELECT u.id AS id_usuario, u.usuario, r1.puntuacion, r1.fecha, r1.correcta
+        FROM Resultados r1
+        JOIN Usuarios u ON u.id = r1.id_usuario
+        WHERE r1.id_grupo = ?
+        AND r1.rowid = (
+            SELECT MAX(r2.rowid)
             FROM Resultados r2
-            WHERE r2.id_grupo   = r.id_grupo
-            AND r2.id_usuario = r.id_usuario
-            AND (
-                r2.fecha > r.fecha
-                OR (r2.fecha = r.fecha AND r2.id > r.id)
+            WHERE r2.id_grupo = r1.id_grupo
+            AND r2.id_usuario = r1.id_usuario
+            AND r2.fecha = (
+                SELECT MAX(r3.fecha)
+                FROM Resultados r3
+                WHERE r3.id_grupo = r1.id_grupo
+                AND r3.id_usuario = r1.id_usuario
             )
         )
-        ORDER BY r.puntuacion DESC, r.fecha DESC, u.usuario ASC
+        ORDER BY r1.puntuacion DESC, r1.fecha DESC, u.usuario ASC;
         """, (id_grupo,))
     resultados = cursor.fetchall()
     conn.close()
