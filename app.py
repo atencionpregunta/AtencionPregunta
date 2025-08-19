@@ -12,6 +12,7 @@ from utils import _seleccionar_pregunta_para_hoy
 load_dotenv()
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
+
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "clave_por_defecto")
 
@@ -27,6 +28,9 @@ google_bp = make_google_blueprint(
     ]
 )
 app.register_blueprint(google_bp, url_prefix="/login")
+
+app = Flask(__name__)
+app.secret_key = "I2k4e1r22001!"
 
 # Importar y registrar Blueprints de tus módulos
 from auth import auth_bp
