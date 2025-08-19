@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card fade-in">
+  <h1>👑 Panel de Administración</h1>
+  <p>Bienvenido, administrador.</p>
+
+  <div class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:16px;">
+    <div class="card" style="padding:16px;">
+      <h3>Acciones rápidas</h3>
+      <ul>
+        <li><a href="#">📊 Ver preguntas del día</a></li>
+        <li><a href="#">👥 Revisar grupos</a></li>
+        <li><a href="#">📜 Usuarios recientes</a></li>
+      </ul>
+    </div>
+    <div class="card" style="padding:16px;">
+      <h3>Estado</h3>
+      <p>✅ Todo en orden</p>
+    </div>
+  </div>
+
+  <a href="{{ url_for('admin.logout') }}" class="btn secondary-btn" style="margin-top:20px;">
+    Cerrar sesión
+  </a>
+</div>
+{% endblock %}

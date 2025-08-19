@@ -2,10 +2,9 @@ import os
 from flask import Flask, session, render_template
 from flask_dance.contrib.google import make_google_blueprint
 from dotenv import load_dotenv
-# (Opcional) si luego activas tareas programadas:
-# from apscheduler.schedulers.background import BackgroundScheduler
-# from apscheduler.triggers.cron import CronTrigger
-# from zoneinfo import ZoneInfo
+# from apscheduler.schedulers.background import BackgroundScheduler  # opcional
+# from apscheduler.triggers.cron import CronTrigger                  # opcional
+# from zoneinfo import ZoneInfo                                      # opcional
 from utils import _seleccionar_pregunta_para_hoy  # si no lo usas aún, puedes quitarlo
 
 # ----------------------------
@@ -36,7 +35,7 @@ google_bp = make_google_blueprint(
         "https://www.googleapis.com/auth/userinfo.profile",
     ],
 )
-# Asegurar nombre del endpoint "google" (por si acaso)
+# Asegurar nombre del endpoint "google"
 google_bp.name = "google"
 
 # Registra ANTES de rutas que renderizan plantillas
@@ -49,11 +48,11 @@ from auth import auth_bp
 from grupos import grupos_bp
 from preguntas import preguntas_bp
 from resultados import resultados_bp
-from admin.routes import admin_bp  # import directo desde routes para evitar ciclos
+from admin.routes import admin_bp  # import directo para evitar ciclos
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(grupos_bp)
-app.register_blueprint(preguntas_bp)   # si quieres prefix, ponlo en el propio blueprint
+app.register_blueprint(preguntas_bp)   # si quieres prefix, ponlo en ese blueprint
 app.register_blueprint(resultados_bp)
 app.register_blueprint(admin_bp)       # SIN url_prefix; las rutas ya empiezan por /admin
 
