@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card fade-in" style="max-width:420px;margin:0 auto;">
+  <h2>🔐 Acceso administrador</h2>
+  <form method="POST" class="form">
+    <div class="form-row">
+      <input type="password" name="password" placeholder="Contraseña" required class="input">
+    </div>
+    <button type="submit" class="btn">Entrar</button>
+  </form>
+</div>
+{% endblock %}

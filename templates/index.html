@@ -20,13 +20,6 @@
             <h1>🚨 Atención Pregunta 🚨</h1>
 
             {% if session.get("usuario_id") %}
-                {% if puede_buscar_por_email %}
-                    <a href="{{ url_for('busquedas.pagina_busquedas') }}"
-                    class="btn"
-                    style="position:fixed; top:12px; left:12px; z-index:1000; padding:10px 14px; border-radius:12px; text-decoration:none;">
-                    🔎 Búsquedas
-                    </a>
-                {% endif %}
                 <p class="welcome">Bienvenido, <strong>{{ session["usuario_nombre"] }}</strong> 👋</p>
 
                 {% if grupo_actual %}
