@@ -1,0 +1,9 @@
+BEGIN:VCARD
+VERSION:3.0
+N:;Kebab;;;
+FN:Kebab
+item1.TEL:+34 976 47 23 05
+item1.X-ABLabel:Casa
+item2.TEL;waid=34664040617:+34 664 04 06 17
+item2.X-ABLabel:Móvil
+END:VCARD

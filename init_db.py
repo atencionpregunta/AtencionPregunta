@@ -8,13 +8,13 @@ DB_PATH = "/opt/render/db/database.db"
 # CSVs (subidos en tu repo)
 # Pon los CSV en: /opt/render/project/src/data/...
 PREGUNTAS_CSV = "Chat_de_WhatsApp_con_ATENCION_PREGUNTA_preguntas.csv"
-RESPUESTAS_CSV = "Chat_de_WhatsApp_con_ATENCION_PREGUNTA_respuestas.csv"
+RESPUESTAS_CSV = ".csv"
 
 # Fallbacks locales para trabajar en tu PC sin tocar nada:
 if not os.path.exists(PREGUNTAS_CSV):
-    PREGUNTAS_CSV = "data/whatsapp_chat_preguntas.csv"
+    PREGUNTAS_CSV = "Chat_de_WhatsApp_con_ATENCION_PREGUNTA_preguntas.csv"
 if not os.path.exists(RESPUESTAS_CSV):
-    RESPUESTAS_CSV = "data/whatsapp_chat_respuestas.csv"
+    RESPUESTAS_CSV = "Chat_de_WhatsApp_con_ATENCION_PREGUNTA_respuestas.csv"
 
 # -------------------- Helpers --------------------
 def ensure_db_dir():
