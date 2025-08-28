@@ -1,7 +1,7 @@
 import os, sqlite3
 from datetime import datetime
 
-DB_PATH = os.getenv("DB_PATH", "/opt/render/db/database.db")
+DB_PATH = "database.db"
 os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
 def init_db():

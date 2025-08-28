@@ -1,7 +1,3 @@
-from flask import render_template, request, redirect, session, url_for
-from datetime import datetime
-from db import get_conn, db_lock
-from . import auth_bp  # <-- aquí está el cambio clave
 from flask import render_template, request, redirect, session, url_for, flash, jsonify
 from datetime import datetime
 from db import get_conn, db_lock

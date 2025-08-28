@@ -1,7 +1,6 @@
 from datetime import datetime
 from db import get_conn
 from functools import wraps
-import os
 from flask import session, redirect, url_for, flash
 
 def get_puntuacion_anterior(id_usuario, id_grupo):
@@ -29,53 +28,32 @@ def get_grupo_actual(usuario_id):
             row = cursor.fetchone()
             return row["codigo"] if row else None
         
-def get_id_grupo_actual(usuario_id):
+def get_ids_grupos_usuario(usuario_id):
     with db_lock:
         with get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                SELECT G.id FROM Grupos G
+                SELECT G.id
+                FROM Grupos G
                 JOIN Grupo_Usuario GU ON G.id = GU.id_grupo
                 WHERE GU.id_usuario = ?
             """, (usuario_id,))
-            row = cursor.fetchone()
-            return row["id"] if row else None
-
-def email_puede_buscar(email: str) -> bool:
-    allowed = {
-        e.strip().lower()
-        for e in os.getenv("ALLOWED_SEARCH_EMAILS", "").split(",")
-        if e.strip()
-    }
-    return bool(email) and email.lower() in allowed
-
+            rows = cursor.fetchall()
+            return [row["id"] for row in rows]  # lista de IDs
         
-def usuario_puede_buscar(usuario_id: int) -> bool:
-    """Permite ver la pestaña/usar la API de búsquedas."""
-    if not usuario_id:
-        return False
-    with db_lock, get_conn() as conn:
-        cur = conn.cursor()
-        # Si tu tabla Grupo_Usuario tiene columna 'rol', restringe a admin/moderador.
-        cur.execute("PRAGMA table_info(Grupo_Usuario)")
-        cols = [r["name"] for r in cur.fetchall()]
-        if "rol" in cols:
+def get_grupos_usuario(usuario_id: int):
+    with db_lock:
+        with get_conn() as conn:
+            cur = conn.cursor()
             cur.execute("""
-                SELECT 1
-                FROM Grupo_Usuario
-                WHERE id_usuario = ? AND rol IN ('admin','moderador')
-                LIMIT 1
+                SELECT G.id, G.codigo
+                FROM Grupos G
+                JOIN Grupo_Usuario GU ON G.id = GU.id_grupo
+                WHERE GU.id_usuario = ?
+                ORDER BY G.codigo
             """, (usuario_id,))
-            if cur.fetchone():
-                return True
-        # Fallback: cualquier miembro de algún grupo
-        cur.execute("""
-            SELECT 1
-            FROM Grupo_Usuario
-            WHERE id_usuario = ?
-            LIMIT 1
-        """, (usuario_id,))
-        return cur.fetchone() is not None
+            rows = cur.fetchall()
+    return [dict(id=r["id"], codigo=r["codigo"]) for r in rows]
 
 def login_required(f):
     @wraps(f)
@@ -98,48 +76,6 @@ from db import get_conn, db_lock
 
 HUSO = "Europe/Madrid"  # solo a título informativo si usas zoneinfo en app.py
 HORA_SELECCION = time(9, 0, 0)  # 09:00
-
-def _seleccionar_pregunta_para_hoy():
-    """Elige una pregunta NO mostrada y la marca con fecha_mostrada=ahora.
-       Si ya hay una para hoy, no hace nada. Idempotente."""
-    hoy = datetime.now().date().isoformat()
-    with db_lock:
-        with get_conn() as conn:
-            c = conn.cursor()
-            c.execute("BEGIN IMMEDIATE")
-
-            # ¿Ya hay pregunta fijada hoy?
-            c.execute("""
-                SELECT id FROM Preguntas
-                WHERE substr(COALESCE(fecha_mostrada, ''), 1, 10) = ?
-                LIMIT 1
-            """, (hoy,))
-            if c.fetchone():
-                conn.commit()
-                return
-
-            # Elegir una NO mostrada (NULL primero), y si todas mostradas, la menos reciente
-            c.execute("""
-                SELECT *
-                FROM Preguntas
-                ORDER BY
-                    CASE WHEN fecha_mostrada IS NULL THEN 0 ELSE 1 END ASC,
-                    fecha_mostrada ASC,
-                    RANDOM()
-                LIMIT 1
-            """)
-            preg = c.fetchone()
-            if not preg:
-                conn.commit()
-                return
-
-            ahora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            c.execute("UPDATE Preguntas SET fecha_mostrada = ? WHERE id = ?", (ahora, preg["id"]))
-            conn.commit()
-
-# utils.py
-from datetime import datetime, time
-from db import get_conn, db_lock
 
 HORA_SELECCION = time(9, 0, 0)  # ajusta si quieres otra hora
 

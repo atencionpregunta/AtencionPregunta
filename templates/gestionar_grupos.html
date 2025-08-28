@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestionar grupos · Reto Diario</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <style>
+    .lista-grupos { list-style:none; padding:0; margin: 10px 0 0; }
+    .item-grupo { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid #eee; }
+    .trash-btn { background:transparent; border:none; cursor:pointer; color:#b91c1c; }
+    .trash-btn:hover { opacity:.8; transform: scale(1.05); }
+    .acciones { display:flex; gap:8px; align-items:center; }
+  </style>
+</head>
+<body>
+  <main class="center-wrapper">
+    <div class="card fade-in">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <h1><i class="fa-solid fa-gear"></i> Gestionar grupos</h1>
+
+      {% if grupos_usuario and grupos_usuario|length %}
+        <ul class="lista-grupos">
+          {% for grupo in grupos_usuario %}
+            <li class="item-grupo">
+              <div>
+                <i class="fa-solid fa-users"></i>
+                <strong>{{ grupo.codigo }}</strong>
+              </div>
+              <div class="acciones">
+                <form method="POST" action="{{ url_for('grupos.salir_grupo') }}" onsubmit="return confirm('¿Seguro que quieres salirte del grupo &quot;{{ grupo.codigo }}&quot;?');">
+                  <input type="hidden" name="id_grupo" value="{{ grupo.id }}">
+                  <button type="submit" class="trash-btn" title="Salir del grupo">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="info">No perteneces a ningún grupo todavía.</p>
+      {% endif %}
+
+      <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap;">
+        <a href="{{ url_for('grupos.crear_grupo') }}" class="btn secondary-btn">
+          <i class="fa-solid fa-plus"></i> Crear grupo
+        </a>
+        <a href="{{ url_for('grupos.unirse_grupo') }}" class="btn secondary-btn">
+          <i class="fa-solid fa-sign-in-alt"></i> Unirse a grupo
+        </a>
+        <a href="{{ url_for('index') }}" class="btn secondary-btn">⬅️ Volver al inicio</a>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <p>&copy; 2025 · Atención Pregunta / Iker Ángel</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  /* Pregunta a todo lo ancho */
+  .question-textarea{
+    width:100% !important; max-width:100%; box-sizing:border-box; display:block;
+  }
+
+  /* Contenedor de opciones más compacto */
+  .options.compact .opcion{
+    display:grid;
+    grid-template-columns: 1fr auto auto; /* input grande + radio + icono */
+    gap:8px; align-items:center; margin-bottom:8px;
+  }
+
+  /* Input de opción más ancho y cómodo */
+  .options.compact .opcion input[type="text"]{
+    font-size:0.95rem; padding:8px 10px; width:100%;
+  }
+
+  /* Radio “correcta” más pequeño */
+  .options.compact .radio-correcta{
+    font-size:0.9rem; white-space:nowrap;
+  }
+
+  /* Botón pequeño con icono */
+  .icon-btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:32px; height:32px; padding:0; border:1px solid var(--border, #ddd);
+    border-radius:8px; background:transparent; cursor:pointer;
+  }
+  .icon-btn:hover{ background:rgba(0,0,0,.05); }
+  .icon-btn svg{ width:16px; height:16px; display:block; }
+  .icon-btn.danger{ border-color:#e57373; }
+  .icon-btn.danger svg{ fill:#e53935; }
+
+  /* Botón “+ Añadir opción” un poco más pequeño */
+  .add-option-btn{ font-size:0.85rem; padding:6px 10px; }
+  .options-header{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+</style>
+
+<div class="card fade-in" style="max-width: 820px; margin: 0 auto;">
+  <h1 style="margin-top:0;">➕ Nueva pregunta</h1>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-container" style="margin-bottom:12px;">
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="{{ url_for('admin.subir_pregunta') }}" class="form">
+    <label for="pregunta"><strong>Pregunta</strong></label>
+    <textarea id="pregunta" name="pregunta" rows="3" required
+              placeholder="Escribe aquí la pregunta..."
+              class="question-textarea">{{ pregunta or '' }}</textarea>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
+      <div>
+        <label for="categoria">Categoría</label>
+        <input id="categoria" type="text" name="categoria" value="{{ categoria or 'General' }}" placeholder="General">
+      </div>
+      <div>
+        <label for="dificultad">Dificultad</label>
+        {% set dif = dificultad or 'Media' %}
+        <select id="dificultad" name="dificultad">
+          <option value="Fácil"   {{ 'selected' if dif=='Fácil' else '' }}>Fácil</option>
+          <option value="Media"   {{ 'selected' if dif=='Media' else '' }}>Media</option>
+          <option value="Difícil" {{ 'selected' if dif=='Difícil' else '' }}>Difícil</option>
+        </select>
+      </div>
+    </div>
+
+    <hr style="margin:16px 0;">
+
+    <div class="options-header">
+      <h3 style="margin:0;">Opciones de respuesta</h3>
+      <button class="btn add-option-btn" onclick="agregarOpcion(); return false;">+ Añadir opción</button>
+    </div>
+    <p class="muted" style="margin:6px 0 12px;">Añade al menos 2. Si <strong>no</strong> es encuesta, marca exactamente una como correcta.</p>
+
+    <div id="opciones" class="options compact">
+      {% set opciones = respuestas or ['',''] %}
+      {% for val in opciones %}
+      <div class="opcion">
+        <input type="text" name="respuestas[]" value="{{ val }}" required placeholder="Texto de la opción">
+        <label class="radio-correcta">
+          <input type="radio" name="correcta" value="{{ loop.index0 }}"> Correcta
+        </label>
+        <button class="icon-btn danger" title="Eliminar opción" aria-label="Eliminar opción" onclick="eliminarOpcion(this); return false;">
+          <!-- Icono papelera (SVG inline) -->
+          <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+            <path d="M9 3h6a1 1 0 0 1 1 1v1h4v2h-1v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7H4V5h4V4a1 1 0 0 1 1-1zm2 2v0h2V5h-2zM7 7v12h10V7H7zm3 2h2v8h-2V9zm4 0h2v8h-2V9z"/>
+          </svg>
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div style="display:flex; gap:10px; margin-top:12px;">
+      <button class="btn primary-btn" type="submit">Guardar</button>
+      <a class="btn" href="{{ url_for('admin.panel_admin') }}">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<!-- Template para nuevas opciones -->
+<template id="tpl-opcion">
+  <div class="opcion">
+    <input type="text" name="respuestas[]" required placeholder="Texto de la opción">
+    <label class="radio-correcta">
+      <input type="radio" name="correcta" value="__IDX__"> Correcta
+    </label>
+    <button class="icon-btn danger" title="Eliminar opción" aria-label="Eliminar opción" onclick="eliminarOpcion(this); return false;">
+      <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+        <path d="M9 3h6a1 1 0 0 1 1 1v1h4v2h-1v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7H4V5h4V4a1 1 0 0 1 1-1zm2 2v0h2V5h-2zM7 7v12h10V7H7zm3 2h2v8h-2V9zm4 0h2v8h-2V9z"/>
+      </svg>
+    </button>
+  </div>
+</template>
+
+<script>
+(function () {
+  const cont = document.getElementById('opciones');
+  const encuestaChk = document.getElementById('es_encuesta');
+  const tpl = document.getElementById('tpl-opcion');
+
+  function renumerarRadios() {
+    cont.querySelectorAll('input[type=radio][name=correcta]').forEach((r, i) => r.value = i);
+  }
+  function uncheckAllRadios() {
+    cont.querySelectorAll('input[type=radio][name=correcta]').forEach(r => r.checked = false);
+  }
+  function syncEncuestaDisabled() {
+    const disable = encuestaChk.checked;
+    cont.querySelectorAll('input[type=radio][name=correcta]').forEach(r => {
+      r.disabled = disable;
+      if (disable) r.checked = false;
+    });
+  }
+
+  window.agregarOpcion = function() {
+    const clone = tpl.content.cloneNode(true);
+    cont.appendChild(clone);
+    renumerarRadios();
+    syncEncuestaDisabled();
+  };
+
+  window.eliminarOpcion = function(btn) {
+    const row = btn.closest('.opcion');
+    if (!row) return;
+    row.remove();
+    renumerarRadios();
+    syncEncuestaDisabled();
+  };
+
+  encuestaChk.addEventListener('change', () => {
+    if (encuestaChk.checked) uncheckAllRadios();
+    syncEncuestaDisabled();
+  });
+
+  // Inicialización
+  syncEncuestaDisabled();
+})();
+</script>
+{% endblock %}

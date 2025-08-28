@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 # from apscheduler.schedulers.background import BackgroundScheduler  # opcional
 # from apscheduler.triggers.cron import CronTrigger                  # opcional
 # from zoneinfo import ZoneInfo                                      # opcional
-from utils import _seleccionar_pregunta_para_hoy  # si no lo usas aún, puedes quitarlo
 
 # ----------------------------
 # Cargar variables de entorno
@@ -48,13 +47,15 @@ from auth import auth_bp
 from grupos import grupos_bp
 from preguntas import preguntas_bp
 from resultados import resultados_bp
-from admin.routes import admin_bp  # import directo para evitar ciclos
+from admin import admin_bp  # import directo para evitar ciclos
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(grupos_bp)
 app.register_blueprint(preguntas_bp)   # si quieres prefix, ponlo en ese blueprint
 app.register_blueprint(resultados_bp)
 app.register_blueprint(admin_bp)       # SIN url_prefix; las rutas ya empiezan por /admin
+
+
 
 # ----------------------------
 # Ruta principal
@@ -105,3 +106,11 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     print(app.url_map)  # para verificar endpoints (deberías ver google.login y admin.*)
     app.run(host="0.0.0.0", port=port, debug=True)
+    
+from flask_cors import CORS
+# si servirás React en otro dominio (p.ej. https://tu-frontend.com):
+CORS(app, resources={r"/api/*": {"origins": ["https://tu-frontend.com"], "supports_credentials": True}})
+app.config.update(
+    SESSION_COOKIE_SAMESITE="None",   # cookies cross-site
+    SESSION_COOKIE_SECURE=True        # requiere HTTPS en prod
+)

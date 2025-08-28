@@ -1,4 +1,7 @@
 # admin/__init__.py
-from .routes import admin_bp
+from flask import Blueprint
 
-__all__ = ["admin_bp"]
+admin_bp = Blueprint("admin", __name__)  # <-- se define aquí UNA sola vez
+
+# Importa las rutas para que se registren en este blueprint
+from . import routes  # noqa

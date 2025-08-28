@@ -7,6 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+      .grupos-usuario { margin-top:20px; }
+      .grupos-usuario ul { list-style:none; padding:0; }
+      .grupos-usuario li { margin:6px 0; display:flex; align-items:center; gap:8px; }
+    </style>
 </head>
 <body>
     <main class="center-wrapper">
@@ -19,7 +24,7 @@
                 {% endif %}
             {% endwith %}
             <h1><i class="fa-solid fa-users"></i> Unirse a Grupo</h1>
-            <form method="POST" action="/unirse_grupo" class="formulario">
+            <form method="POST" action="{{ url_for('grupos.unirse_grupo') }}" class="formulario">
                 <div class="form-group">
                     <label for="codigo_grupo">Nombre o código del grupo:</label>
                     <input type="text" name="codigo_grupo" id="codigo_grupo" required>
@@ -31,17 +36,20 @@
                 <button type="submit" class="btn primary-btn">
                     <i class="fa-solid fa-door-open"></i> Unirse al grupo
                 </button>
-                <a href="/" class="btn secondary-btn">⬅️ Volver al inicio</a>
+                <a href="{{ url_for('index') }}" class="btn secondary-btn">⬅️ Volver al inicio</a>
             </form>
+
             {% if grupos_usuario %}
-                <div class="grupos-usuario">
-                    <h3>Grupos a los que perteneces:</h3>
-                    <ul>
-                        {% for grupo in grupos_usuario %}
-                            <li><i class="fa-solid fa-check-circle"></i> {{ grupo.codigo }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
+              <div class="grupos-usuario">
+                <h3>Tus grupos actuales</h3>
+                <ul>
+                  {% for grupo in grupos_usuario %}
+                    <li>
+                      <i class="fa-solid fa-users"></i> {{ grupo.codigo }}
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
             {% endif %}
         </div>
     </main>

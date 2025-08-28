@@ -21,6 +21,16 @@
     h2{ margin:0 0 4px; font-size:1.6rem }
     .sub{ color:var(--muted); margin:0 0 16px; font-size:.95rem }
 
+    /* toolbar */
+    .toolbar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin: 8px 0 16px; }
+    .toolbar .select{
+      padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; font-size:.95rem;
+    }
+    .btn-link{
+      text-decoration:none; padding:8px 12px; border:1px solid var(--line); border-radius:8px; color:#333;
+      background:#fff;
+    }
+
     table{ width:100%; border-collapse:collapse; }
     thead th{
       text-align:left; font-weight:600; font-size:.9rem; color:#555; padding:12px 10px; border-bottom:1px solid var(--line);
@@ -64,7 +74,30 @@
 <body>
   <div class="card">
     <h2>📊 Clasificación</h2>
-    <p class="sub">Quién será la gente con mayor conocimiento riverlandístico.</p>
+
+    {# localizar el grupo seleccionado para mostrar su código bonito #}
+    {% set grupo_sel = (grupos_usuario | selectattr('id','equalto', id_grupo) | list | first) %}
+    <p class="sub">
+      Clasificación general del grupo seleccioando
+      {% if grupo_sel %} · <strong>Grupo:</strong> {{ grupo_sel.codigo }}{% endif %}
+    </p>
+
+    <!-- Toolbar: selector de grupo + volver -->
+    <div class="toolbar">
+      <form method="GET" action="{{ url_for('resultados.ver_resultados') }}">
+        <label for="id_grupo"><strong>Grupo:</strong></label>
+        <select name="id_grupo" id="id_grupo" class="select" onchange="this.form.submit()">
+          {% for g in grupos_usuario %}
+            <option value="{{ g.id }}" {% if g.id == id_grupo %}selected{% endif %}>
+              {{ g.codigo }}
+            </option>
+          {% endfor %}
+        </select>
+        <noscript><button type="submit" class="btn-link">Ver</button></noscript>
+      </form>
+
+      <a class="btn-link" href="{{ url_for('index') }}">⬅️ Volver al inicio</a>
+    </div>
 
     {% set max_p = (resultados | map(attribute='puntuacion') | max) if resultados else 1 %}
 

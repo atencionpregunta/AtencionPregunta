@@ -1,0 +1,2800 @@
+id,id_pregunta,respuesta,correcta
+1,1,Lunes,False
+2,1,Martes,False
+3,1,Miercoles,False
+4,1,Jueves,False
+5,1,Viernes,False
+6,1,Sabado,False
+7,1,Domingo,False
+8,2,Violín,False
+9,2,Lira,False
+10,2,Contrabajo,False
+11,2,Piano,False
+12,2,Clavecín,False
+13,2,Clavicordio,False
+14,2,Violonchelo,False
+15,3,Chatarra,False
+16,3,Chusma,False
+17,4,Blanquear,False
+18,4,Pochar,False
+19,5,Del viento,False
+20,5,De la lluvia,False
+21,6,Si el nudo es ancho,False
+22,6,En ningún caso,False
+23,7,Leonardo - Catanas,False
+24,7,Michelangelo - Nunchakus,False
+25,7,Rafael - Sais,False
+26,7,Donnatello - Yumi,False
+27,8,45°,False
+28,8,90°,False
+29,8,180°,False
+30,8,360°,False
+31,8,720°,False
+32,9,Pancréas,False
+33,9,Colon,False
+34,9,Boca,False
+35,9,Esófago,False
+36,9,Faringe,False
+37,9,Bazo,False
+38,9,Sigma,False
+39,10,Hierro,False
+40,10,Silicio,False
+41,10,Magnesio,False
+42,10,Aluminio,False
+43,10,Cobre,False
+44,10,Calcio,False
+45,10,Titanio,False
+46,11,Rojo,False
+47,11,Amarillo,False
+48,11,Blanco,False
+49,11,Azul,False
+50,11,Verde,False
+51,11,Naranja,False
+52,11,Negro,False
+53,11,Morado,False
+54,11,Marrón,False
+55,11,Rosa,False
+56,12,3 Años,False
+57,12,4 Años,False
+58,12,5 Años,False
+59,12,6 Años,False
+60,12,7 Años,False
+61,12,8 Años,False
+62,13,Austria,False
+63,13,EEUU,False
+64,13,Grecia,False
+65,13,Francia,False
+66,13,Italia,False
+67,13,Japón,False
+68,13,Argentina,False
+69,14,Verbos copulativos,False
+70,14,Verbos transitivos,False
+71,14,Verbos reflexivos,False
+72,14,Verbos sucesivos,False
+73,14,Verbos defectivos,False
+74,14,Verbos recíprocos,False
+75,14,Verbos auxiliares,False
+76,14,Verbos intransitivos,False
+77,14,Verbos predicativos,False
+78,15,Aún no ha nacido,False
+79,15,6 Años,False
+80,15,10 Años,False
+81,15,16 Años,False
+82,15,26 Años,False
+83,15,36 Años,False
+84,16,Una patata,False
+85,16,Una cebolla,False
+86,17,De un hongo,False
+87,17,De un fruto seco,False
+88,18,Daddy Yankee,False
+89,18,Enrique Iglesias,False
+90,19,No se puede jugar al domino,False
+91,19,No se puede fumar pipa,False
+92,19,No se puede leer propaganda,False
+93,20,1,False
+94,20,101,False
+95,21,0000AAA,False
+96,21,0001AAA,False
+97,21,0000AAB,False
+98,21,0000BBB,False
+99,21,0001BBB,False
+100,21,0000BBC,False
+101,21,0000ZZZ,False
+102,21,0001ZZZ,False
+103,21,0000ZZA,False
+104,22,5 Años,False
+105,22,15 Años,False
+106,22,25 Años,False
+107,22,50 Años,False
+108,22,75 Años,False
+109,22,150 Años,False
+110,22,250 Años,False
+111,23,Dua Lipa,False
+112,23,Luar La L,False
+113,23,Selana Gómez,False
+114,23,Feid,False
+115,23,Nicki Minaj,False
+116,23,Jennifer López,False
+117,23,Quavo,False
+118,23,Residente,False
+119,23,Myke Towers,False
+120,23,Lenny Tavarez,False
+121,24,Play Station 1,False
+122,24,Play Station 2,False
+123,24,Play Station 3,False
+124,24,Xbox 360,False
+125,24,Gameboy,False
+126,24,Nintendo Switch,False
+127,24,Nintendo DS,False
+128,24,Wii,False
+129,25,8.2 metros por segundo,False
+130,25,8.9 metros por segundo,False
+131,25,9.2 metros por segundo,False
+132,25,9.5 metros por segundo,False
+133,25,9.8 metros por segundo,False
+134,25,No podemos saberlo,False
+135,25,No aumenta,False
+136,26,Celo/Celofán,False
+137,26,Microscopio Electrónico,False
+138,26,Bolígrafo,False
+139,26,Fregona,False
+140,26,Radar,False
+141,26,Televisión,False
+142,27,Celo/Celofán,False
+143,27,Microscopio Electrónico,False
+144,27,Bolígrafo,False
+145,27,Fregona,False
+146,27,Televisión,False
+147,27,Radar,False
+148,28,65 millones de años aprox,False
+149,28,105 millones de años aprox,False
+150,28,175 millones de años aprox,False
+151,28,215 millones de años aprox,False
+152,28,325 millones de años aprox,False
+153,28,475 millones de años aprox,False
+154,28,500 millones de años aprox,False
+155,29,Ibiza,False
+156,29,Fuerteventura,False
+157,30,5 años,False
+158,30,10 años,False
+159,31,Viento solar 🌬️,False
+160,31,Ciclo lunar 🌗,False
+161,32,Dos,False
+162,32,Cuatro,False
+163,33,Do' dia' y tre' noche,False
+164,33,Tre' dia y do' noche,False
+165,34,8,False
+166,34,9,False
+167,34,10,False
+168,34,11,False
+169,34,12,False
+170,34,13,False
+171,34,14,False
+172,35,1,False
+173,35,2,False
+174,35,3,False
+175,35,4,False
+176,35,5,False
+177,35,6,False
+178,35,7,False
+179,36,Hasta 10 minutos,False
+180,36,Hasta 15 minutos,False
+181,36,Hasta 20 minutos,False
+182,36,Hasta 25 minutos,False
+183,36,Hasta 30 mins,False
+184,36,Hasta 45 minutos,False
+185,37,4,False
+186,37,5,False
+187,37,6,False
+188,37,7,False
+189,37,8,False
+190,37,9,False
+191,37,10,False
+192,38,1,False
+193,38,2,False
+194,38,3,False
+195,38,4,False
+196,38,5,False
+197,38,6,False
+198,38,7,False
+199,38,8,False
+200,38,9,False
+201,38,10,False
+202,38,11,False
+203,38,12,False
+204,39,Esmerjon,False
+205,39,Abobilla,False
+206,39,Mito,False
+207,39,Graja,False
+208,39,Cárabo,False
+209,39,Vencejo,False
+210,40,Aries,False
+211,40,Tauro,False
+212,40,Geminis,False
+213,40,Cancer,False
+214,40,Leo,False
+215,40,Virgo,False
+216,40,Libra,False
+217,40,Escorpio,False
+218,40,Sagitario,False
+219,40,Capricornio,False
+220,40,Acuario,False
+221,40,Piscis,False
+222,41,Luna en acuario,False
+223,41,Signo -> escorpio,False
+224,41,Me gusta una canción de La La Love You,False
+225,41,Ser magrebí,False
+226,41,Ser homosexual,False
+227,41,Ser magrebí y homosexual,False
+228,42,Iker,False
+229,42,Sara Velayos con uñas largas,False
+230,43,Sudáfrica,False
+231,43,Francia,False
+232,43,Nigeria,False
+233,43,Madagascar,False
+234,43,Costa de Marfil,False
+235,43,Congo,False
+236,43,Camerún,False
+237,44,13 a.c,False
+238,44,102 a.c,False
+239,44,0,False
+240,44,34 d.c,False
+241,44,254 d.c,False
+242,44,1845 d.c,False
+243,45,1'55 metros,False
+244,45,1'62 metros,False
+245,45,1'74 metros,False
+246,45,1'80 metros,False
+247,45,1'95 metros,False
+248,45,2'10 metros,False
+249,46,es feo,False
+250,46,"es ""mono""",False
+251,47,MAPS - Maroon 5,False
+252,47,Me porto bonito - Bad Bunny ft Chencho Corleone,False
+253,47,Hawaii - Maluma,False
+254,47,Falling - Harry Styles,False
+255,47,The real slim shady - Eminem,False
+256,47,Goosebumps - Travis Scott,False
+257,47,Wolves - Selena Gómez ft Marshmello,False
+258,48,Ninfas,False
+259,48,Musas,False
+260,49,Escabeche,False
+261,49,Salmuera,False
+262,50,Delta,False
+263,50,Zeta,False
+264,51,Los hipopótamos,False
+265,51,Las gacelas,False
+266,52,El número de años que hace de que se extingueran los dinosaurios,False
+267,52,El número de millones que pagó el Atlético de Madrid por fichar a Diego Costa del Chealse en 2017,False
+268,53,Ural,False
+269,53,Dniéper,False
+270,53,Volga,False
+271,53,Danubio,False
+272,53,Kama,False
+273,53,Pechora,False
+274,53,Don,False
+275,54,"No, para qué, qué hay mas rapido que un reflejo",False
+276,54,"Si, optimizando más espacio a los laterales de los vehículos y facilitando asi la circulación",False
+277,55,Enero,False
+278,55,Febrero,False
+279,55,Marzo,False
+280,55,Abril,False
+281,55,Mayo,False
+282,55,Junio,False
+283,55,Julio,False
+284,55,Agosto,False
+285,55,Septiembre,False
+286,55,Octubre,False
+287,55,Noviembre,False
+288,55,Diciembre,False
+289,56,"El ""Carjitsu"" es un deporte que consiste en pelear dentro de un coche.",False
+290,56,Aproximadamente 1 de cada 5000 niños nacen sin ano.,False
+291,56,Los perezosos pueden aguantar hasta 40 minutos debajo del agua.,False
+292,56,La primera persona con enanismo se identificó en el Siglo XX.,False
+293,56,Existe una palabra que tarda en leerse más de 3 horas.,False
+294,56,La ciudad de Cádiz fue fundada más cerca en el tiempo del último mamut que de nosotros.,False
+295,56,El mechero se inventó antes que las cerillas.,False
+296,56,La universidad de Oxford es más antigua que el imperio azteca.,False
+297,57,♻️,False
+298,57,🏝️,False
+299,57,🌰,False
+300,57,🥶,False
+301,58,⠀⠀⠀⠀⠀⠀⠀⠀⠀,False
+302,58,Sin nada,False
+303,58,Una manita por delante y otra manita por detras,False
+304,58,Pedigüeño,False
+305,58,Al menos tendrá un cigarro,False
+306,58,"""A lo que ca""",False
+307,59,1,False
+308,59,2,False
+309,59,3,False
+310,59,4,False
+311,59,5,False
+312,59,6,False
+313,60,Negra,False
+314,60,Blanca,False
+315,60,Gris,False
+316,60,Carne,False
+317,60,Todas las opciones anteriores son correctas,False
+318,60,Ninguna de las opciones anteriores es correcta,False
+319,60,C y D son correctas,False
+320,61,75,False
+321,61,80,False
+322,61,85,False
+323,61,90,False
+324,61,99,False
+325,61,100,False
+326,62,Galería,False
+327,62,Puente,False
+328,62,Concha,False
+329,62,Corazón,False
+330,62,Labio,False
+331,62,Punta o Punto,False
+332,62,Orejas,False
+333,63,Medioambiente,False
+334,63,Medio ambiente,False
+335,63,Ambas opciones son correctas,False
+336,64,Fortaleza,False
+337,64,Caudaloso,False
+338,65,Negro,False
+339,65,Rojo,False
+340,65,Amarillo,False
+341,65,Depende de la equipación de su equipo,False
+342,66,Díastole,False
+343,66,Sístole,False
+344,67,Chaqué,False
+345,67,Terno,False
+346,68,Edward 🧛🏻,False
+347,68,Jacob 🐺,False
+348,69,Antonio Recio mayorista no limpia pescado🐟🚫🧼,False
+349,69,Hilario el de los cementos 👷‍♂️🧱,False
+350,70,Dopamina,False
+351,70,Serotonina,False
+352,70,Oxitocina,False
+353,70,Endorfina,False
+354,70,Adrenalina,False
+355,70,Melatonina,False
+356,70,Testosterona,False
+357,71,Venus,False
+358,71,Diana,False
+359,71,Jupiter,False
+360,71,Marte,False
+361,71,Febo,False
+362,71,Minerva,False
+363,71,Saturno,False
+364,71,Vesta,False
+365,71,Juno,False
+366,71,Ceres,False
+367,72,Noemi,False
+368,72,Olga,False
+369,72,Maria,False
+370,72,Dora,False
+371,72,Selene,False
+372,72,Elena,False
+373,73,7,False
+374,73,8,False
+375,73,9,False
+376,73,10,False
+377,73,11,False
+378,73,12,False
+379,73,13,False
+380,74,Cartas Tarot 🃏,False
+381,74,Posos Café ☕,False
+382,75,0,False
+383,75,1,False
+384,75,2,False
+385,75,3,False
+386,75,4,False
+387,75,+ de 4,False
+388,76,Cruz Cafune,False
+389,76,Dellafuente,False
+390,77,Difícil 😨,False
+391,77,Muy difícil 😱,False
+392,78,Wake Me Up - Avicii,False
+393,78,Riptide - Vance Joy,False
+394,78,Gangnam Style - Psy,False
+395,78,Party Rock Anthem - LMFAO,False
+396,78,Bangarang - Skrillex,False
+397,78,Rolling in the deep - Adele,False
+398,78,Sigueme y te sigo - Daddy Yankee,False
+399,78,On the floof - Jennifer Lopez,False
+400,79,Riptide,False
+401,79,Stolen Dance,False
+402,80,Riptide,False
+403,80,Srolen Dance,False
+404,80,Somebody that i used to know,False
+405,81,Pasado pisado,False
+406,81,Pan y mantequilla,False
+407,82,Wake Me Up - Avicii,False
+408,82,Riptide - Vance Joy,False
+409,82,Gangnam Style - Psy,False
+410,82,Party Rock Anthem - LMFAO,False
+411,82,Bangarang - Skrillex,False
+412,82,Rolling in the deep - Adele,False
+413,82,Sigueme y te sigo - Daddy Yankee,False
+414,82,On the floor - Jennifer Lopez,False
+415,83,Billions club,False
+416,83,No billions club,False
+417,84,skype,False
+418,84,discord,False
+419,84,Teams,False
+420,84,google meetings,False
+421,85,3,False
+422,85,4,False
+423,85,5,False
+424,85,6,False
+425,85,7,False
+426,85,8,False
+427,85,9,False
+428,85,10,False
+429,86,"0,5",False
+430,86,1,False
+431,86,2,False
+432,86,Al corte,False
+433,87,75 km,False
+434,87,100 km,False
+435,87,125 km,False
+436,87,150 km,False
+437,87,175 km,False
+438,87,200 km,False
+439,87,225 km,False
+440,87,250 km,False
+441,88,Canguro 🦘,False
+442,88,Rana 🐸,False
+443,88,Rinoceronte 🦏,False
+444,88,Hipopótamo 🦛,False
+445,88,Gorila 🦍,False
+446,88,Carapa Koi 🎏,False
+447,88,Cocodrilo agua salada 🐊🧂,False
+448,88,Cocodrilo del nilo 🐊💦,False
+449,88,León hembra 🦁♀️,False
+450,88,Jirafa 🦒,False
+451,89,"Moros con ""TN"" 👟",False
+452,89,Mujeres con iPhone 🤳🏻,False
+453,90,SÍ TOTALLLLLL 💯🔥🥇,False
+454,90,no.,False
+455,91,Milf,False
+456,91,Milfnt,False
+457,92,Wombat,False
+458,92,Dugongo,False
+459,93,125,False
+460,93,370,False
+461,93,750,False
+462,93,1380,False
+463,93,3540,False
+464,94,Maki,False
+465,94,Sashimi,False
+466,94,Nigiri,False
+467,94,Uramaki,False
+468,95,Tango,False
+469,95,Ranchero,False
+470,95,Bolero,False
+471,95,Cumbia,False
+472,96,Festival de los farolillos 🏮🏮,False
+473,96,Festival del dragón 🐉🀄,False
+474,97,8 Km,False
+475,97,10 Km,False
+476,97,12 Km,False
+477,97,14 Km,False
+478,97,16 Km,False
+479,97,18 Km,False
+480,97,20 Km,False
+481,98,8,False
+482,98,13,False
+483,98,17,False
+484,98,20,False
+485,98,24,False
+486,99,193 cms,False
+487,99,203 cms,False
+488,99,213 cms,False
+489,99,223 cms,False
+490,99,233 cms,False
+491,100,Naiaramusic,False
+492,100,Novia de Micki facal2021,False
+493,101,Si,False
+494,101,No,False
+495,102,1,False
+496,102,5,False
+497,102,7,False
+498,102,10,False
+499,102,15,False
+500,102,20,False
+501,102,25,False
+502,102,30,False
+503,103,Dulce,False
+504,103,Ácido,False
+505,103,Salado,False
+506,103,Amargo,False
+507,103,Umami,False
+508,104,Si,False
+509,104,No,False
+510,105,Ratones,False
+511,105,Conejos,False
+512,105,Pulgas,False
+513,105,Gatos,False
+514,105,Piojos,False
+515,105,Perros,False
+516,105,Ratas,False
+517,105,Burros,False
+518,105,Vacas,False
+519,105,Cerdos,False
+520,106,X100PRE🐰,False
+521,106,YHLQMDLG🤕🥵,False
+522,106,LQNIAS🥳🥳,False
+523,106,UVST🌅🥳🥺,False
+524,106,💤💤 OASIS💤💤,False
+525,107,UN MDFKN VERANO SIN TI 🌅🌅,False
+526,107,MICRO MDFKN DOSIS 💊💊,False
+527,108,Enero,False
+528,108,Febrero,False
+529,108,Marzo,False
+530,108,Abril,False
+531,108,Mayo,False
+532,108,Junio,False
+533,108,Julio,False
+534,108,Agosto,False
+535,108,Septiembre,False
+536,108,Octubre,False
+537,108,Noviembre,False
+538,108,Diciembre,False
+539,109,Ninguno,False
+540,109,Uno,False
+541,109,Dos,False
+542,109,Tres,False
+543,109,Depende,False
+544,110,La pava,False
+545,110,La gallina,False
+546,111,Tiburón,False
+547,111,Ballena,False
+548,112,Adversativa,False
+549,112,Comparativa,False
+550,113,Izquierda,False
+551,113,Derecha,False
+552,114,Si,False
+553,114,No,False
+554,115,5,False
+555,115,6,False
+556,115,7,False
+557,115,8,False
+558,115,9,False
+559,115,10,False
+560,116,Évole 🎤🤓,False
+561,116,Wild 💪🤬,False
+562,117,Bizarrap,False
+563,117,Drake,False
+564,117,Dua Lipa,False
+565,117,David Guetta,False
+566,117,Imagine Dragons,False
+567,117,Bad Bunny,False
+568,117,Harry Styles,False
+569,118,Harry Styles,False
+570,118,Shawn Mendes,False
+571,119,Harry Styles,False
+572,119,Shawn Mendes,False
+573,120,Mommy issues,False
+574,120,Daddy issues,False
+575,121,Easy Money Baby,False
+576,121,Un Verano sin tí,False
+577,121,Yo hago lo que me da la gana,False
+578,121,Viceversa,False
+579,121,X 100pre,False
+580,121,Aura,False
+581,121,Motomami,False
+582,121,El madrileño,False
+583,122,Blueface,False
+584,122,Pablo Chill E,False
+585,122,Bhad Bhabie,False
+586,123,HASTA QUE DIOS DIGA ft. 🐰,False
+587,123,EL MANUAL,False
+588,123,BANDOLERA,False
+589,123,HIPÓCRITA ft. Zion,False
+590,124,EL CONEJO MALO🐰,False
+591,124,MYKE TOWERS YOUNGKINGZ🤴🏽,False
+592,124,MORA🍇💖,False
+593,124,EL DIOS DEL TRÁ'👺,False
+594,124,RAUW RAUW 🪐,False
+595,124,PEDRO DOMÍNGUEZ QUEVEDO 🇮🇨,False
+596,124,FERXXO 💚,False
+597,124,DUKO 🤟🏼😈,False
+598,125,Sinécdoque,False
+599,125,Asíndeton,False
+600,125,Hipérbole,False
+601,125,Anáfora,False
+602,125,Aliteración,False
+603,125,Hipérbaton,False
+604,125,Sinestesia,False
+605,126,Ayuda a cagar,False
+606,126,Ayuda a no cagar,False
+607,127,Ayuda a cagar,False
+608,127,Ayuda a no cagar,False
+609,128,Esloveno,False
+610,128,Inglés,False
+611,128,Suizo,False
+612,128,Francés,False
+613,128,Alemán,False
+614,128,Romanche,False
+615,128,Italiano,False
+616,129,4,False
+617,129,6,False
+618,129,8,False
+619,129,10,False
+620,129,12,False
+621,130,Papel repro,False
+622,130,Papel de seda,False
+623,130,Papel de algodón,False
+624,130,Papel satinado,False
+625,130,Papel reciclado,False
+626,130,Papel bond,False
+627,130,Papel ecológico,False
+628,130,Papel sintético,False
+629,131,Gayvidinho - David 🤏🏻🤓🇮🇪🍀,False
+630,131,Super Paoli 👧🏽🇮🇨🍌,False
+631,131,Super Manoli 👩🏽 🇮🇨🍌,False
+632,131,Sofibú 👩🏻? 🏡,False
+633,131,Erin? 🙏🏻🛐🕊️,False
+634,132,Endosimbiosis,False
+635,132,Metamorfosis,False
+636,132,Desarrollo,False
+637,132,Fotosíntesis,False
+638,132,Quimiosintesis,False
+639,132,Muda,False
+640,132,Ecdiosis,False
+641,132,Transmutación,False
+642,133,1869,False
+643,133,1887,False
+644,133,1900,False
+645,133,1915,False
+646,133,1928,False
+647,133,1942,False
+648,133,1960,False
+649,134,Guatemala 🇬🇹,False
+650,134,Perú 🇵🇪,False
+651,134,Ecuador 🇪🇨,False
+652,134,Honduras 🇭🇳,False
+653,134,México 🇲🇽,False
+654,134,Península de Yucatán 🏝,False
+655,134,Colombia 🇨🇴,False
+656,135,👋,False
+657,135,🫲,False
+658,136,"7,90€",False
+659,136,"8,40€",False
+660,136,"8,60€",False
+661,136,"9,50€",False
+662,136,"10,40€",False
+663,136,"11,00€",False
+664,136,"12,10€",False
+665,137,Foto 1,False
+666,137,Foto 2,False
+667,138,37,False
+668,138,39,False
+669,138,41,False
+670,138,43,False
+671,139,Nigeria 🇳🇬,False
+672,139,Egipto 🇪🇬,False
+673,139,Argelia 🇩🇿,False
+674,139,República Democrática del Congo 🇨🇩,False
+675,139,Zimbabwe 🇿🇼,False
+676,139,Sudáfrica 🇿🇦,False
+677,139,Chad 🇹🇩,False
+678,140,Si 🥖,False
+679,140,No???? 😐👎,False
+680,141,Zeta ζ,False
+681,141,Kappa κ,False
+682,141,Theta θ,False
+683,141,Eta η,False
+684,141,Omicron ο,False
+685,141,Mu μ,False
+686,142,16 de enero,False
+687,142,8 de agosto,False
+688,142,3 de noviembre,False
+689,142,4 de julio,False
+690,142,19 de octubre,False
+691,142,9 de marzo,False
+692,143,Málaga,False
+693,143,Barcelona,False
+694,143,Valencia,False
+695,143,Madrid,False
+696,143,Santander,False
+697,143,Bilbao,False
+698,143,Palma de Mallorca,False
+699,144,Si 😱,False
+700,144,No 🙅🏽‍♂️,False
+701,145,Juan Magan,False
+702,145,Kidd Keo,False
+703,146,Miedo al cambio,False
+704,146,Miedo a la soledad,False
+705,146,Miedo a la muerte,False
+706,146,Miedo a la humillación,False
+707,146,Miedo a la mutilación,False
+708,146,Miedo a la pérdida de la autonomía,False
+709,146,Miedo al fracaso,False
+710,147,Leiti sene,False
+711,147,Su primo,False
+712,148,fluvi 💧🚿🐳💦,False
+713,148,pilar 🪨,False
+714,149,Madagestores,False
+715,149,Malgaches,False
+716,149,Mestecos,False
+717,149,Médegos,False
+718,149,Margáceños,False
+719,149,Trompeños,False
+720,149,Molilecos,False
+721,150,Con queso,False
+722,150,Sin queso,False
+723,150,Algunos con algunos sin,False
+724,151,Simon,False
+725,151,Nel,False
+726,152,Erin Pedraz + Super Paoli,False
+727,152,Supoer Manoli+ Sara Velayos,False
+728,153,Amaprime 🤖,False
+729,153,Maurodona 🦹🏽‍♂️,False
+730,154,Panthera onca,False
+731,154,Panthera pardus,False
+732,155,Demeter,False
+733,155,Apolo,False
+734,156,Acero,False
+735,156,Bicho,False
+736,157,Parcerita,False
+737,157,Si Veo a Tu Mamá,False
+738,158,Puertas,False
+739,158,Ruedas,False
+740,159,Miedo al cambio,False
+741,159,Miedo a la soledad,False
+742,159,Miedo a la muerte,False
+743,159,Miedo a la humillacion,False
+744,159,Miedo a la mutilación,False
+745,159,Miedo a la perdida de autonomia,False
+746,159,Miedo al fracaso,False
+747,160,Instagram,False
+748,160,Tiktok,False
+749,160,Facebook,False
+750,160,WhatsApp,False
+751,160,Twitter,False
+752,160,LinkedIn,False
+753,160,Youtube,False
+754,160,Snapchat,False
+755,161,Magrebí,False
+756,161,Libra,False
+757,162,De,False
+758,162,Y,False
+759,162,La,False
+760,162,Que,False
+761,162,A,False
+762,162,En,False
+763,162,El,False
+764,162,No,False
+765,163,🥀,False
+766,163,🍫,False
+767,163,💺,False
+768,163,🔝❌,False
+769,164,🥀,False
+770,164,🍫,False
+771,165,Enfermedades respiratorias,False
+772,165,Cáncer,False
+773,165,Enfermedades infecciosas,False
+774,165,Enfermedades cardiovasculares,False
+775,165,Accidentes,False
+776,165,Suicidios,False
+777,165,Enfermedades digestivas,False
+778,165,Diabetes,False
+779,165,Enfermedades neurológicas,False
+780,166,mates,False
+781,166,fisio,False
+782,166,bioquímica,False
+783,166,veterinaria,False
+784,166,nutri,False
+785,166,dade,False
+786,167,40%,False
+787,167,50%,False
+788,167,60%,False
+789,167,70%,False
+790,167,75%,False
+791,167,80%,False
+792,167,90%,False
+793,167,Ninguna de las anteriores,False
+794,168,Moldeo por inyección de plástico,False
+795,168,Termoformado de plástico,False
+796,168,Extrusión de plástico,False
+797,168,Soldadura por ultrasonidos,False
+798,168,Moldeo por compresión de plástico,False
+799,168,Moldeo por soplado de plástico,False
+800,168,Extrusión-soplado de plástico,False
+801,169,6 meses,False
+802,169,10 meses,False
+803,169,18 meses,False
+804,169,22 meses,False
+805,169,26 meses,False
+806,169,30 meses,False
+807,169,36 meses,False
+808,170,Sísalatas,False
+809,170,Naaaast,False
+810,171,Oxigeno,False
+811,171,Hidrogeno,False
+812,171,Hierro,False
+813,171,Helio,False
+814,171,Carbono,False
+815,171,Nitrógeno,False
+816,171,Calcio,False
+817,172,Si sa,False
+818,172,Naast,False
+819,173,5 %,False
+820,173,10 %,False
+821,173,15 %,False
+822,173,20 %,False
+823,173,25 %,False
+824,173,30 %,False
+825,173,Ninguna de las anteriores,False
+826,174,"Quito, Ecuador",False
+827,174,"Cartagena, Colombia",False
+828,174,"Cuzco, Peru",False
+829,174,"La Habana, Cuba",False
+830,174,"San Juan, Puerto Rico",False
+831,174,"Antigua, Guatemala",False
+832,174,"Ouro Preto, Brasil",False
+833,175,Bicarbonato de sodio,False
+834,175,Flúor,False
+835,175,Carbonato de calcio,False
+836,175,Cloruro de cetilpridinio,False
+837,176,Hinca píe,False
+838,176,Hincapíe,False
+839,176,Inca pie,False
+840,176,Incapié,False
+841,176,Hincapié,False
+842,176,Hincapie,False
+843,176,Hinca pie,False
+844,177,Brasil,False
+845,177,Colombia,False
+846,177,Vietnam,False
+847,177,Etiopía,False
+848,178,Egipto,False
+849,178,India,False
+850,178,Mesopotamia,False
+851,178,China,False
+852,178,Persia,False
+853,178,Grecia,False
+854,179,1948,False
+855,179,1954,False
+856,179,1960,False
+857,179,1969,False
+858,179,1979,False
+859,179,1980,False
+860,180,Miedo a los payasos,False
+861,180,Miedo a los números impares,False
+862,180,Miedo a los espacios abiertos,False
+863,180,Miedo a los lugares abiertos,False
+864,180,Miedo a los espejos,False
+865,180,Miedo a las palabras largas,False
+866,180,Miedo a la nieve,False
+867,181,Seguimos cómo hasta ahora,False
+868,181,Mando la pregunta en un mensaje y cada uno me envia de manera individual su respuesta por privado,False
+869,181,"Se puede cambiar el voto ilimitadas veces pero a las 15:00 o hora ""X"" se cierran votaciones",False
+870,182,Como hasta ahora,False
+871,182,Se envia por Google Forms un link y se vota ahí,False
+872,182,Votos ilimitados y se cierra a las 15:00 votos posteriores a esa hora EN MI MOV estan descalificados,False
+873,182,Mando la pregunta en mensaje normal y cada uno me responde por privado citando msj,False
+874,183,El octanaje se refiere a la cantidad de gasolina pura en la mezcla de combustible,False
+875,183,El octanaje se refiere a la cantidad de etanol en la mezcla de combustible,False
+876,183,El octanaje se refiere a la capacidad de la gasolina de resistir la detonación en el motor,False
+877,183,El octanaje se refiere a la cantidad de aditivos en la mezcla de combustible,False
+878,183,El octanaje se refiere a la cantidad de impurezas en la gasolina,False
+879,183,El octanaje se refiere a la cantidad de compuestos químicos en la gasolina,False
+880,183,El octanaje se refiere a la cantidad de agua en la gasolina,False
+881,184,sí,False
+882,184,no,False
+883,184,casi todos,False
+884,185,Givenchy,False
+885,185,Versace,False
+886,185,Kenzo,False
+887,185,Fendi,False
+888,185,Christian Dior,False
+889,185,Prada,False
+890,185,Emilio Pucci,False
+891,186,824,False
+892,186,940,False
+893,186,1000,False
+894,186,1054,False
+895,186,1210,False
+896,186,1304,False
+897,187,Oregon,False
+898,187,California,False
+899,187,Montana,False
+900,187,Nuevo México,False
+901,187,Texas,False
+902,187,Colorado,False
+903,187,Arizona,False
+904,188,"Dos glándulas sudoriparas, las apocrinas y las ecrinas",False
+905,188,"Dos glándulas sudoriparas, las sebaceas y las apocrinas",False
+906,188,"Tres glándulas sudoriparas, las sebaceas, las apocrinas y las ecrinas",False
+907,188,"Tres glándulas sudoriparas, las sebaceas, las apocrinas y las mamarias",False
+908,188,"Cuatro glándulas sudoriparas, las sebaceas, las apocrinas, las erinas y las mamarias",False
+909,188,"Cuatro glandulas sudoriparas, las sebáceas, las apocrinas, las mamarias y las ceruminosas",False
+910,188,"Cinco glandulas sudoríparas, las sebaceas, las apocrinas, las ecrinas, las mamariasy las ceruminosas",False
+911,189,Las Apocrinas,False
+912,189,Las Ecrinas,False
+913,190,Helio,False
+914,190,Nitrógeno,False
+915,190,Hidrógeno,False
+916,190,Oxigeno,False
+917,191,Elefante,False
+918,191,Jirafa,False
+919,191,Hipopótamo,False
+920,191,Ornitorrinco,False
+921,192,Negras con rayas blancas,False
+922,192,Blancas con rayas negras,False
+923,193,4.2 años luz,False
+924,193,4.2 millones de kilómetros,False
+925,193,42 años luz,False
+926,193,42 millones de kilómetros,False
+927,194,Secuoya gigante,False
+928,194,Pino bristlecone,False
+929,194,Olivo,False
+930,194,Baobab,False
+931,194,Ginkgo biloba,False
+932,194,Arce japonés,False
+933,194,Eucalipto,False
+934,195,4 años,False
+935,195,5 años,False
+936,195,6 años,False
+937,195,7 años,False
+938,195,8 años,False
+939,195,9 años,False
+940,195,10 años,False
+941,195,Ninguna de las anteriores,False
+942,196,"Platón, Sócrates, Aristóteles",False
+943,196,"Platón, Aristóteles, Sócrates",False
+944,196,"Sócrates, Platón, Aristóteles",False
+945,196,"Sócrates, Aristóteles, Platón",False
+946,196,"Aristóteles, Platón, Sócrates",False
+947,196,"Aristóteles,  Sócrates, Platón",False
+948,197,Con bata,False
+949,197,Descalzas,False
+950,198,Quién se quede más cerca,False
+951,198,Quién se quede más cerca sin pasarse,False
+952,198,Quién se quede más cerca sin quedarse corto,False
+953,199,+1,False
+954,199,+2,False
+955,199,+3,False
+956,199,+4,False
+957,199,+5,False
+958,199,+6,False
+959,199,+7,False
+960,199,+8,False
+961,199,+9,False
+962,199,+10,False
+963,200,Rata 🐁,False
+964,200,Ratón 🐀,False
+965,200,Perro 🐕‍🦺,False
+966,200,Mono 🐒,False
+967,200,Gusano 🪱,False
+968,200,Mosca 🪰,False
+969,200,Pez 🐟,False
+970,201,Sí 😮,False
+971,201,No 😖,False
+972,202,Si,False
+973,202,No,False
+974,203,Venezuela,False
+975,203,Colombia,False
+976,203,Guyana,False
+977,203,Surinam,False
+978,203,Guyana Francesa,False
+979,203,Ecuador,False
+980,203,Chile,False
+981,203,Perú,False
+982,203,Bolivia,False
+983,203,Paraguay,False
+984,203,Argentina,False
+985,203,Uruguay,False
+986,204,No bebe!,False
+987,204,1 👉🏻👈🏻,False
+988,204,2🤩,False
+989,204,3😜,False
+990,204,4😜,False
+991,204,5😳,False
+992,205,152,False
+993,205,190,False
+994,205,205,False
+995,205,260,False
+996,205,340,False
+997,205,401,False
+998,205,500,False
+999,206,MAN DAN GA,False
+1000,206,APOCALIPSI,False
+1001,206,SERAFÍ,False
+1002,206,SALAM ALEIKUM,False
+1003,206,3D,False
+1004,206,DAKAR,False
+1005,206,. Y APARTE,False
+1006,207,Bitcoin,False
+1007,207,5:05 pm,False
+1008,207,H2O,False
+1009,207,Relativo,False
+1010,207,Y yassta,False
+1011,207,RAM,False
+1012,207,Osa mayor °•°|°`°`§§×§∆,False
+1013,208,Buenaaas! 🙋🏽‍♂️,False
+1014,208,Hasta luegoo 🫡,False
+1015,208,Holaaa 😬,False
+1016,208,Adioos! 👋,False
+1017,209,Flynn,False
+1018,209,Fletcher,False
+1019,209,Patel,False
+1020,209,Cooper,False
+1021,209,Clarke,False
+1022,209,Smith,False
+1023,209,Green,False
+1024,210,Albahaca orégano,False
+1025,210,Bolignesa,False
+1026,211,ETA 😶‍🌫️,False
+1027,211,PETA 🐕/☘️🌿,False
+1028,211,KETA 🐴,False
+1029,211,SETA? 🍄,False
+1030,212,La región geográfica donde ocurren,False
+1031,212,La intensidad del viento,False
+1032,213,Federico García Loca,False
+1033,213,Luis Cernuda,False
+1034,213,Rafael Alberti,False
+1035,213,Jorge Luis Borges,False
+1036,214,1482,False
+1037,214,1495,False
+1038,214,1505,False
+1039,214,1519,False
+1040,215,Quincallero,False
+1041,215,Farfolla,False
+1042,215,Frangornio,False
+1043,215,Anacoreta,False
+1044,216,"1,90 m x 1,40 m",False
+1045,216,"1,50 m x 1,90 m",False
+1046,216,"2,00 m x 2,00 m",False
+1047,216,"2,10 m x 1,60 m",False
+1048,217,Billie Eilish,False
+1049,217,Post Malone,False
+1050,217,Dua Lipa,False
+1051,217,Harry Styles,False
+1052,217,Taylor Swift,False
+1053,217,Bad Bunny,False
+1054,217,Coldplay,False
+1055,218,Música clásica,False
+1056,218,Una lectura de la biblia,False
+1057,218,"""Estás preparado""",False
+1058,218,El sonido de una bombilla encendiéndose,False
+1059,218,"""Te quiero""",False
+1060,218,"""Hola?""",False
+1061,218,El himno de Italia,False
+1062,219,"Hacerlo ""Rápidamente/ ""a fuego"" 🔥💨",False
+1063,219,Hacerlo a 4tito/doggy style 🐩🐕,False
+1064,219,Hacerlo a diario/como costumbre 📆📅🗓️,False
+1065,219,"Hacerlo sin pensarlo 2 veces/ ""de una"" / aqui te pillo aqui te mato 🤯🤪",False
+1066,219,Hacerlo sin ponerse protección/ sin ponerse capuchón ❌🪖❌,False
+1067,219,"Hacerlo sin que se entere la gente / a lo callao, que se repite, ya sabéis ... 🤫🤐",False
+1068,219,Hacerlo sin descansar / sin tregua 🕛🕜🕛🕜❌💤❌,False
+1069,220,Ácido sulfúrico,False
+1070,220,Óxido nitroso,False
+1071,220,Dióxido de carbono,False
+1072,220,Metano,False
+1073,220,Ácido nítrico,False
+1074,220,Óxido de etileno,False
+1075,220,Geosmina,False
+1076,221,Tiburón mako,False
+1077,221,Pez vela delPacífico,False
+1078,221,Pez espada,False
+1079,221,Aguja azul,False
+1080,222,Victoria de las fuerzas soviéticas,False
+1081,222,Victoria de las fuerzas alemanas,False
+1082,222,Empate,False
+1083,223,La teoría del colapso gravitacional de estrellas masivas,False
+1084,223,La teoría de la evolución estelar de bajas masas,False
+1085,223,La teoría del Big Bang y la expansión del universo,False
+1086,223,La teoría de la relatividad general de Einstein,False
+1087,224,Grafeno,False
+1088,224,Diamante,False
+1089,224,Acero reforzado con fibra de carbono,False
+1090,224,Tungsteno,False
+1091,225,Las prácticas agrícolas intensivas y el uso excesivo de productos químicos agrícolas,False
+1092,225,El cambio climático y la degradación del hábitat natural de las abejas por este,False
+1093,226,"0,0958 segundos",False
+1094,226,"0,958 Segundos",False
+1095,226,"9,58 segundos",False
+1096,226,"95,8 segundos",False
+1097,226,958 segundos,False
+1098,226,9580 segundos,False
+1099,226,95800 segundos,False
+1100,227,Enemiguérrimo,False
+1101,227,Inimicérrimo,False
+1102,227,Enemicistósico,False
+1103,227,Enemicérrimo,False
+1104,227,Enemiglífico,False
+1105,227,Enemicisimo,False
+1106,227,Enemigógeno,False
+1107,228,Pinto pinto,False
+1108,228,Pito pito,False
+1109,229,La lámina ungueal,False
+1110,229,La hiponiquia ungueal,False
+1111,229,La eponiquia ungueal,False
+1112,229,La cutícula ungueal,False
+1113,229,La placa ungueal,False
+1114,229,La intercesora ungueal,False
+1115,229,La cresta ungueal,False
+1116,230,York,False
+1117,230,Serrano,False
+1118,231,"sí, no pone nada por el día por tanto ha desperdiciado la oportunidad de las horas de mañana/tarduki",False
+1119,231,"no, ha tenido los santisimos cojone de lanzar su hora a las 20:00",False
+1120,232,El aceite utilizado para calentarlas,False
+1121,232,Las ondas electromagnéticas emitidas por el microondas que interactúan con los granos de maíz,False
+1122,232,La temperatura del microondas,False
+1123,232,La cantidad de tiempo que se tarda en calentar las palomitas de maíz,False
+1124,232,La presencia de aire en los granos de maíz,False
+1125,232,La variación genética de los granos de maíz,False
+1126,232,Las pequeñas bombas de aire ubicadas dentro de los granos de maíz que se activan con el calor,False
+1127,232,El contenido de almidón del maíz,False
+1128,233,Jordania,False
+1129,233,Kuwait,False
+1130,233,Arabia Saudita,False
+1131,233,Japón,False
+1132,233,Reino Unido,False
+1133,233,Gibraltar,False
+1134,233,Baréin,False
+1135,233,Islas Caimán,False
+1136,234,arreglándote,False
+1137,234,ve arreglándote,False
+1138,234,otra,False
+1139,235,Ribosomas,False
+1140,235,Lisosomas,False
+1141,235,Cloroplastos,False
+1142,235,Mitocondrias,False
+1143,236,Venus,False
+1144,236,Mercurio,False
+1145,237,12,False
+1146,237,20,False
+1147,238,Verano,False
+1148,238,Invierno,False
+1149,238,Otoño,False
+1150,238,Primavera,False
+1151,239,Ligamentos,False
+1152,239,Ligaduras,False
+1153,239,Articulación,False
+1154,240,Hipotálamo,False
+1155,240,Tálamo,False
+1156,240,Cerebro medio,False
+1157,240,Cerebelo,False
+1158,241,Reflexión,False
+1159,241,Refracción,False
+1160,241,Difracción,False
+1161,241,Polarización,False
+1162,242,Moscow Mule,False
+1163,242,Me porto bonito,False
+1164,242,Titi me preguntó,False
+1165,242,Efecto,False
+1166,242,Ojitos lindos,False
+1167,242,Callaita,False
+1168,243,Mora - Escalofrios,False
+1169,243,Myke Towers - Extra Extra,False
+1170,244,-,False
+1171,244,3,False
+1172,244,4,False
+1173,244,5,False
+1174,244,6,False
+1175,244,+,False
+1176,245,0.125 km,False
+1177,245,0.25 km,False
+1178,245,0.5 km,False
+1179,245,1 km,False
+1180,245,2 km,False
+1181,245,5 km,False
+1182,245,7 km,False
+1183,246,👍,False
+1184,246,👎,False
+1185,247,Banda,False
+1186,247,Ellos,False
+1187,248,💩,False
+1188,248,🏹,False
+1189,249,Black Hood,False
+1190,249,Dark Hood,False
+1191,249,Green Hood,False
+1192,249,Dark Arrow,False
+1193,249,Green Arrow,False
+1194,249,Nightwing,False
+1195,249,Nightbow,False
+1196,250,Cleptomania,False
+1197,250,Enuresis,False
+1198,250,Cropofagia,False
+1199,250,Nosomania,False
+1200,250,Onicofagia,False
+1201,250,Nefrogénesis,False
+1202,251,Mercurio,False
+1203,251,Té de testículo de castor,False
+1204,251,Estiércol,False
+1205,251,Mucus de caracol,False
+1206,251,Testículos de comadreja,False
+1207,251,Preservativos,False
+1208,252,A quién...,False
+1209,252,Dónde...,False
+1210,252,Cómo...,False
+1211,253,Unión Europea,False
+1212,253,URSS,False
+1213,253,Estados Unidos,False
+1214,254,URSS,False
+1215,254,Estados Unidos,False
+1216,254,Abinisia,False
+1217,255,Norte de la Península Ibérica,False
+1218,255,Este de la Península Ibérica,False
+1219,255,Sur de la Península Ibérica,False
+1220,256,Trucha,False
+1221,256,Caballa,False
+1222,256,Salmón Rojo,False
+1223,257,En la jaula del león,False
+1224,257,En la jaula de los osos polares,False
+1225,257,En la jaula de las nutrias,False
+1226,258,12,False
+1227,258,15,False
+1228,258,16,False
+1229,258,17,False
+1230,258,18,False
+1231,258,20,False
+1232,259,Calamocos,False
+1233,259,Matagorda,False
+1234,259,Entrepenes,False
+1235,259,El Gordo,False
+1236,259,Malcocido,False
+1237,259,Venta de Pantalones,False
+1238,259,Aceituna,False
+1239,260,Fútbol,False
+1240,260,Baloncesto,False
+1241,260,Ajedrez,False
+1242,260,Ballet,False
+1243,260,Natación,False
+1244,260,Pesca,False
+1245,260,Caza,False
+1246,261,Magrebi,False
+1247,261,Gitano,False
+1248,262,Still rapping,False
+1249,262,Baile de la lluvia,False
+1250,262,Cuando me miras,False
+1251,262,Na de na,False
+1252,262,Huele a nuevo,False
+1253,262,Sangre,False
+1254,262,Llorando en la limo,False
+1255,262,Cabernet suavignon,False
+1256,262,Pussy call,False
+1257,262,Siempre quise todo,False
+1258,263,👍,False
+1259,263,Mid,False
+1260,263,👎,False
+1261,264,aquel causado tras hacerle daño a un ser querido,False
+1262,264,aquel causado tras hacerle daño a un desconocido,False
+1263,264,aquel causado por el desvanecimiento de un logro estando muy cerca de conseguirlo,False
+1264,264,"aquel causado por el fallecimiento de un familiar o amigo, tras un largo periodo de sufrimiento",False
+1265,264,aquel causado por la incapacidad de actuar ante una situación desagradable,False
+1266,265,TangoWorld,False
+1267,265,TrangoWorld,False
+1268,266,Subir unas escaleras infinitas,False
+1269,266,Estar atado a una rueda que gira eternamente,False
+1270,266,Comer eternamente sin detenerse,False
+1271,266,"Tras matar a su padre, cargar de él en su espalda para la eternidad",False
+1272,266,Vagar por la Tierra eternamente,False
+1273,266,"Con sed y hambre, estar al borde de un lago y bajo un árbol con frutas, sin poder alcanzarlo/las",False
+1274,267,👍,False
+1275,267,👎,False
+1276,268,Más de 20M de reproducciones,False
+1277,268,Menos de 20M de reproducciones,False
+1278,269,20,False
+1279,269,22,False
+1280,269,Ninguna de las anteriores,False
+1281,270,Shake It Off - Taylor Swift 🧚‍♀️,False
+1282,270,Ojitos Lindos - Bad Bunny 🐰,False
+1283,271,Flowers - Miley Cyrus,False
+1284,271,"Double Fantasy - The Weekend, Future",False
+1285,271,"Ella Baila Sola - Eslabon Armado, Peso Pluma",False
+1286,272,11/01/2023,False
+1287,272,04/01/2023,False
+1288,272,18/01/2023,False
+1289,273,Cieg@,False
+1290,273,Manc@,False
+1291,274,A,False
+1292,274,B,False
+1293,275,Parte de la actual Navarra perteneció al Reino de Aragón en la Edad Media,False
+1294,275,Parte del actual Aragón perteneció al Reino de Navarra en la Edad Media,False
+1295,275,Ambos territorios mantuvieron una unión política en el siglo XI,False
+1296,275,Navarra y Aragón tuvieron una unificación territorial en la Edad Moderna,False
+1297,275,Parte del actual Aragón perteneció al Reino de Pamplona en la Edad Media,False
+1298,275,Nunca hubo relaciones entre los reinos de Navarra y Aragón,False
+1299,275,Ninguna es correcta,False
+1300,275,Osasuna siempre gana al Real Zaragoza,False
+1301,276,El gitano,False
+1302,276,Rocío,False
+1303,277,Peter Pan,False
+1304,277,Blancanieves y los siete enanitos,False
+1305,277,Los aristogatos,False
+1306,277,Encanto,False
+1307,277,El jorobado de Notre Dame,False
+1308,277,Coco,False
+1309,277,Hércules,False
+1310,277,Lilo y Stitch,False
+1311,278,Sí,False
+1312,278,No,False
+1313,279,8A,False
+1314,279,8C,False
+1315,279,9B,False
+1316,279,9D,False
+1317,279,AE,False
+1318,279,AF,False
+1319,279,BA,False
+1320,280,Anatoli Kárpov,False
+1321,280,Viktor Korchnói,False
+1322,280,Garri Kaspárov,False
+1323,280,Bobby Fischer,False
+1324,280,Boris Spasski,False
+1325,280,Igor Popov,False
+1326,281,3.75 kg,False
+1327,281,2.5 kg,False
+1328,281,4.25 kg,False
+1329,281,5.5 kg,False
+1330,281,3.25 kg,False
+1331,281,2 kg,False
+1332,282,15456 km,False
+1333,282,27632 km,False
+1334,282,21465 km,False
+1335,282,19110 km,False
+1336,282,24942 km,False
+1337,282,22531 km,False
+1338,283,Delfín Baiji,False
+1339,283,Cotorra de Carolina,False
+1340,283,Rinoceronte negro,False
+1341,283,Paloma pasajera,False
+1342,283,Sapo dorado,False
+1343,283,Pe cachorro de Tecopa,False
+1344,284,"Hay una leyenda navideña que habla de un hombre, “o apalpador” que da castañas a los niños pobres",False
+1345,284,En Galicia se encuentra la ÚNICA muralla romana intacta,False
+1346,284,El futbolin lo inventó un gallego,False
+1347,284,Na noite de San Xoan,False
+1348,284,Un postre típico son las filloas,False
+1349,284,En un monte de pontevedra hay un monumento megalítico que se dice que es una barrera vivos-muertos,False
+1350,284,Tenemos el faro romano en funcionamiento más antiguo del mundo,False
+1351,285,"Heavenly Bodies: Fashion and the Catholic Imagination, Rihanna y Tom Brady",False
+1352,285,"Manus x Machina: Fashion in an Age of Technology, Taylor Swift y Idris Elba",False
+1353,285,"China: Through the Looking Glass, Beyoncé y Jay-Z",False
+1354,285,"Camp: Notes on Fashion, Lady Gaga y Harry Styles",False
+1355,285,"Punk: Chaos to Couture, Sarah Jessica Parker y Bradley Cooper",False
+1356,285,"American Woman: Fashioning a National Identity, Oprah Winfrey y George Clooney",False
+1357,285,"Charles James: Beyond Fashion, Kate Moss y David Beckham",False
+1358,286,Día mundial de la salud mental materna 🤰🏽,False
+1359,286,Día internacional del personal de Paz de las Naciones Unidas 🇺🇳,False
+1360,286,Día internacional del Té 🌿☕️,False
+1361,286,Día de Star Wars 🪐🔫,False
+1362,286,Día mundial sin piti Co' 🚬,False
+1363,286,Día mundial de la libertad de prensa 📰,False
+1364,286,Día mundial de la Tuba 🎺,False
+1365,287,Enana roja,False
+1366,287,Enana blanca,False
+1367,287,Gigante luminosa,False
+1368,287,Estrella de neutrones,False
+1369,287,Subgigante,False
+1370,287,Enana amarilla,False
+1371,287,Supergigante luminosa,False
+1372,287,Enana naranja,False
+1373,287,Subenana,False
+1374,288,Moño alto 😍,False
+1375,288,Moño bajo,False
+1376,288,Moño medio,False
+1377,288,Suelto rizado,False
+1378,289,"En física, hace referencia al tiempo",False
+1379,289,"En física, el graviton podría, teóricamente, enviar objetos a la cuarta dimensión",False
+1380,289,"En física, implica una curvatura del espacio-tiempo",False
+1381,289,"En matemáticas, hace referencia a espacios euclídeos de más de 3 dimensiones",False
+1382,289,"En matemáticas,  4-cubo se llama teseracto",False
+1383,289,"En geometría, el teseracto es un hipercubo n=4",False
+1384,289,"Para resolver un problema en 4 dimensiones, debemos usar la analogía dimensional en n=4",False
+1385,289,"En la espiritualidad, es el espacio donde podemos habitar en un estado de libre consciencia",False
+1386,290,+1,False
+1387,290,😐,False
+1388,291,Si,False
+1389,291,No,False
+1390,292,✅,False
+1391,292,❌,False
+1392,293,Zanahoria,False
+1393,293,Nabo,False
+1394,293,Apio,False
+1395,293,Remolacha,False
+1396,293,Calabacín,False
+1397,293,Yuca,False
+1398,294,Real Madrid,False
+1399,294,Barcelona,False
+1400,294,Atlético,False
+1401,294,Valencia,False
+1402,294,Athletic,False
+1403,294,Real Zaragoza,False
+1404,294,Betis,False
+1405,294,Deportivo de La Coruña,False
+1406,294,Real Sociedad,False
+1407,295,Uruguay 3.27 metros,False
+1408,295,Argentina 6.55 metros,False
+1409,295,Australia 3.01 metros,False
+1410,295,China 2.50 metros,False
+1411,295,Pakistan 1.70 metros,False
+1412,295,Ucrania 5.39 metros,False
+1413,295,Islandia 4.20 metros,False
+1414,296,La Copa de campeon fue robada meses antes y fue recuperada por un perro,False
+1415,296,A los argentinos y brasileños se les asignaron campos de entrenamiento sin porterias,False
+1416,296,"Ratín,",False
+1417,296,Fue el primer mundial en el que hubo una mascota,False
+1418,296,Fue el primer mundial que se retransmitió a color y vía satélite,False
+1419,296,Aficionados Extranjeros pagaron habitaciones de 5 ⭐ y acabaron en cuartos comunales de un internado,False
+1420,296,España hizo el ridículo y no pasó ni de fase de grupos,False
+1421,297,Cuando la cosa no me va buena,False
+1422,297,3 Caras,False
+1423,297,El camino,False
+1424,297,Ni soy santo,False
+1425,297,Carameloraro,False
+1426,297,Sharila,False
+1427,297,"No te lo niego, ma dolío",False
+1428,297,Pa llorar,False
+1429,298,Neptuno,False
+1430,298,Urano,False
+1431,298,Jupiter,False
+1432,298,Venus,False
+1433,298,Plutón,False
+1434,298,La Tierra,False
+1435,298,Saturno,False
+1436,299,Si,False
+1437,299,No,False
+1438,300,Malempleao,False
+1439,300,Malimpleao/u',False
+1440,301,Su esperanza de vida era de 25 años,False
+1441,301,Como máximo alcanzaba velocidades de hasta 40km por hora,False
+1442,301,Eran capaces de regular su propia temperatura,False
+1443,301,Tenían entre 50 y 60 dientes,False
+1444,301,Tragaban a sus víctimas sin masticarlas,False
+1445,301,Solo vivían en América,False
+1446,301,El olfato era su sentido mejor y más desarrollado,False
+1447,302,"948,00€",False
+1448,302,"1200,00€",False
+1449,302,"1221,20€",False
+1450,302,"1021,50€",False
+1451,302,"1179,00€",False
+1452,302,"991,70€",False
+1453,302,"1000,21€",False
+1454,303,+4 sin restar,False
+1455,303,+1 sin restar,False
+1456,303,+4 y restar -4,False
+1457,304,1,False
+1458,304,2,False
+1459,305,guepardos,False
+1460,305,leopardos,False
+1461,306,Si,False
+1462,306,No,False
+1463,307,Lola Indigo,False
+1464,307,Aitana,False
+1465,308,Una pisa,False
+1466,308,Una tortilla de patata,False
+1467,309,3 cajas de valerianas,False
+1468,309,Una barca a pedales,False
+1469,310,Babosas,False
+1470,310,Ardillas,False
+1471,310,Caracoles,False
+1472,310,Ratas,False
+1473,310,Cucarachas,False
+1474,310,Ajos,False
+1475,310,Cebollas,False
+1476,310,Coles de bruselas,False
+1477,311,Sofás,False
+1478,311,Sofases,False
+1479,311,Ambas opciones son validas,False
+1480,312,Bamboléo,False
+1481,312,Ingobernable ft C tangana,False
+1482,312,Volare,False
+1483,313,35%,False
+1484,313,45%,False
+1485,313,55%,False
+1486,313,65%,False
+1487,313,75%,False
+1488,313,85%,False
+1489,314,Contra,False
+1490,314,Sobre,False
+1491,314,Entre,False
+1492,314,Igual,False
+1493,314,Dentro de,False
+1494,315,Arquitectura,False
+1495,315,Pintura,False
+1496,315,Escultura,False
+1497,315,Música,False
+1498,315,Danza,False
+1499,315,Literatura,False
+1500,315,Cine,False
+1501,316,EMPATE GENERAL,False
+1502,316,DESEMPATE AL FALLO SOLO LOS 🥇,False
+1503,316,DESEMPATE ENTRE TODOS,False
+1504,317,Si,False
+1505,317,No,False
+1506,318,Uno de eses gatos - sen senra sky romp,False
+1507,318,Where she goes - badbunny,False
+1508,318,Team Shakira - Cecilio G,False
+1509,318,Stunna islandd - Steve lean Rojuu,False
+1510,318,Just wanna rock - Lil Uzi,False
+1511,319,155 cm,False
+1512,319,160 cm,False
+1513,319,162 cm,False
+1514,319,166 cm,False
+1515,319,169 cm,False
+1516,320,58 KG,False
+1517,320,60 KG,False
+1518,320,63 KG,False
+1519,320,66 KG,False
+1520,320,69 KG,False
+1521,320,73 KG,False
+1522,321,Rachel,False
+1523,321,Chloe,False
+1524,321,Kelly,False
+1525,321,Angela,False
+1526,321,Virginia,False
+1527,321,Blair,False
+1528,321,Olivia,False
+1529,322,Sofia,False
+1530,322,Manoli,False
+1531,322,Erin,False
+1532,322,Paoli,False
+1533,322,Sara,False
+1534,322,"Nadie hace eso, es rarísimo",False
+1535,323,Calcio,False
+1536,323,Yodo,False
+1537,323,Hierro,False
+1538,323,Zinc,False
+1539,323,Potasio,False
+1540,323,Sodio,False
+1541,323,Magnesio,False
+1542,324,gavi,False
+1543,324,betzi,False
+1544,325,👍,False
+1545,325,👎,False
+1546,326,"3,6",False
+1547,326,"3,9",False
+1548,326,"4,1",False
+1549,326,4'8,False
+1550,326,"5,0",False
+1551,326,"6,4",False
+1552,326,"7,2",False
+1553,326,8,False
+1554,327,Fusión nuclear,False
+1555,327,Gravitación,False
+1556,327,Desintegración radiactiva,False
+1557,327,Reacción de combustión,False
+1558,327,Reacción química,False
+1559,327,Transformación de energía,False
+1560,327,Colapso gravitacional,False
+1561,328,👍🏼,False
+1562,328,👎🏼,False
+1563,329,Síndrome inmunitario agravado,False
+1564,329,Síndrome intensificado de autoinmunidad,False
+1565,329,Síndrome de inmunodeficiencia adquirida,False
+1566,329,Síndrome intensificado adquirido,False
+1567,329,Síndrome inmediato de autosensibilidad,False
+1568,329,Síndrome inmunogénico de anomalía definida,False
+1569,329,Si,False
+1570,330,Si,False
+1571,330,No,False
+1572,331,Corea del Sur,False
+1573,331,Arabia Saudita,False
+1574,331,China,False
+1575,331,Emiratos Arabes,False
+1576,331,Estados Unidos,False
+1577,331,Rusia,False
+1578,331,Japón,False
+1579,331,Canadá,False
+1580,332,2%,False
+1581,332,5%,False
+1582,332,10 %,False
+1583,332,15%,False
+1584,332,20%,False
+1585,332,25%,False
+1586,332,30%,False
+1587,333,Mercurio,False
+1588,333,Venus,False
+1589,333,Marte,False
+1590,333,Jupiter,False
+1591,333,Saturno,False
+1592,333,Urano,False
+1593,333,Neptuno,False
+1594,334,sí,False
+1595,334,no,False
+1596,335,"Ocurre cuando la Tierra se encuentra más cerca del Sol, lo que resulta en temperaturas más altas",False
+1597,335,Marca el inicio de la temporada de lluvias intensas en regiones tropicales,False
+1598,335,"Durante el solsticio de verano, el eje de la Tierra se encuentra inclinado hacia el Sol",False
+1599,335,Se produce cuando la órbita de la Tierra alrededor del Sol alcanza su punto más alejado,False
+1600,335,"la Tierra se alinea directamente entre el Sol y la Luna, lo que da lugar a un eclipse solar total.",False
+1601,335,"Momento en el que la capa de ozono se vuelve más delgada, lo que aumenta la exposición a rayos U.V",False
+1602,336,"Cada uno piensa un pregunta y se organiza calendario, como la ultima temporada.",False
+1603,336,Volvemos a formato original.,False
+1604,336,¿Equipos? No se como sería 🤨.,False
+1605,337,Si,False
+1606,337,No,False
+1607,338,Todos los animales de experimentación han de estar vacunados,False
+1608,338,"Reemplazar, reducir y refinar el número de animales y las técnicas utilizadas",False
+1609,338,Principio de no maleficencia,False
+1610,338,Solo se permitirá guardar uno o dos animales por jaula en el animalario,False
+1611,338,Principio de Bernouilli,False
+1612,338,El investigador solo podrá tratar cn 1grupo reducido d animales para evitar la contaminación cruzada,False
+1613,338,"Al ser sacrificado, el animal no podrá destinarse a ningún otro experimento, ya q no serviría",False
+1614,339,Panterita_01 🐈‍⬛,False
+1615,339,Tiki Taka ⚽️🔥,False
+1616,339,GOFREMAN 🧇🦸🏻‍♂️,False
+1617,340,Pez Globo,False
+1618,340,Serpiente de Cascabel,False
+1619,340,Serpiente marina de Taipan,False
+1620,340,Avispa de Mar,False
+1621,340,Viuda negra,False
+1622,340,Araña de tela de embudo,False
+1623,340,Escorpión emperador,False
+1624,341,1cm,False
+1625,341,25cm,False
+1626,341,50cm,False
+1627,341,1m,False
+1628,341,2m,False
+1629,341,4m,False
+1630,341,8m,False
+1631,341,Ninguna de las anteriores,False
+1632,342,275km,False
+1633,342,375km,False
+1634,342,475km,False
+1635,342,875km,False
+1636,342,1275km,False
+1637,342,3575km,False
+1638,343,Que me quedan en la boca,False
+1639,343,35,False
+1640,343,36,False
+1641,343,37,False
+1642,343,38,False
+1643,343,39,False
+1644,343,40?🤮,False
+1645,344,Pam,False
+1646,344,Karen,False
+1647,345,18,False
+1648,345,26,False
+1649,345,38,False
+1650,345,66,False
+1651,345,68,False
+1652,345,86,False
+1653,345,88,False
+1654,346,Got 2 luv u,False
+1655,346,She doesnt mind,False
+1656,347,RSA,False
+1657,347,PDP,False
+1658,347,CURVAS ELIPTICAS,False
+1659,347,ENIGMA,False
+1660,347,SOLO INTRODUCEN RUIDO AL MENSAJE,False
+1661,347,REALMENTE NO ESTA CIFRADO,False
+1662,348,Si,False
+1663,348,No,False
+1664,349,1973,False
+1665,349,1983,False
+1666,349,1993,False
+1667,349,2003,False
+1668,349,2013,False
+1669,349,2023,False
+1670,350,Solo de mi,False
+1671,350,La romana,False
+1672,350,Mia,False
+1673,350,Otra noche en miami,False
+1674,350,Si estuviesemos juntos,False
+1675,350,Estamos bien,False
+1676,350,Ni bien ni mal,False
+1677,351,si,False
+1678,351,no,False
+1679,351,de vez en cuando nada mal,False
+1680,352,Toro Salvaje,False
+1681,352,Tess,False
+1682,352,Gente Corriente,False
+1683,352,El imperio contraataca,False
+1684,352,Moscú no cree en las lagrimas,False
+1685,352,El hombre elefante,False
+1686,352,Fame,False
+1687,353,San patricio,False
+1688,353,San Jaime,False
+1689,353,San Gregorio,False
+1690,353,San Jorge,False
+1691,353,San Pedro,False
+1692,353,San Carlos,False
+1693,354,Si tiene una mancha amarilla,False
+1694,354,Si no tiene ninguna mancha,False
+1695,354,Si tiene el rabo tieso,False
+1696,354,Si tiene el rabo caído,False
+1697,354,Si tiene un color oscuro,False
+1698,354,Si tiene un color claro,False
+1699,355,Cascada de Gavarnie,False
+1700,355,Cascada de la Cola de Caballo,False
+1701,355,Cascada del Estrecho,False
+1702,355,Cascada de Arripas,False
+1703,355,Cascada del Sorrosal,False
+1704,355,Cascada de la Cueva,False
+1705,356,Banco 🏦,False
+1706,356,No Banco 🏦❌️,False
+1707,357,1,False
+1708,357,2,False
+1709,357,3,False
+1710,358,Noche Loca,False
+1711,358,Hasta Cuando,False
+1712,358,No Digas Nada,False
+1713,358,Reir o Llorar,False
+1714,358,.Desagradecida,False
+1715,358,El Recuerdo,False
+1716,358,Si Tu No Estás,False
+1717,359,Carol,False
+1718,359,Call me by your name,False
+1719,359,Moonlight,False
+1720,359,La chica danesa,False
+1721,359,Brockeback mountain,False
+1722,359,Retrato de una mujer en llamas,False
+1723,359,La hida de Adéle,False
+1724,359,Todo sobre mi madre,False
+1725,360,Moro,False
+1726,360,Panchito,False
+1727,360,Negro,False
+1728,361,5,False
+1729,361,8,False
+1730,361,13,False
+1731,361,17,False
+1732,361,21,False
+1733,361,24,False
+1734,362,Frida Kahlo,False
+1735,362,Salvador Dalí,False
+1736,362,Pablo Picasso,False
+1737,362,Enrick Bern,False
+1738,362,John Cage,False
+1739,363,Londres,False
+1740,363,Paris,False
+1741,363,Estados Unidos,False
+1742,363,China,False
+1743,363,Alemania,False
+1744,364,Mi carro,False
+1745,364,Un beso en la discoteca,False
+1746,364,El Meneito,False
+1747,364,Borro Cassette,False
+1748,364,Dale Vieja,False
+1749,364,El Prostituto,False
+1750,364,Te lo voy a partir,False
+1751,364,María Lola,False
+1752,364,Me vas a extrañar,False
+1753,365,Flor de la Granadilla,False
+1754,365,Espina de Cristo,False
+1755,365,Flor de la pasión,False
+1756,365,Pasionaria,False
+1757,365,Flor de la paciencia,False
+1758,365,Orquídea del atardecer,False
+1759,365,Flor del enigma,False
+1760,366,Calico Jack,False
+1761,366,Los hermanos pinzon,False
+1762,366,Bartholomew Roberts,False
+1763,366,Capitán Kidd,False
+1764,366,Pingaen Tukkulo,False
+1765,366,Barbanegra,False
+1766,366,Barbaroja,False
+1767,367,Gato 🐈,False
+1768,367,Toro 🐂,False
+1769,367,Cerdo 🐷,False
+1770,367,Paloma 🐦,False
+1771,367,Cabra 🐐,False
+1772,367,Tractor 🚜,False
+1773,367,Cordero 🐑,False
+1774,368,1,False
+1775,368,2,False
+1776,368,3,False
+1777,368,4,False
+1778,368,5,False
+1779,368,6,False
+1780,368,7,False
+1781,368,10,False
+1782,369,No por mucho madrugar amanece más temprano,False
+1783,369,El que de potro no galopa de caballo de desboca,False
+1784,369,El que no tenga orden ni ley que lo busque en casa y no en el rey,False
+1785,369,Habló el mudo y dijo lo que pudo,False
+1786,369,A todo cerdo le llega su san martín,False
+1787,369,El que con lo ajeno se viste por la calle le desnudan,False
+1788,369,El que no tenga cabeza que tenga pies,False
+1789,369,Todos son popularmente conocidos,False
+1790,370,2014,False
+1791,370,2015,False
+1792,370,2016,False
+1793,370,2017,False
+1794,370,2018,False
+1795,370,2019,False
+1796,371,120 años,False
+1797,371,200 años,False
+1798,371,250 años,False
+1799,371,300 años,False
+1800,371,400 años,False
+1801,371,500 años,False
+1802,372,Comer picante ayuda a combatir el calor,False
+1803,372,El calor quita el apetito porque necesitamos menos energia para regular la temperatura corporal,False
+1804,372,El verano mas caluroso en españa ha sido el de 2022,False
+1805,372,"La temperatura maxima jamas registrada en españa fue en cordoba con 47,6 grados",False
+1806,372,La temp maxima jamas registrada en el mundo es en el Valle de la Muerte en EEUU con 56.7grados,False
+1807,372,"En areas del interior de la peninsula , julio es el mes mas caluroso del año.",False
+1808,372,El 6 de agosto es el dia considerado en españa como el mas caluroso del año,False
+1809,372,La temperatura máxima registrada en el Polo Sur es de -1 grado,False
+1810,373,Dominica,False
+1811,373,Estados Federados de Micronesia,False
+1812,373,Granada,False
+1813,373,Kitibati,False
+1814,373,Belice,False
+1815,373,Fiyi,False
+1816,373,Seychelles,False
+1817,374,60-65,False
+1818,374,50-55,False
+1819,374,40-45,False
+1820,374,70-75,False
+1821,374,80-85,False
+1822,375,0,False
+1823,375,10,False
+1824,375,20,False
+1825,375,30,False
+1826,375,40,False
+1827,375,50,False
+1828,375,60,False
+1829,375,70,False
+1830,375,80,False
+1831,375,90,False
+1832,375,100,False
+1833,376,Sí,False
+1834,376,No,False
+1835,377,Zimbabue,False
+1836,377,Líbano,False
+1837,377,Venezuela,False
+1838,377,Cuba,False
+1839,377,Argentina,False
+1840,377,Sri Lanka,False
+1841,377,Irán,False
+1842,377,Ghana,False
+1843,378,1,False
+1844,378,2,False
+1845,378,3,False
+1846,378,4,False
+1847,378,5,False
+1848,378,6,False
+1849,378,7,False
+1850,379,45,False
+1851,379,312,False
+1852,379,151,False
+1853,379,98,False
+1854,379,1003,False
+1855,379,930,False
+1856,379,515,False
+1857,380,Rana Paedophryne,False
+1858,380,Musaraña,False
+1859,380,Murcielago nariz de cerdo,False
+1860,380,Colibri abeja,False
+1861,380,Camaleón Brookesia,False
+1862,381,Sal,False
+1863,381,Canela,False
+1864,381,Azucar,False
+1865,381,Miel,False
+1866,381,Ketchup,False
+1867,381,Berenjena,False
+1868,381,Mejillon,False
+1869,381,Cafe,False
+1870,382,Intestino delgado,False
+1871,382,Corazon,False
+1872,382,Bazo,False
+1873,382,Higado,False
+1874,382,Intestino grueso,False
+1875,382,Riñón,False
+1876,383,Si,False
+1877,383,No,False
+1878,384,Si,False
+1879,384,No,False
+1880,385,Si,False
+1881,385,No,False
+1882,386,125 Años,False
+1883,386,150 Años,False
+1884,386,175 Años,False
+1885,386,200 Años,False
+1886,386,225 Años,False
+1887,386,250 Años,False
+1888,386,275 Años,False
+1889,387,58,False
+1890,387,66,False
+1891,387,70,False
+1892,387,77,False
+1893,387,82,False
+1894,387,87,False
+1895,387,93,False
+1896,388,12 por cada 100k habitantes,False
+1897,388,10 por cada 100k habitantes,False
+1898,388,9 por cada 100k habitantes,False
+1899,388,8 por cada 100k habitantes,False
+1900,388,6 por cada 100k habitantes,False
+1901,388,4 por cada 100k habitantes,False
+1902,388,2 por cada 100k habitantes,False
+1903,389,Epi,False
+1904,389,Betsy,False
+1905,389,Manolo,False
+1906,390,11000,False
+1907,390,12000,False
+1908,390,13000,False
+1909,390,14000,False
+1910,390,15000,False
+1911,390,16000,False
+1912,390,17000,False
+1913,391,Ceuta,False
+1914,391,Alava,False
+1915,391,Madrid,False
+1916,391,Barcelona,False
+1917,391,Huesca,False
+1918,391,La rioja,False
+1919,392,Stan,False
+1920,392,Katarina,False
+1921,392,Ike,False
+1922,392,Jeanne,False
+1923,392,Mitch,False
+1924,392,Gordon,False
+1925,392,Erin,False
+1926,392,Gilbert,False
+1927,393,El nombre “Madrid” proviene del árabe,False
+1928,393,Bajo la cibeles se encuentra la cámara acorazada del banco de españa,False
+1929,393,Diversas estaciones de metro sirvieron de refugio y depósitos de armas durante la Guerra Civil,False
+1930,393,Tiene el restaurante mas antiguo del mundo,False
+1931,393,"Se conserva un único búnker de guerra en el parque del Capricho, de los muchos que se construyeron",False
+1932,393,En Madrid se guarda el mejor grupo de instrumentos de cuarteto de cuerda del mundo,False
+1933,393,Se dice que hay dos palacios encantados: la casa de las 7 chimeneas y el palacio de linares,False
+1934,394,Malta,False
+1935,394,Republica checa,False
+1936,394,Polonia,False
+1937,394,Alemania,False
+1938,394,Islandia,False
+1939,394,Noruega,False
+1940,394,Paises Bajos,False
+1941,395,≈ 19.000 km,False
+1942,395,≈ 22.500 km,False
+1943,395,≈ 27.750 km,False
+1944,395,≈ 25.200 km,False
+1945,395,≈ 32.750 km,False
+1946,395,≈ 29.000 km,False
+1947,395,≈ 13.000 km,False
+1948,396,Mandamos resultados de la ruta,False
+1949,396,Cancelamos y otra pregunta,False
+1950,397,Se alimentan de noche.,False
+1951,397,Secretan un líquido rosa que protege su piel.,False
+1952,397,El ácido hiposudórico es un pigmento rojo.,False
+1953,397,El ácido norhiposudórico es un pigmento naranja.,False
+1954,397,Estos 2 compuestos son hidrofóbicos.,False
+1955,397,Estos 2 compuestos repelen la radiación ultravioleta.,False
+1956,398,Un arbusto,False
+1957,398,Un montículo,False
+1958,398,Un plato típico,False
+1959,398,Un anfibio,False
+1960,398,Un insecto,False
+1961,398,Una verdura,False
+1962,398,Una danza tradicional,False
+1963,399,Abril,False
+1964,399,Mayo,False
+1965,399,Junio,False
+1966,399,Julio,False
+1967,399,Agosto,False
+1968,400,Cuerpo,False
+1969,400,Cerebro,False
+1970,400,Sangre,False
+1971,400,Pulmones,False
+1972,401,Lince ibérico,False
+1973,401,Lobo ibérico,False
+1974,401,Toro,False
+1975,401,León hispano,False
+1976,401,Águila imperial,False
+1977,402,Cara,False
+1978,402,Cruz,False
+1979,403,5.000.000 Km²,False
+1980,403,9.000.000 Km²,False
+1981,403,13.000.000 Km²,False
+1982,403,16.000.000 Km²,False
+1983,403,20.000.000 Km²,False
+1984,403,24.000.000 Km²,False
+1985,403,28.000.000 Km²,False
+1986,404,Brasil,False
+1987,404,Imperio otomano,False
+1988,404,Australia,False
+1989,404,Imperio español,False
+1990,404,Imperio britanico,False
+1991,404,Imperio mongol,False
+1992,404,Rusia,False
+1993,405,57Países y alrededor de 1800 lenguas/dialectos,False
+1994,405,54 países y alrededor de 2000 lenguas/dialectos,False
+1995,405,55 países y alrededor de 1700 lenguas/dialectos,False
+1996,405,53 países y alrededor de 1900 lenguas/ dialectos,False
+1997,406,Si,False
+1998,406,No,False
+1999,407,Si,False
+2000,407,No,False
+2001,408,Aprox. 20.000,False
+2002,408,Aprox. 15.000,False
+2003,408,Aprox. 7000,False
+2004,408,Aprox. 4000,False
+2005,408,Aprox. 1500,False
+2006,408,Aprox. 9.000,False
+2007,409,Se realiza un tour por todo en el pueblo en el que dan una copa gratis en toda los bares,False
+2008,409,Un procesión con la virgen de Ainsa,False
+2009,409,Representación de la batalla entre moros y cristianos,False
+2010,409,Se quema una carrasca en la plaza mayor,False
+2011,409,Se organiza una carrera popular entre todos los habitantes del pueblo,False
+2012,410,"Monte Perdido, Aragón.",False
+2013,410,"Siete Picos, Madrid.",False
+2014,410,"Montaña Montserrat, Cataluña.",False
+2015,410,"Peña de Antequera, Málaga.",False
+2016,410,"Pico El Turbón, Aragón.",False
+2017,410,"Pico Sacro, Galicia.",False
+2018,410,"Pico Valdeamor, Extremadura.",False
+2019,410,"Pico Almanzor, Castilla y León.",False
+2020,410,"Monte La Maliciosa, Madrid.",False
+2021,411,Australia es mas ancha que la luna 🌑🇦🇺,False
+2022,411,La nuez moscada es un alucinógeno 😵‍💫😵‍💫,False
+2023,411,Las cabezas de la Isla Pascua de tienen cuerpos 🗿🗿,False
+2024,411,"Un ""Jiffy"" es una unidad de tiempo real ⌛⌛",False
+2025,411,La inteligencia se hereda en gran parte del padre 👨‍👦,False
+2026,411,Las hormigas no duermen nunca 🐜💤,False
+2027,412,Lee sin,False
+2028,412,Ahri,False
+2029,412,Blitzcrank,False
+2030,412,Heimeedinger,False
+2031,412,Ezreal,False
+2032,412,Tristana,False
+2033,413,India,False
+2034,413,Francia,False
+2035,413,Taiwán,False
+2036,413,Holanda,False
+2037,413,Israel,False
+2038,413,China,False
+2039,413,Austria,False
+2040,413,Australia,False
+2041,414,Si,False
+2042,414,No,False
+2043,415,1970,False
+2044,415,1971,False
+2045,415,1980,False
+2046,415,1969,False
+2047,415,1973,False
+2048,415,1967,False
+2049,415,1983,False
+2050,416,Andalucía,False
+2051,416,Canarias,False
+2052,416,Navarra,False
+2053,416,Comunidad Valenciana,False
+2054,416,Extremadura,False
+2055,416,Galicia,False
+2056,416,Cataluña,False
+2057,416,Aragon,False
+2058,417,Mar Caspio,False
+2059,417,Mar de Aral,False
+2060,417,Mar de Salton,False
+2061,417,Mar Rojo,False
+2062,417,Mar Muerto 💀,False
+2063,417,Mar de Azov,False
+2064,418,"Gran Pirámide de Giza, Egipto",False
+2065,418,Los Jardines Colgantes de Babilonia,False
+2066,418,"La Estatua de Zeus en Olimpia,Grecia",False
+2067,418,"La Acrópolis de Atenas, Grecia",False
+2068,418,"El Faro de Alejandría, Egipto",False
+2069,418,"El Coloso de Rodas, Grecia",False
+2070,418,"El Mausoleo de Halicanarso, Grecia",False
+2071,418,"Templo de Artemisa en Éfeso, Turquía",False
+2072,419,36,False
+2073,419,61,False
+2074,419,118,False
+2075,419,342,False
+2076,419,574,False
+2077,419,893,False
+2078,420,Sandía 🍉,False
+2079,420,Plátanos 🍌,False
+2080,420,Mango 🥭,False
+2081,420,Naranjas 🍊,False
+2082,420,Manzanas 🍎,False
+2083,421,Día mundial del farmacéutic@,False
+2084,421,Día mundial del odontólog@,False
+2085,421,Día mundial del médic@,False
+2086,421,Día mundial del enfermer@,False
+2087,422,24,False
+2088,422,30,False
+2089,422,35,False
+2090,422,42,False
+2091,422,50,False
+2092,422,51,False
+2093,423,7 días,False
+2094,423,14 dias,False
+2095,423,21 días,False
+2096,423,28 días,False
+2097,423,35 días,False
+2098,424,Técnica de riego que simula la lluvia para mejorar el crecimiento de los cultivos,False
+2099,424,Un método de cocción gastronómica en el que los alimentos se cocinan en una película de gelatina,False
+2100,424,"Se refiere la práctica de la caza, especialmente la caza de aves y mamíferos en su hábitat natural.",False
+2101,424,Un tipo de composición musical que evoca la sensación de estar en un bosque o en la naturaleza,False
+2102,424,Adjetivo para describir a una persona que tiene una obsesión por coleccionar películas antiguas,False
+2103,424,Rama de la ecología que estudia las interacciones entre los seres humanos y la vida silvestre,False
+2104,425,Stayin' Alive - Bee Gees,False
+2105,425,Mamichula - Trueno y Nicki Nicole,False
+2106,425,It was a good day - Ice cube,False
+2107,425,Neverita - Bad bunny,False
+2108,425,All star - Smash mouth,False
+2109,425,My name is - Eminem,False
+2110,426,Si,False
+2111,426,No,False
+2112,427,25000,False
+2113,427,24000,False
+2114,427,22000,False
+2115,427,23000,False
+2116,428,"55,90 kilos",False
+2117,428,"35,60 kilos",False
+2118,428,"40,20 kilos",False
+2119,428,"30,70 kilos",False
+2120,429,🏳️‍🌈,False
+2121,429,￼,False
+2122,430,100 Km/h,False
+2123,430,120 Km/h,False
+2124,430,140 Km/h,False
+2125,430,160 Km/h,False
+2126,430,180 Km/h,False
+2127,430,200 Km/h,False
+2128,430,210 Km/h,False
+2129,431,Naranja,False
+2130,431,Limon,False
+2131,432,Rubias,False
+2132,432,Morenas,False
+2133,433,Ángel,False
+2134,433,Sergio,False
+2135,433,Manolo,False
+2136,433,Mariajo,False
+2137,434,490,False
+2138,434,590,False
+2139,434,690,False
+2140,434,790,False
+2141,434,890,False
+2142,434,990,False
+2143,435,Taylor Swift,False
+2144,435,Ed Sheeran,False
+2145,435,The weeknd,False
+2146,435,Dua Lipa,False
+2147,435,Bad bunny,False
+2148,435,Drake,False
+2149,435,Doja Cat,False
+2150,436,A,False
+2151,436,B,False
+2152,436,C,False
+2153,436,D,False
+2154,436,E,False
+2155,437,pasto🌱,False
+2156,437,mate🧉,False
+2157,437,hierbita d la risa🤣🍁,False
+2158,438,La Frontera,False
+2159,438,El Margen,False
+2160,438,La Periferia,False
+2161,438,La Arista,False
+2162,438,El Extenso Confín,False
+2163,438,La Larga Línea,False
+2164,438,Tiempo de sombreros y plumas,False
+2165,439,1,False
+2166,439,2,False
+2167,439,3,False
+2168,439,4,False
+2169,439,5,False
+2170,439,6,False
+2171,439,7 - Ninguna es correcta,False
+2172,440,Enero,False
+2173,440,Marzo,False
+2174,440,Abril,False
+2175,440,Mayo,False
+2176,440,Septiembre,False
+2177,440,Octubre,False
+2178,440,Diciembre,False
+2179,441,14.95€,False
+2180,441,19.99€,False
+2181,441,21.95€,False
+2182,441,24.99€,False
+2183,441,28.95€,False
+2184,441,30€,False
+2185,441,Ninguna de las anteriores,False
+2186,442,10 - 20000 Hz,False
+2187,442,100 - 30000 Hz,False
+2188,442,20 - 20000 Hz,False
+2189,442,200 - 24000 Hz,False
+2190,442,125 - 19000 Hz,False
+2191,442,345 - 19000 Hz,False
+2192,442,Ninguna de las anteriores,False
+2193,443,Embarazo,False
+2194,443,Dificultades sexuales,False
+2195,443,Despido laboral,False
+2196,443,Jubilación,False
+2197,443,Nuevo miembro de la familia,False
+2198,443,Condena penitenciaria,False
+2199,443,Muerte de un familiar,False
+2200,443,Lesión o enfermedad,False
+2201,444,Guardabarranco,False
+2202,444,Yigüirro,False
+2203,445,Amperio,False
+2204,445,Vatio,False
+2205,446,6,False
+2206,446,8,False
+2207,447,La Tartamudez,False
+2208,447,Del Mol,False
+2209,448,19:15,False
+2210,448,19:25,False
+2211,449,100 horas,False
+2212,449,200 horas,False
+2213,449,300 horas,False
+2214,449,1000 horas,False
+2215,449,2000 horas,False
+2216,449,3000 horas,False
+2217,449,10000 horas,False
+2218,450,simon,False
+2219,450,nel,False
+2220,451,464,False
+2221,451,468,False
+2222,451,476,False
+2223,451,479,False
+2224,451,507,False
+2225,451,513,False
+2226,451,522,False
+2227,452,"Un sonido excesivamente dulce, suave o delicado.",False
+2228,452,Dicho de una persona soñadora que no se apercibe de la realidad.,False
+2229,452,"Imperturabilidad, serenidad.",False
+2230,452,"Estado mental involuntario, propio de la atracción romántica hacia jna persona.",False
+2231,452,"Puro, sin mancha ni defecto.",False
+2232,452,Hallazgo afortunado e inesperado que se produce cuando se está buscando otra cosa.,False
+2233,452,Algo tan increíble que no puede ser explicado con palabras.,False
+2234,453,XXI,False
+2235,453,XXII,False
+2236,453,XXV,False
+2237,453,XXX,False
+2238,453,XXXV,False
+2239,453,XL,False
+2240,453,L,False
+2241,454,27000,False
+2242,454,89000,False
+2243,454,114000,False
+2244,454,191000,False
+2245,454,236000,False
+2246,454,278000,False
+2247,454,Ninguna de las anteriores,False
+2248,455,Estados Unidos,False
+2249,455,México,False
+2250,455,Inglaterra,False
+2251,455,Bélgica,False
+2252,455,Lituania,False
+2253,455,Japón,False
+2254,455,Australia,False
+2255,456,3,False
+2256,456,9,False
+2257,456,11,False
+2258,456,17,False
+2259,456,20,False
+2260,456,26,False
+2261,457,5 relampago,False
+2262,457,2 cortitas y un nuevo formato,False
+2263,458,Mora,False
+2264,458,Eladio Carrion,False
+2265,459,5,False
+2266,459,8,False
+2267,460,Se ha quemado el bosque.,False
+2268,460,Ha sido asesinadoo,False
+2269,460,Ha sufrido una caída.,False
+2270,460,Se ha suicidad.,False
+2271,461,Sí,False
+2272,461,No,False
+2273,462,1️⃣,False
+2274,462,2️⃣,False
+2275,463,Los jomsvikingos hace ≈1000 años,False
+2276,463,Los jarls hace ≈1000 años,False
+2277,463,Los vikingos hace ≈1000 años,False
+2278,463,Los celtas hace ≈2000 años,False
+2279,463,Los íberos hace ≈2000 años,False
+2280,463,Los ingleses hace ≈500 años,False
+2281,463,Ninguna de las anteriores,False
+2282,464,Que sea guapisim@ y que tenga una voz que no podéis escuchar,False
+2283,464,Que sea más fe@ y que tenga una voz agradable y que te guste escuchar,False
+2284,465,Anabelle 👧🏼,False
+2285,465,Expediente Warren 👻,False
+2286,465,Expediente Warren: El Caso Enfield 👻👻,False
+2287,465,IT 🤡🎈,False
+2288,465,La Monja 👰🏻‍♀️,False
+2289,465,El Exorcista ✝️,False
+2290,465,El Resplandor 😃🪓👧🏽👧🏽,False
+2291,466,sí,False
+2292,466,no,False
+2293,467,Islas Canarias,False
+2294,467,Extremadura,False
+2295,467,Castillas y León,False
+2296,467,Cantabria,False
+2297,467,La Rioja,False
+2298,467,Comunidad Valenciana,False
+2299,467,Murcia,False
+2300,468,-184°C,False
+2301,468,-168°C,False
+2302,468,-96°C,False
+2303,468,-72°C,False
+2304,468,-54°C,False
+2305,468,-36°C,False
+2306,468,Ninguna de las anteriores,False
+2307,469,Hipertensión arterial,False
+2308,469,Dolor de espalda,False
+2309,469,Dolor de espalda,False
+2310,469,Colesterol alto,False
+2311,469,Migraña,False
+2312,469,Ansiedad crónica,False
+2313,469,Ninguna de las anteriores,False
+2314,470,Cachalote,False
+2315,470,Humano,False
+2316,471,Estrellas,False
+2317,471,Granos de arena,False
+2318,472,Federer,False
+2319,472,Curry,False
+2320,473,1'7 M,False
+2321,473,2'2 M,False
+2322,474,1918,False
+2323,474,1945,False
+2324,475,Inazuma Eleven ⚡️⚽️,False
+2325,475,Cómo entrenar a tu dragón 🐉,False
+2326,475,Doraemon 🐱,False
+2327,475,Monstruos SA 👾🦠🪱,False
+2328,475,Ben 10 👽⌚️,False
+2329,475,Blancanieves 👰🏻‍♀️🧝🏻‍♂️🧝🏽‍♂️🧝🏻‍♂️🧝🏽‍♂️🧝🏾‍♂️🧝🏿‍♂️🧝🏼‍♂️,False
+2330,475,Los padrinos mágicos 🎀🥎,False
+2331,476,Si,False
+2332,476,No,False
+2333,477,Canarias,False
+2334,477,Extremadura,False
+2335,477,Andalucía,False
+2336,477,Ceuta,False
+2337,477,Melilla,False
+2338,477,Murcia,False
+2339,477,Castilla La Mancha,False
+2340,478,Si,False
+2341,478,No,False
+2342,479,Fez,False
+2343,479,Tánger,False
+2344,479,Salé,False
+2345,479,Marrakech,False
+2346,479,Casablanca,False
+2347,479,Rabat,False
+2348,479,Agadir,False
+2349,480,"Claro, evidentemente.",False
+2350,480,"No,",False
+2351,481,Huevo Frito,False
+2352,481,Huevo duro,False
+2353,481,Huevo pasado por agua,False
+2354,481,Huevo pochao,False
+2355,481,Tortilla/revuelto,False
+2356,482,Dark Storie,False
+2357,482,Pregunta,False
+2358,483,Buceo,False
+2359,483,Carrera de 100 metros,False
+2360,483,Carrera de 1000 metros,False
+2361,483,Press banca,False
+2362,483,Salto vertical,False
+2363,483,Desplazamiento por barra,False
+2364,483,Ninguna de las anteriores,False
+2365,484,II a.C.,False
+2366,484,I,False
+2367,484,II,False
+2368,484,IV,False
+2369,484,V,False
+2370,484,VII,False
+2371,484,Ninguna de las anteriores,False
+2372,485,Esperaba una llamada de alguien querido,False
+2373,485,Se da cuenta de algo cuando suena el móvil,False
+2374,485,La llamada era una señal para realizar algo,False
+2375,485,Ve algo mientras está en el aire,False
+2376,486,Kiwi,False
+2377,486,Brócoli,False
+2378,487,1879,False
+2379,487,1769,False
+2380,488,León,False
+2381,488,Tigre,False
+2382,489,1665,False
+2383,489,1445,False
+2384,490,Español,False
+2385,490,Inglés,False
+2386,491,1110 millones de km³,False
+2387,491,1380 millones de km³,False
+2388,491,1740 millones de km³,False
+2389,491,2400 millones de km³,False
+2390,491,2810 millones de km³,False
+2391,491,3440 millones de km³,False
+2392,491,6100 millones de km³,False
+2393,492,sí pero +2 y -6,False
+2394,492,no.,False
+2395,493,París,False
+2396,493,Carcassone,False
+2397,493,Lyon,False
+2398,493,Chartres,False
+2399,493,Bordeaux,False
+2400,493,Nantes,False
+2401,493,Ninguna de las anteriores,False
+2402,494,Platón,False
+2403,494,Socrates,False
+2404,494,Aristoteles,False
+2405,494,Descartes,False
+2406,494,Epicteto,False
+2407,494,Kant,False
+2408,494,Nietzsche,False
+2409,495,Julio Cesar,False
+2410,495,Cleopatra,False
+2411,495,Marco Aurelio,False
+2412,495,Alejandro Magno,False
+2413,495,Augusto,False
+2414,495,Socrates,False
+2415,495,Pitagoras,False
+2416,496,Monaco - Bad Bunny,False
+2417,496,Cruel Summer - Taylor Swift,False
+2418,496,Perro Negro - Bad Bunny & Feid,False
+2419,496,Houdini - Dua Lipa,False
+2420,496,Si No Estás - Tiktoker Cayetano,False
+2421,496,Paint The Town Red - Doja Cat,False
+2422,496,greedy - Tate McRae,False
+2423,497,14,False
+2424,497,17,False
+2425,497,18,False
+2426,497,21,False
+2427,497,22,False
+2428,497,27,False
+2429,497,36,False
+2430,498,Betzi,False
+2431,498,Águila Real,False
+2432,499,6000 a.C.,False
+2433,499,5000 a.C,False
+2434,499,3500 a.C.,False
+2435,499,2000 a.C.,False
+2436,499,1700 a.C.,False
+2437,499,1500 a.C.,False
+2438,499,None,False
+2439,500,La Curiosidad - Jay Wheeler,False
+2440,500,Pareja del Año - Sebastián Yatra,False
+2441,501,Rihanna,False
+2442,501,Drake,False
+2443,502,Bambi,False
+2444,502,Dumbo,False
+2445,503,Pterodáctil,False
+2446,503,Archaeopteryx,False
+2447,504,Tom Holland,False
+2448,504,Robert Downey Jr.,False
+2449,505,6,False
+2450,505,7,False
+2451,505,9,False
+2452,505,13,False
+2453,505,16,False
+2454,505,19,False
+2455,505,21,False
+2456,506,Clima,False
+2457,506,Territorio,False
+2458,506,Posicionamiento,False
+2459,506,Contextualización,False
+2460,506,Población,False
+2461,506,Organización,False
+2462,506,Construcción,False
+2463,507,Guipúzcoa,False
+2464,507,Toledo,False
+2465,507,Badajoz,False
+2466,507,Cantabria,False
+2467,507,Jaén,False
+2468,507,Castellón,False
+2469,507,Valladolid,False
+2470,508,Pérdida de las acciones motoras,False
+2471,508,Pérdida del olfato,False
+2472,508,Incapacidad para comprender el lenguaje,False
+2473,508,Incapacidad para expresar el lenguaje,False
+2474,508,Proceso de asimilación de la información en estructuras cerebrales,False
+2475,508,Proceso de organización de la información en estructuras cerebrales,False
+2476,508,Ninguna de la anteriores,False
+2477,509,Normal con todas sus cosas,False
+2478,509,80% sin teclado numerico,False
+2479,510,A las 12:00,False
+2480,510,A las 14:00,False
+2481,510,A las 16:00,False
+2482,510,A las 17:00,False
+2483,510,A las 18:00,False
+2484,510,A las 18:30,False
+2485,510,A las 19:00,False
+2486,510,A las 20:00,False
+2487,511,Si,False
+2488,511,No,False
+2489,511,Según qué ciclomotor,False
+2490,512,Si,False
+2491,512,No,False
+2492,513,León,False
+2493,513,Igual,False
+2494,513,Tigre,False
+2495,514,+5,False
+2496,514,5,False
+2497,514,4,False
+2498,514,3,False
+2499,514,2,False
+2500,514,1,False
+2501,514,0,False
+2502,515,MENOS DE 100 METROS,False
+2503,515,MÁS DE 100 METROS,False
+2504,516,250,False
+2505,516,300,False
+2506,516,350,False
+2507,516,400,False
+2508,516,450,False
+2509,516,550,False
+2510,516,650,False
+2511,516,700,False
+2512,516,850,False
+2513,517,Rojo fuego,False
+2514,517,Verde hoja,False
+2515,518,1937,False
+2516,518,1945,False
+2517,518,1950,False
+2518,518,1956,False
+2519,518,1961,False
+2520,518,1967,False
+2521,518,1973,False
+2522,519,Elton John,False
+2523,519,Arnold Schwarzenegger,False
+2524,519,Cher,False
+2525,519,Meryl street,False
+2526,519,Isabel Preisler,False
+2527,519,Morgan Freeman,False
+2528,519,Mick Jagger,False
+2529,519,Mario Vargas Llosa,False
+2530,520,Comida para bebes 👶🏽🍼,False
+2531,520,Herraduras 🧲,False
+2532,520,Ascensores 🛗,False
+2533,520,Servilletas 🚮,False
+2534,520,Ron 🥃,False
+2535,520,Calzado para hacer escalada 🧗🏽‍♂️,False
+2536,520,Jabón 🧼,False
+2537,521,Si,False
+2538,521,No,False
+2539,522,UNA SEMANA - ACABA EN NAVIDAD,False
+2540,522,DOS SEMANAS - ACABA EN NOCHEVIEJA,False
+2541,522,NO ZZZ,False
+2542,522,"Ponte el pantysito color fucciY te lo vo'a deci' en inglés: ""Only wanna fuck the pussy""",False
+2543,523,ITALIA,False
+2544,523,BELGICA,False
+2545,523,ESTADOS UNIDOS,False
+2546,523,NORUEGA,False
+2547,523,AUSTRIA,False
+2548,523,IRLANDA,False
+2549,523,GROENLANDIA,False
+2550,524,Francia,False
+2551,524,Suecia,False
+2552,524,Inglaterra,False
+2553,524,Canada,False
+2554,524,Estados Unidos,False
+2555,524,España,False
+2556,524,Alemania,False
+2557,525,Nazaret,False
+2558,525,Belén,False
+2559,525,Jerusalén,False
+2560,525,Galilea,False
+2561,526,Mirto,False
+2562,526,Plata,False
+2563,526,Ropaje,False
+2564,526,Oro,False
+2565,526,Incienso,False
+2566,526,Especias,False
+2567,526,Sándalo,False
+2568,526,Bronce,False
+2569,526,Leche,False
+2570,527,"La adoración de Jesús por unos ""magos"" venidos de Oriente",False
+2571,527,La resurrección de Jesús,False
+2572,527,El ascenso de Jesús a los cielos,False
+2573,527,El nacimiento de Jesús,False
+2574,527,La purificación de la Virgen María,False
+2575,527,El intercambio de regalos entre amigos,False
+2576,528,Estambul,False
+2577,528,Milán,False
+2578,528,Londres,False
+2579,528,Estocolmo,False
+2580,528,Viena,False
+2581,528,Vigo,False
+2582,528,París,False
+2583,529,La Noche Santa,False
+2584,529,La Vigilia Navideña,False
+2585,529,La Noche Larga,False
+2586,529,La Noche de los Deseos,False
+2587,529,La Noche Sagrada,False
+2588,529,La Noche de Paz,False
+2589,529,La Noche Bendita,False
+2590,530,Krampus,False
+2591,530,Befana,False
+2592,530,Yule Cat,False
+2593,530,Hoteiosho,False
+2594,530,Ded Moroz,False
+2595,530,Baba Yaga,False
+2596,531,TAYIKISTÁN,False
+2597,531,JAPÓN,False
+2598,531,URUGUAY,False
+2599,531,SOMALIA,False
+2600,532,Avellanas,False
+2601,532,Nueces,False
+2602,532,Coco,False
+2603,532,Miel,False
+2604,532,Almendras,False
+2605,532,Frutas confitadas,False
+2606,533,Conmemorar la inocencia de los niños,False
+2607,533,Festejar la unificación de varios territorios,False
+2608,533,Conmemorar la muerte de niños asesinados,False
+2609,533,Recordar la abolición de la esclavitud,False
+2610,533,Conmemorar la inauguración de una antigua catedral,False
+2611,533,Conmemorar la liberación de un grupo de inocentes prisioneros,False
+2612,533,Festejar la inocencia de un antiguo Rey dictado culpable previamente en un juicio,False
+2613,534,Leche,False
+2614,534,Harina,False
+2615,534,Aceite,False
+2616,534,Azúcar,False
+2617,534,Huevos,False
+2618,534,Leche condensada,False
+2619,534,Agua,False
+2620,534,Levadura,False
+2621,534,Sal,False
+2622,534,Mantequilla,False
+2623,535,Churros,False
+2624,535,Porras,False
+2625,536,La condensación del agua en gotas que se congelan al caer,False
+2626,536,La congelación instantánea de la humedad en el aire,False
+2627,536,La fusión de pequeñas partículas de hielo en la atmósfera,False
+2628,536,"Las variaciones de temperatura atmosférica moldean los copos de nieve, nevando de esta forma",False
+2629,536,Gotas muy pequeñas de agua se congelan alrededor de una partícula microscópica de polvo o polen,False
+2630,537,España,False
+2631,537,Italia,False
+2632,537,Francia,False
+2633,537,Grecia,False
+2634,537,Luxemburgo,False
+2635,537,Dinamarca,False
+2636,537,Inglaterra,False
+2637,538,llevar acabo,False
+2638,538,llevar a cabo,False
+2639,539,Altavoz,False
+2640,539,Cascos,False
+2641,539,Sin más desde el móvil,False
+2642,539,No escucho música,False
+2643,540,Sí,False
+2644,540,No,False
+2645,541,Si,False
+2646,541,Nain,False
+2647,542,Público,False
+2648,542,Concertado,False
+2649,542,Privado,False
+2650,543,Con leche,False
+2651,543,Cortao,False
+2652,543,Solo,False
+2653,543,Mariconadas,False
+2654,544,¿Y eso?,False
+2655,544,Perreo Pesau',False
+2656,544,Enchule,False
+2657,544,La Old Skul,False
+2658,544,Desesperados,False
+2659,544,Cúrame,False
+2660,545,Fanta,False
+2661,545,Sprite,False
+2662,545,Burn,False
+2663,545,Nestea,False
+2664,545,Gatorade,False
+2665,545,Aquarius,False
+2666,545,Powerade,False
+2667,545,Minute Maid,False
+2668,545,Aquabona,False
+2669,545,7Up,False
+2670,546,Aquí no hay quien viva,False
+2671,546,La que se avecina,False
+2672,546,Aida,False
+2673,547,Las celebridades pagan a Ibai,False
+2674,547,Ibai paga a las celebridades,False
+2675,547,No existe un intercambio de dinero,False
+2676,547,Dependiendo mucho de la celebridad,False
+2677,548,Surrealista,False
+2678,548,Subrealista,False
+2679,548,Subrrealista,False
+2680,548,Surealista,False
+2681,549,Dos Mill 16,False
+2682,549,Pa Ti,False
+2683,550,Si,False
+2684,550,No,False
+2685,551,Cheap Thirlls,False
+2686,551,Cheerleader,False
+2687,552,Taladrador,False
+2688,552,Taladro,False
+2689,552,Taladradora,False
+2690,553,tetica,False
+2691,553,cuscurro,False
+2692,553,otro,False
+2693,554,En polvo,False
+2694,554,Rallado,False
+2695,555,2010,False
+2696,555,2005,False
+2697,555,2000,False
+2698,555,1995,False
+2699,555,1990,False
+2700,555,1985,False
+2701,556,Hija,False
+2702,556,Hiji,False
+2703,557,10%,False
+2704,557,20%,False
+2705,557,30%,False
+2706,557,40%,False
+2707,557,50%,False
+2708,557,60%,False
+2709,557,70%,False
+2710,557,80%,False
+2711,557,90%,False
+2712,557,99%,False
+2713,558,1925,False
+2714,558,1941,False
+2715,558,1957,False
+2716,558,1968,False
+2717,558,1976,False
+2718,558,1985,False
+2719,559,A,False
+2720,559,B,False
+2721,559,C,False
+2722,560,CARNECERIA,False
+2723,560,CARNICERÍA,False
+2724,561,pescadero,False
+2725,561,pescatero,False
+2726,561,son sinónimos,False
+2727,561,son cosas diferentes,False
+2728,562,"Si, realmente existe",False
+2729,562,"No, eres gilipollas y muy muy poco ""salao""",False
+2730,563,7 Years,False
+2731,563,Mama Said,False
+2732,564,Si,False
+2733,564,No,False
+2734,565,80 millones,False
+2735,565,70 millones,False
+2736,565,90 millones,False
+2737,565,100 millones,False
+2738,565,Ninguna de las anteriores,False
+2739,566,Nieve ❄️,False
+2740,566,Un cofundador de YouTube 🕴🏻,False
+2741,566,Elefantes 🐘,False
+2742,566,Música 🎵,False
+2743,567,2004,False
+2744,567,2005,False
+2745,567,2006,False
+2746,567,2007,False
+2747,568,125M,False
+2748,568,180M,False
+2749,568,240M,False
+2750,568,310M,False
+2751,568,365M,False
+2752,568,410ñ5M,False
+2753,569,2000,False
+2754,569,1997,False
+2755,569,1993,False
+2756,569,1988,False
+2757,570,5,False
+2758,570,10,False
+2759,570,15,False
+2760,570,20,False
+2761,570,25,False
+2762,570,30,False
+2763,571,Saturno,False
+2764,571,Venus,False
+2765,571,Tierra,False
+2766,571,Neptuno,False
+2767,571,Urano,False
+2768,571,Jupiter,False
+2769,571,Marte,False
+2770,571,Mercurio,False
+2771,572,1939,False
+2772,572,1944,False
+2773,572,1951,False
+2774,572,1959,False
+2775,572,1962,False
+2776,572,1975,False
+2777,572,1979,False
+2778,573,No tiene nombre,False
+2779,573,Apóstrofe,False
+2780,573,Virgulilla,False
+2781,573,Diéresis,False
+2782,573,Ondulación Ortográfica,False
+2783,574,350,False
+2784,574,400,False
+2785,574,450,False
+2786,574,500,False
+2787,574,600,False
+2788,574,650,False
+2789,574,700,False
+2790,575,1,False
+2791,575,"1,5",False
+2792,575,2,False
+2793,575,"2,33",False
+2794,575,"2,75",False
+2795,575,"3,35",False
+2796,575,"3,75",False
+2797,575,"4,15",False
+2798,576,Las dejas,False
+2799,576,Te llevas tres tiros,False

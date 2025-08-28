@@ -8,12 +8,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
-      /* Mensaje bajo el input */
       .hint { font-size:.95rem; margin-top:6px; min-height:1.2em; }
       .hint.ok { color:#1e8543; }
       .hint.bad { color:#c62828; }
       .hint.neutral { color:#6b7280; }
       .btn[disabled] { opacity:.5; cursor:not-allowed; }
+      .grupos-usuario { margin-top:20px; }
+      .grupos-usuario ul { list-style:none; padding:0; }
+      .grupos-usuario li { margin:6px 0; display:flex; align-items:center; gap:8px; }
     </style>
 </head>
 <body>
@@ -45,6 +47,19 @@
                 </button>
                 <a href="{{ url_for('index') }}" class="btn secondary-btn">⬅️ Volver al inicio</a>
             </form>
+
+            {% if grupos_usuario %}
+              <div class="grupos-usuario">
+                <h3>Tus grupos actuales</h3>
+                <ul>
+                  {% for grupo in grupos_usuario %}
+                    <li>
+                      <i class="fa-solid fa-users"></i> {{ grupo.codigo }}
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
         </div>
     </main>
     <footer>
@@ -52,18 +67,15 @@
     </footer>
 
     <script>
-      // Debounce básico
       function debounce(fn, delay=300) {
         let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
       }
-
       const input = document.getElementById("nombre_grupo");
       const hint  = document.getElementById("nombre_hint");
       const btn   = document.getElementById("btn-crear");
       const form  = document.getElementById("form-crear-grupo");
 
       const setState = (state, msg = "") => {
-        // state: "empty" | "checking" | "ok" | "bad"
         if (state === "empty") {
           hint.textContent = "Escribe un nombre de grupo.";
           hint.className = "hint neutral";
@@ -102,12 +114,7 @@
       }, 350);
 
       input.addEventListener("input", checkNombre);
-
-      // Bloqueo extra en submit si no está ok
-      form.addEventListener("submit", (ev) => {
-        if (btn.disabled) ev.preventDefault();
-      });
-
+      form.addEventListener("submit", (ev) => { if (btn.disabled) ev.preventDefault(); });
       setState("empty");
     </script>
 </body>
