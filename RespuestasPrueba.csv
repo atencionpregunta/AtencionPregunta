@@ -9,3 +9,49 @@ id;id_pregunta;respuesta;correcta
 118;23;Residente;True
 119;23;Myke Towers;True
 120;23;Lenny Tavarez;True
+1;1;Lunes;False
+2;1;Martes;False
+3;1;Miercoles;False
+4;1;Jueves;False
+5;1;Viernes;False
+6;1;Sabado;True
+7;1;Domingo;False
+8;2;Violín;False
+9;2;Lira;True
+10;2;Contrabajo;False
+11;2;Piano;False
+12;2;Clavecín;False
+13;2;Clavicordio;False
+14;2;Violonchelo;False
+23;7;Leonardo - Catanas;False
+24;7;Michelangelo - Nunchakus;False
+25;7;Rafael - Sais;False
+26;7;Donnatello - Yumi;True
+27;8;45°;False
+28;8;90°;True
+29;8;180°;False
+30;8;360°;False
+31;8;720°;False
+39;10;Hierro;True
+40;10;Silicio;False
+41;10;Magnesio;False
+42;10;Aluminio;False
+43;10;Cobre;False
+44;10;Calcio;False
+45;10;Titanio;False
+32;9;Pancréas;False
+33;9;Colon;False
+34;9;Boca;False
+35;9;Esófago;False
+36;9;Faringe;False
+37;9;Bazo;True
+38;9;Sigma;False
+69;14;Verbos copulativos;False
+70;14;Verbos transitivos;False
+71;14;Verbos reflexivos;False
+72;14;Verbos sucesivos;True
+73;14;Verbos defectivos;False
+74;14;Verbos recíprocos;False
+75;14;Verbos auxiliares;False
+76;14;Verbos intransitivos;False
+77;14;Verbos predicativos;False
