@@ -16,7 +16,7 @@ def _as_int(val, default=None):
 
 # ----- Rutas robustas -----
 
-DB_PATH = os.getenv("DB_PATH", str("database.db"))  # BD en la carpeta del proyecto
+DB_PATH = os.getenv("DB_PATH", str("/opt/render/db/database.db"))  # BD en la carpeta del proyecto
 
 # CSVs (absolutos)
 PREGUNTAS_CSV = os.getenv("PREGUNTAS_CSV", str("PreguntasPrueba.csv"))
