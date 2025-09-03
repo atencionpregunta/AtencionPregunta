@@ -16,7 +16,7 @@ def _as_int(val, default=None):
 
 # ----- Rutas robustas -----
 
-DB_PATH = os.getenv("DB_PATH", str("/opt/render/db/database.db"))  # BD en la carpeta del proyecto
+DB_PATH = os.getenv("DB_PATH", str("database.db"))  # BD en la carpeta del proyecto
 
 # CSVs (absolutos)
 PREGUNTAS_CSV = os.getenv("PREGUNTAS_CSV", str("PreguntasPrueba.csv"))
@@ -56,11 +56,18 @@ def create_schema(conn: sqlite3.Connection):
         CREATE TABLE IF NOT EXISTS Grupos (
             id INTEGER PRIMARY KEY,
             fec_ini DATETIME,
+            duracion_temp INTEGER,
             codigo TEXT,
             tipo TEXT,
             contrasena TEXT
         );
     """)
+
+    cur.execute("""
+        INSERT OR IGNORE INTO Grupos (id, fec_ini, duracion_temp, codigo, tipo, contrasena)
+        VALUES (0, NULL, NULL, 'General', 'General', NULL);
+    """) 
+
     cur.execute("""CREATE UNIQUE INDEX IF NOT EXISTS ux_grupos_codigo ON Grupos(codigo COLLATE NOCASE);""")
     cur.execute("""
         CREATE TABLE IF NOT EXISTS grupo_usuario (
@@ -93,6 +100,7 @@ def create_schema(conn: sqlite3.Connection):
             FOREIGN KEY (id_pregunta) REFERENCES Preguntas(id) ON DELETE CASCADE
         );
     """)
+
     cur.execute("""
         INSERT OR IGNORE INTO Respuestas (id, id_pregunta, respuesta, correcta)
         VALUES (0, NULL, '[TIMEOUT]', 0);

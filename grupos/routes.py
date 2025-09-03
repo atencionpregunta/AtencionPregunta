@@ -38,7 +38,16 @@ def crear_grupo():
     if request.method == "POST":
         nombre = (request.form.get("nombre_grupo") or "").strip()
         contrasena = (request.form.get("contrasena_grupo") or "").strip()
+        tipo = (request.form.get("tipo_grupo") or "publico").strip().lower()
+        if request.form.get("duracion_dias"):
+            dur_temp = request.form.get("duracion_dias") or None
+        else:
+            dur_temp = None
 
+
+        if tipo not in ("publico", "privado"):
+            tipo = "publico"
+        
         if not nombre:
             flash("Falta el nombre del grupo.", "error")
             return render_template("crear_grupo.html", grupos_usuario=get_grupos_usuario(usuario_id))
@@ -52,8 +61,8 @@ def crear_grupo():
                 with get_conn() as conn:
                     cur = conn.cursor()
                     cur.execute(
-                        "INSERT INTO Grupos (fec_ini, codigo, tipo, contrasena) VALUES (?, ?, ?, ?)",
-                        (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), nombre, "general", contrasena or None)
+                        "INSERT INTO Grupos (fec_ini, duracion_temp, codigo, tipo, contrasena) VALUES (?, ?, ?, ?, ?)",
+                        (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), dur_temp, nombre, tipo, contrasena or None)
                     )
                     grupo_id = cur.lastrowid
                     cur.execute(
@@ -182,3 +191,38 @@ def salir_grupo():
 
     flash("Has salido del grupo correctamente.", "success")
     return redirect(url_for("grupos.gestionar_grupos"))
+
+
+@grupos_bp.route("/publicos")
+def listar_publicos():
+    q = (request.args.get("q") or "").strip().lower()
+    limit = request.args.get("limit", type=int) or 25
+    offset = request.args.get("offset", type=int) or 0
+    usuario_id = session.get("usuario_id")
+
+    with db_lock:
+        with get_conn() as conn:
+            cur = conn.cursor()
+            params = []
+            sql = """
+                SELECT g.id, g.codigo, COUNT(gu.id_usuario) AS miembros
+                FROM Grupos g
+                LEFT JOIN Grupo_Usuario gu ON gu.id_grupo = g.id
+                WHERE g.tipo='publico'
+            """
+            if usuario_id:
+                sql += " AND g.id NOT IN (SELECT id_grupo FROM Grupo_Usuario WHERE id_usuario = ?)"
+                params.append(usuario_id)
+
+            if q:
+                sql += " AND LOWER(g.codigo) LIKE ?"
+                params.append(f"%{q}%")
+
+            sql += " GROUP BY g.id, g.codigo ORDER BY g.id DESC LIMIT ? OFFSET ?"
+            params.extend([limit, offset])
+
+            cur.execute(sql, params)
+            rows = cur.fetchall()
+
+    items = [{"id": r["id"], "codigo": r["codigo"], "miembros": r["miembros"]} for r in rows]
+    return jsonify({"items": items, "limit": limit, "offset": offset})

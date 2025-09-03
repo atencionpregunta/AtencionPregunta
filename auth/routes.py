@@ -6,6 +6,17 @@ import sqlite3
 import re
 import secrets
 
+# =============================
+# Config: ID del grupo 'general'
+# =============================
+GENERAL_GROUP_ID = 0
+# Si NO estás 100% seguro de que 'general' es id=0, usa esta helper en vez de la constante:
+# def _get_general_id(cur):
+#     row = cur.execute("SELECT id FROM Grupos WHERE nombre = 'general'").fetchone()
+#     if not row:
+#         cur.execute("INSERT INTO Grupos (nombre) VALUES ('general')")
+#         return cur.lastrowid
+#     return row["id"]
 
 # -----------------------------
 # Helpers de sesión / remember
@@ -56,6 +67,18 @@ def autologin_from_cookie():
                 cur.execute("UPDATE Usuarios SET remember_expira=? WHERE id=?", (nueva, user["id"]))
                 conn.commit()
 
+# -----------------------------
+# Utilidades BD
+# -----------------------------
+def _ensure_user_in_general(cur, user_id: int):
+    """Mete al usuario en el grupo 'general' evitando duplicados."""
+    # Si usas búsqueda por nombre:
+    # grupo_id = _get_general_id(cur)
+    grupo_id = GENERAL_GROUP_ID
+    cur.execute("""
+        INSERT OR IGNORE INTO Grupo_usuario (id_usuario, id_grupo)
+        VALUES (?, ?)
+    """, (user_id, grupo_id))
 
 # -----------------------------
 # Validaciones / utilidades
@@ -144,6 +167,11 @@ def crear_usuario():
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     pais or None, edad
                 ))
+                user_id = cur.lastrowid
+
+                # ✅ Asegurar pertenencia a 'general'
+                _ensure_user_in_general(cur, user_id)
+
                 conn.commit()
     except sqlite3.IntegrityError:
         # Por si hay UNIQUE en BD o carrera entre dos altas
@@ -233,6 +261,7 @@ def google_callback():
             user = cursor.fetchone()
 
             if not user:
+                # Crear usuario nuevo
                 cursor.execute("""
                     INSERT INTO Usuarios (mail, usuario, contrasena, fec_ini, pais, edad)
                     VALUES (?, ?, ?, ?, ?, ?)
@@ -244,9 +273,20 @@ def google_callback():
                     "Google",
                     None
                 ))
+                user_id = cursor.lastrowid
+
+                # ✅ Asegurar pertenencia a 'general'
+                _ensure_user_in_general(cursor, user_id)
+
                 conn.commit()
-                cursor.execute("SELECT * FROM Usuarios WHERE mail = ?", (email,))
+
+                # Refrescar user para sesión
+                cursor.execute("SELECT * FROM Usuarios WHERE id = ?", (user_id,))
                 user = cursor.fetchone()
+            else:
+                # Usuario existente: asegurar pertenencia a 'general'
+                _ensure_user_in_general(cursor, user["id"])
+                conn.commit()
 
     # Sesión de Flask persistente
     session.permanent = True

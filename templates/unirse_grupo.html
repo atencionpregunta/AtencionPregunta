@@ -47,22 +47,108 @@
                 <a href="{{ url_for('index') }}" class="btn secondary-btn">⬅️ Volver al inicio</a>
             </form>
 
-            {% if grupos_usuario %}
-              <div class="grupos-usuario">
-                <h3>Tus grupos actuales</h3>
-                <ul>
-                  {% for grupo in grupos_usuario %}
-                    <li>
-                      <i class="fa-solid fa-users"></i> {{ grupo.codigo }}
-                    </li>
-                  {% endfor %}
-                </ul>
-              </div>
-            {% endif %}
-        </div>
+           <!-- EXPLORADOR DE GRUPOS PÚBLICOS -->
+         <div class="publicos">
+  <h3><i class="fa-solid fa-globe"></i> Grupos públicos</h3>
+
+  <div class="publicos__search">
+    <input type="text" id="search_publicos" placeholder="Buscar grupo público…" autocomplete="off">
+  </div>
+
+  <table class="publicos-table">
+    <thead>
+      <tr>
+        <th>Grupo</th>
+        <th>Miembros</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="publicos_list">
+      <tr><td colspan="3" class="hint neutral">Escribe para buscar o pulsa “Buscar”.</td></tr>
+    </tbody>
+  </table>
+</div>
+
     </main>
     <footer>
         <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
     </footer>
 </body>
+
+<script>
+(function(){
+  const formJoin    = document.querySelector('form[action="{{ url_for("grupos.unirse_grupo") }}"]');
+  const inputCodigo = document.getElementById("codigo_grupo");
+  const listEl      = document.getElementById("publicos_list");
+  const qInput      = document.getElementById("search_publicos");
+
+  // Render filas en la tabla
+  function renderLista(items){
+    if (!listEl || listEl.tagName !== 'TBODY') return;
+    if (!items.length){
+      listEl.innerHTML = '<tr><td colspan="3" class="hint neutral">No hay resultados.</td></tr>';
+      return;
+    }
+    const rows = items.map(g => {
+      const nombre = (g.codigo ?? '').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+      const n = Number(g.miembros ?? 0);
+      const label = n + (n === 1 ? ' miembro' : ' miembros');
+      return `
+        <tr>
+          <td>${nombre}</td>
+          <td style="text-align:center; white-space:nowrap;">${label}</td>
+          <td style="text-align:right;">
+            <button type="button" class="btn primary-btn btn-sm" onclick="
+              document.getElementById('codigo_grupo').value='${nombre}';
+              document.querySelector('form[action=\\'{{ url_for("grupos.unirse_grupo") }}\\']').submit();
+            ">Unirse</button>
+          </td>
+        </tr>`;
+    }).join("");
+    listEl.innerHTML = rows;
+  }
+
+  // Debounce helper
+  function debounce(fn, delay=300){
+    let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), delay); };
+  }
+
+  let aborter = null;
+  async function cargarPublicos(q=""){
+    if (!listEl) return;
+    if (aborter) aborter.abort();
+    aborter = new AbortController();
+
+    listEl.innerHTML = '<tr><td colspan="3" class="hint neutral">Buscando…</td></tr>';
+
+    try{
+      const url = new URL("{{ url_for('grupos.listar_publicos') if url_for else '/grupos/publicos' }}", window.location.origin);
+      if (q.trim()) url.searchParams.set("q", q.trim());
+      url.searchParams.set("limit", "25");
+      const res = await fetch(url.toString(), { credentials:"same-origin", signal: aborter.signal });
+      if (!res.ok) throw new Error("HTTP "+res.status);
+      const data = await res.json();
+      renderLista(data.items || []);
+    }catch(e){
+      if (e.name === 'AbortError') return; // se canceló por nueva búsqueda
+      listEl.innerHTML = '<tr><td colspan="3" class="hint bad">Error al cargar grupos.</td></tr>';
+      console.error(e);
+    }
+  }
+
+  // Buscar al teclear (con debounce)
+  const debounced = debounce(() => cargarPublicos(qInput.value), 300);
+  qInput.addEventListener('input', debounced);
+
+  // Enter fuerza búsqueda inmediata (opcional)
+  qInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); cargarPublicos(qInput.value); }
+  });
+
+  // Primera carga (sin filtro)
+  cargarPublicos("");
+})();
+</script>
+
+
 </html>
