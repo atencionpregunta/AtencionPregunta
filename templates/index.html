@@ -7,21 +7,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <script>
-        function toggleGrupoMenu() {
-            const menu = document.getElementById('grupo-options');
-            menu.classList.toggle('hidden');
-            if (!menu.classList.contains('hidden')) {
-                menu.style.animation = 'fadeDown 0.3s ease forwards';
-            }
-        }
-    </script>
+    <link rel="icon" type="image/png" sizes="32x32"
+      href="{{ url_for('static', filename='img/ATPPet-32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16"
+      href="{{ url_for('static', filename='img/ATPPet-16.png') }}">
+
+<!-- iOS / atajo a pantalla de inicio -->
+<link rel="apple-touch-icon"
+      href="{{ url_for('static', filename='img/ATPPet-180.png') }}">
 </head>
+
+
 <body>
+    {% if session.get("usuario_id") %}
+    <!-- Botón pequeño arriba a la derecha para cerrar sesión (solo si hay sesión) -->
+    <a href="{{ url_for('auth.logout') }}"
+       class="btn secondary-btn small-btn"
+       style="position: absolute; top: 1rem; right: 1rem; padding: 0.4rem 0.6rem; font-size: 0.9rem;">
+        <i class="fa-solid fa-right-from-bracket"></i> Salir
+    </a>
+    {% endif %}
+
     <main class="center-wrapper">
         <div class="card fade-in">
+              <img
+                    class="ATPPet-title"
+                    src="{{ url_for('static', filename='img/ATPPet-180.png') }}"
+                    alt="ATPPet del reto"
+                    loading="lazy" decoding="async">
             <h1>🚨 Atención Pregunta 🚨</h1>
-
             {% if session.get("usuario_id") %}
                 <p class="welcome">Bienvenido, <strong>{{ session["usuario_nombre"] }}</strong> 👋</p>
 
@@ -38,34 +52,23 @@
                             </button>
                         </form>
                     {% endif %}
+
+                    <!-- Debajo de la pregunta: solo "Gestionar grupos" -->
+                    <div style="margin-top: 0.75rem;">
+                        <a href="{{ url_for('grupos.gestionar_grupos') }}" class="btn secondary-btn small-btn">
+                            <i class="fa-solid fa-gear"></i> Grupos
+                        </a>
+                    </div>
                 {% else %}
                     <p class="info" style="margin-top: 1rem;">
                         ⚠️ Debes <strong>unirte</strong> o <strong>crear</strong> un grupo para participar.
                     </p>
-                {% endif %}
-
-                <!-- Botón para cerrar sesión -->
-                <a href="{{ url_for('auth.logout') }}" class="btn secondary-btn">
-                    <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
-                </a>
-
-                <!-- Menú desplegable de grupo (solo crear/unirse) -->
-                <div class="grupo-menu" style="position: absolute; top: 1rem; right: 1rem;">
-                    <button class="btn primary-btn grupo-toggle" type="button" onclick="toggleGrupoMenu()">
-                        <i class="fa-solid fa-users"></i> Grupos
-                    </button>
-                    <div id="grupo-options" class="grupo-options hidden" style="margin-top: 0.5rem;">
-                        <a href="{{ url_for('grupos.crear_grupo') }}" class="btn secondary-btn small-btn">
-                            <i class="fa-solid fa-plus"></i> Crear grupo
-                        </a>
-                        <a href="{{ url_for('grupos.unirse_grupo') }}" class="btn secondary-btn small-btn">
-                            <i class="fa-solid fa-sign-in-alt"></i> Unirse a grupo
-                        </a>
+                    <div style="margin-top: 0.75rem;">
                         <a href="{{ url_for('grupos.gestionar_grupos') }}" class="btn secondary-btn small-btn">
-                            <i class="fa-solid fa-gear"></i> Gestionar grupos
+                            <i class="fa-solid fa-gear"></i> Grupos
                         </a>
                     </div>
-                </div>
+                {% endif %}
 
             {% else %}
                 <p class="info">Inicia sesión para continuar</p>
@@ -81,6 +84,7 @@
             {% endif %}
         </div>
     </main>
+
     <footer>
         <p>&copy; 2025 · Atención Pregunta / Iker Ángel</p>
     </footer>

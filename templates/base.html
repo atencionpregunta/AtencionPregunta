@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{% block title %}Atención Pregunta{% endblock %}</title>
 
   <!-- Fuentes y librerías -->
@@ -11,6 +11,15 @@
 
   <!-- Tu CSS global -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+  <link rel="icon" type="image/png" sizes="32x32"
+    href="{{ url_for('static', filename='img/ATPPet-32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16"
+    href="{{ url_for('static', filename='img/ATPPet-16.png') }}">
+
+<!-- iOS / atajo a pantalla de inicio -->
+  <link rel="apple-touch-icon"
+    href="{{ url_for('static', filename='img/ATPPet-180.png') }}">
 
   {% block extra_head %}{% endblock %}
 </head>

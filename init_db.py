@@ -1,24 +1,33 @@
 import os, sqlite3, csv
 from contextlib import closing
 from datetime import datetime
+from pathlib import Path
 
-# Ruta de BD (variable en Render → Environment, con fallback local)
-DB_PATH = "/opt/render/db/database.db"
+def _as_int(val, default=None):
+    if val is None:
+        return default
+    s = str(val).strip()
+    if s == "":
+        return default
+    try:
+        return int(s)
+    except Exception:
+        return default
 
-# CSVs (subidos en tu repo)
-# Pon los CSV en: /opt/render/project/src/data/...
-PREGUNTAS_CSV = "Chat_de_WhatsApp_con_ATENCION_PREGUNTA_preguntas.csv"
-RESPUESTAS_CSV = ".csv"
+# ----- Rutas robustas -----
 
-# Fallbacks locales para trabajar en tu PC sin tocar nada:
-if not os.path.exists(PREGUNTAS_CSV):
-    PREGUNTAS_CSV = "Chat_de_WhatsApp_con_ATENCION_PREGUNTA_preguntas.csv"
-if not os.path.exists(RESPUESTAS_CSV):
-    RESPUESTAS_CSV = "Chat_de_WhatsApp_con_ATENCION_PREGUNTA_respuestas.csv"
+DB_PATH = os.getenv("DB_PATH", str("database.db"))  # BD en la carpeta del proyecto
+
+# CSVs (absolutos)
+PREGUNTAS_CSV = os.getenv("PREGUNTAS_CSV", str("PreguntasPrueba.csv"))
+RESPUESTAS_CSV = os.getenv("RESPUESTAS_CSV", str("RespuestasPrueba.csv"))
 
 # -------------------- Helpers --------------------
 def ensure_db_dir():
-    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    folder = os.path.dirname(DB_PATH)
+    # Solo crear si hay un directorio explícito (no "", no ".")
+    if folder and folder not in (".", ""):
+        os.makedirs(folder, exist_ok=True)
 
 def get_conn():
     conn = sqlite3.connect(DB_PATH, timeout=10, check_same_thread=False)
@@ -38,7 +47,9 @@ def create_schema(conn: sqlite3.Connection):
             contrasena TEXT,
             fec_ini DATETIME,
             pais TEXT,
-            edad INTEGER
+            edad INTEGER,
+            remember_token TEXT,          
+            remember_expira TEXT           
         );
     """)
     cur.execute("""
@@ -86,6 +97,12 @@ def create_schema(conn: sqlite3.Connection):
         INSERT OR IGNORE INTO Respuestas (id, id_pregunta, respuesta, correcta)
         VALUES (0, NULL, '[TIMEOUT]', 0);
     """)
+    
+    cur.execute("""
+        INSERT OR IGNORE INTO Respuestas (id, id_pregunta, respuesta, correcta)
+        VALUES (-1, NULL, '[MULTIPLE]', 0);
+    """)
+
     cur.execute("""
         CREATE TABLE IF NOT EXISTS Resultados (
             fecha DATETIME,
@@ -95,7 +112,8 @@ def create_schema(conn: sqlite3.Connection):
             puntuacion INTEGER,
             correcta BOOLEAN,
             id_pregunta INTEGER,
-            id_respuesta INTEGER,
+            id_respuesta INT,
+            seleccion_respuestas TEXT,
             FOREIGN KEY (id_usuario) REFERENCES Usuarios(id),
             FOREIGN KEY (id_grupo) REFERENCES Grupos(id),
             FOREIGN KEY (id_pregunta) REFERENCES Preguntas(id),
@@ -120,7 +138,7 @@ def _to_int_bool(x) -> int:
 def _leer_csv(path, expected_fields):
     if not os.path.exists(path):
         raise FileNotFoundError(f"No existe el CSV: {path}")
-    with open(path, "r", newline="", encoding="utf-8-sig") as f:
+    with open(path, "r", newline="", encoding="cp1252") as f:
         r = csv.DictReader(f, delimiter=";")  # tu script usa ';' + UTF-8 BOM
         faltan = [c for c in expected_fields if c not in r.fieldnames]
         if faltan:
@@ -134,34 +152,51 @@ def importar_csvs(conn: sqlite3.Connection, preguntas_csv: str, respuestas_csv: 
 
     cur = conn.cursor()
     with conn:
-        # Preguntas
+        # --- Preguntas ---
         for row in _leer_csv(preguntas_csv, preguntas_cols):
+            pid = _as_int(row.get("id"))
+            pregunta_txt = (row.get("pregunta") or "").strip()
+            if not pregunta_txt:
+                print(f"⚠ Saltando pregunta sin texto (id={pid}): {row}")
+                continue
+
             cur.execute("""
                 INSERT OR REPLACE INTO Preguntas
                 (id, pregunta, categoria, dificultad, fecha_creacion, fecha_mostrada, ruta_audio, ruta_imagen)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                int(row["id"]) if row["id"] else None,
-                row["pregunta"],
-                row.get("categoria") or None,
-                row.get("dificultad") or None,
-                row.get("fecha_creacion") or None,
-                row.get("fecha_mostrada") or None,
-                row.get("ruta_audio") or None,
-                row.get("ruta_imagen") or None
+                pid,
+                pregunta_txt,
+                (row.get("categoria") or None),
+                (row.get("dificultad") or None),
+                (row.get("fecha_creacion") or None),
+                (row.get("fecha_mostrada") or None),
+                (row.get("ruta_audio") or None),
+                (row.get("ruta_imagen") or None)
             ))
-        # Respuestas
+
+        # --- Respuestas ---
         for row in _leer_csv(respuestas_csv, respuestas_cols):
+            rid = _as_int(row.get("id"))
+            pid = _as_int(row.get("id_pregunta"))  # <- puede venir vacío en tu CSV
+            respuesta_txt = (row.get("respuesta") or "").strip()
+            correcta_val = _to_int_bool(row.get("correcta"))
+
+            # Saltar filas inválidas
+            if pid is None:
+                # típico: fila TIMEOUT o líneas en blanco al final
+                print(f"⚠ Saltando respuesta sin id_pregunta (id={rid}): {row}")
+                continue
+            if not respuesta_txt:
+                print(f"⚠ Saltando respuesta vacía (id={rid}, id_pregunta={pid})")
+                continue
+
             cur.execute("""
                 INSERT OR REPLACE INTO Respuestas
                 (id, id_pregunta, respuesta, correcta)
                 VALUES (?, ?, ?, ?)
-            """, (
-                int(row["id"]) if row["id"] else None,
-                int(row["id_pregunta"]),
-                row["respuesta"],
-                _to_int_bool(row.get("correcta"))
-            ))
+            """, (rid, pid, respuesta_txt, correcta_val))
+
 
 def bootstrap_db():
     ensure_db_dir()
@@ -174,7 +209,6 @@ def bootstrap_db():
             else:
                 print("ℹ BD ya tenía datos. No se importó nada.")
         except FileNotFoundError as e:
-            # Si aún no has subido los CSV al repo, no rompemos el arranque:
             print(f"⚠ No se importaron CSV: {e}")
 
 if __name__ == "__main__":

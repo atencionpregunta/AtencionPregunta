@@ -2,6 +2,9 @@ import os
 from flask import Flask, session, render_template
 from flask_dance.contrib.google import make_google_blueprint
 from dotenv import load_dotenv
+from utils import ensure_schema_usuarios   # 👈 import aquí
+from datetime import timedelta
+
 
 # --- 1) Cargar .env ---
 load_dotenv()
@@ -11,6 +14,14 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  # solo local
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "I2k4e1r22001!")
 app.config["ADMIN_PASSWORD"] = os.getenv("ADMIN_PASSWORD", "I2k4e1r22001!")
+
+app.permanent_session_lifetime = timedelta(days=30)  # cookie de Flask válida 30 días
+app.config.update(
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=False,  # pon True si sirves por HTTPS
+)
+
 
 # (Opcional) CORS y cookies cross-site (poner antes de blueprints)
 from flask_cors import CORS
@@ -41,6 +52,9 @@ google_bp = make_google_blueprint(
 )
 google_bp.name = "google"
 app.register_blueprint(google_bp, url_prefix="/login")
+
+
+ensure_schema_usuarios()
 
 # --- 5) Blueprints propios ---
 from auth import auth_bp

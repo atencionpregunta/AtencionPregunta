@@ -1,109 +1,194 @@
 {% extends "base.html" %}
 
+{% block extra_head %}
+<style>
+  /* sólo para la tarjeta de preguntas */
+@media (max-width: 640px){
+  .card.fade-in { margin-top: max(16px, env(safe-area-inset-top)); }
+}
+  :root{
+    --line:#e8eaf0; --muted:#6b7280; --text:#171717;
+    --ok-hsl: 142 75% 42%;   /* verde vivo */
+    --warn-hsl: 38 92% 50%;  /* ámbar      */
+    --bad-hsl: 0  78% 46%;   /* rojo vivo  */
+  }
+
+  .card.fade-in{
+    border:1px solid var(--line); border-radius:18px;
+    box-shadow:0 12px 40px rgba(2,6,23,.06); padding:22px;
+  }
+
+  .header-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
+  .header-row h1{ margin:0; font-size:1.6rem; letter-spacing:.2px }
+  .chips{ display:flex; gap:8px; flex-wrap:wrap; }
+  .chip{
+    display:inline-flex; align-items:center; gap:.4rem;
+    padding:.35rem .6rem; border-radius:999px;
+    background:#eef2ff; color:#3730a3; border:1px solid #e5e7eb;
+    font-weight:700; font-size:.8rem;
+  }
+
+  .question-title{ margin:.4rem 0 1rem; font-size:1.2rem; line-height:1.35; color:var(--text); }
+
+  .audio-container{ display:flex; align-items:center; gap:.6rem; margin:.25rem 0 .5rem; }
+  .image-container img{ max-width:100%; border-radius:12px; margin-top:.5rem; box-shadow:0 6px 18px rgba(2,6,23,.06) }
+
+  .answers-container{ display:flex; flex-direction:column; gap:.5rem; margin-top:.25rem; }
+  .hint{ color:var(--muted); font-size:.9rem; margin:.2rem 0 .4rem; }
+  .option{
+    display:flex; align-items:flex-start; gap:.65rem;
+    padding:.7rem .9rem; border:1px solid var(--line); border-radius:12px; background:#fff;
+    cursor:pointer; transition: border-color .15s ease, box-shadow .15s ease, transform .03s;
+  }
+  .option:hover{ border-color:#d6dae3; box-shadow:0 4px 14px rgba(2,6,23,.06) }
+  .option:active{ transform:scale(.998) }
+  .option input{ margin-top:.2rem; transform:translateY(1px); accent-color: hsl(var(--ok-hsl)); }
+  .option .txt{ line-height:1.35; }
+
+  .btn.primary-btn{ font-weight:800; border-radius:12px; }
+
+  .timer-section{ display:flex; flex-direction:column; align-items:center; gap:.25rem; margin-top:1rem; }
+  .timer{
+    --angle: 360deg; --ring: hsl(var(--ok-hsl));
+    width: 76px; height: 76px; border-radius:999px;
+    background: conic-gradient(var(--ring) var(--angle), #e5e7eb 0);
+    position: relative; box-shadow: inset 0 4px 16px rgba(0,0,0,.08);
+  }
+  .timer::after{ content:""; position:absolute; inset:6px; border-radius:999px; background:#fff; z-index:0; }
+  .timer span{ position:absolute; inset:0; display:grid; place-items:center; font-weight:800; z-index:1; color:#111827; }
+  .timer-warn{ --ring: hsl(var(--warn-hsl)); }   /* <10s */
+  .timer-danger{ --ring: hsl(var(--bad-hsl)); }  /* <5s  */
+  .timer-label{ font-size:.85rem; color:var(--muted); }
+
+  @media (max-width:520px){
+    .header-row h1{ font-size:1.35rem }
+    .timer{ width:68px; height:68px }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="card fade-in">
+  <div class="header-row">
     <h1>❓ Pregunta del día</h1>
+    <div class="chips">
+      {% if es_multiple %}
+        <span class="chip"><i class="fa-solid fa-layer-group"></i> Respuesta múltiple</span>
+      {% else %}
+        <span class="chip"><i class="fa-solid fa-dot-circle"></i> Respuesta única</span>
+      {% endif %}
+      <span class="chip"><i class="fa-solid fa-clock"></i> 30s</span>
+    </div>
+  </div>
 
-    {% if ruta_audio %}
-        <div class="audio-container">
-            <button id="play-audio" class="btn secondary-btn">
-                ▶ Escuchar audio
-            </button>
-            <audio id="player" preload="auto" style="display:none;">
-                <source src="{{ url_for('static', filename=ruta_audio) }}" type="audio/mpeg">
-                Tu navegador no soporta el elemento de audio.
-            </audio>
-        </div>
+  {% if ruta_audio %}
+    <div class="audio-container">
+      <button id="play-audio" class="btn secondary-btn">▶ Escuchar audio</button>
+      <audio id="player" preload="auto" style="display:none;">
+        <source src="{{ url_for('static', filename=ruta_audio) }}" type="audio/mpeg">
+        Tu navegador no soporta el audio.
+      </audio>
+    </div>
+  {% endif %}
 
-        <script>
-        (function () {
-            const player = document.getElementById('player');
-            const btn = document.getElementById('play-audio');
-            const LIMIT = 5; // segundos
+  {% if ruta_imagen %}
+    <div class="image-container">
+      <img src="{{ url_for('static', filename=ruta_imagen) }}" alt="Imagen de la pregunta">
+    </div>
+  {% endif %}
 
-            btn.addEventListener('click', () => {
-                player.currentTime = 0;
-                player.play();
-                btn.disabled = true; // opcional: evitar spam de clics
-            });
+  <h2 class="question-title">{{ pregunta["pregunta"] }}</h2>
 
-            // Detener a los 5 segundos
-            player.addEventListener('timeupdate', () => {
-                if (player.currentTime >= LIMIT) {
-                    player.pause();
-                    player.currentTime = 0;
-                    btn.disabled = false;
-                }
-            });
-        })();
-        </script>
-    {% endif %}
-    {% if ruta_imagen %}
-        <div class="image-container">
-            <img src="{{ url_for('static', filename=ruta_imagen) }}" alt="Imagen de la pregunta" style="max-width:100%;border-radius:8px;margin-top:1rem;">
-        </div>
-    {% endif %}
+  <form id="form-pregunta" method="POST" action="{{ url_for('preguntas.ver_pregunta') }}">
+    <input type="hidden" name="pregunta_id" value="{{ pregunta['id'] }}">
 
+    <div class="answers-container">
+      {% if es_multiple %}
+        <p class="hint">Marca todas las correctas (pueden ser varias).</p>
+        {% for r in respuestas %}
+          <label class="option">
+            <input type="checkbox" name="respuestas_seleccionadas" value="{{ r['id'] }}">
+            <div class="txt">{{ r['respuesta'] }}</div>
+          </label>
+        {% endfor %}
+      {% else %}
+        <p class="hint">Elige una única respuesta.</p>
+        {% for r in respuestas %}
+          <label class="option">
+            <input type="radio" name="respuesta" value="{{ r['id'] }}" required>
+            <div class="txt">{{ r['respuesta'] }}</div>
+          </label>
+        {% endfor %}
+      {% endif %}
+    </div>
 
-    <h2 class="question-title">{{ pregunta["pregunta"] }}</h2>
+    <button type="submit" class="btn primary-btn" style="margin-top:1rem;">
+      <i class="fa-solid fa-paper-plane"></i> Responder
+    </button>
 
-    <form method="POST" action="{{ url_for('preguntas.ver_pregunta') }}">
-        <div class="answers-container">
-            {% for r in respuestas %}
-            <label class="radio-option">
-                <input type="radio" name="respuesta" value="{{ r['id'] }}">
-                {{ r['respuesta'] }}
-            </label>
-            {% endfor %}
-        </div>
-
-        <div class="timer-container">
-            <div class="timer-circle" id="timer-circle">
-                <span class="timer-number" id="timer-number">30</span>
-            </div>
-         </div>
-         <button type="submit" class="btn primary-btn" style="margin-top: 1.5rem;">
-            <i class="fa-solid fa-paper-plane"></i> Responder
-        </button>
-
-    </form>
+    <div class="timer-section">
+      <div class="timer" id="timer-circle" role="timer" aria-live="polite" aria-label="Cuenta atrás">
+        <span id="timer-number">30</span>
+      </div>
+      <div class="timer-label">Tiempo restante</div>
+    </div>
+  </form>
 </div>
 
 <script>
-  const TOTAL = 30;
-  let segundos = TOTAL;
+  // Audio preview (si existe)
+  (function () {
+    const player = document.getElementById('player');
+    const btn = document.getElementById('play-audio');
+    if (!player || !btn) return;
+    const LIMIT = 5;
+    btn.addEventListener('click', () => { player.currentTime = 0; player.play(); btn.disabled = true; });
+    player.addEventListener('timeupdate', () => {
+      if (player.currentTime >= LIMIT) { player.pause(); player.currentTime = 0; btn.disabled = false; }
+    });
+  })();
 
-  const circle = document.getElementById("timer-circle");
-  const number = document.getElementById("timer-number");
-  const TIMEOUT_URL = "{{ url_for('preguntas.timeout', pregunta_id=pregunta.id) }}";
+  // Timer
+  (function () {
+    const TOTAL = 30;
+    let segundos = TOTAL;
 
-  function pintar() {
-    // Calcular ángulo horario: va de 360 a 0
-    const angle = 360 * (segundos / TOTAL);
-    circle.style.setProperty('--angle', `${angle}deg`);
-    number.textContent = segundos;
+    const circle = document.getElementById("timer-circle");
+    const number = document.getElementById("timer-number");
+    const TIMEOUT_URL = "{{ url_for('preguntas.timeout', pregunta_id=pregunta['id']) }}";
 
-    if (segundos <= 5) {
-      circle.classList.add('timer-danger');
-      circle.classList.remove('timer-warn');
-    } else if (segundos <= 10) {
-      circle.classList.add('timer-warn');
-      circle.classList.remove('timer-danger');
-    } else {
-      circle.classList.remove('timer-warn', 'timer-danger');
+    function pintar() {
+      if (!circle || !number) return;
+      const angle = 360 * (segundos / TOTAL);
+      circle.style.setProperty('--angle', `${angle}deg`);
+      number.textContent = segundos;
+
+      if (segundos <= 5) { circle.classList.add('timer-danger'); circle.classList.remove('timer-warn'); }
+      else if (segundos <= 10) { circle.classList.add('timer-warn'); circle.classList.remove('timer-danger'); }
+      else { circle.classList.remove('timer-warn', 'timer-danger'); }
     }
-  }
 
-  pintar();
-  const intervalo = setInterval(() => {
-    segundos--;
     pintar();
-    if (segundos <= 0) {
-      clearInterval(intervalo);
-      window.location.replace(TIMEOUT_URL);
-    }
-  }, 1000);
+    const intervalo = setInterval(() => {
+      segundos--;
+      pintar();
+      if (segundos <= 0) {
+        clearInterval(intervalo);
+        window.location.replace(TIMEOUT_URL);
+      }
+    }, 1000);
+  })();
+
+  // Validación cliente para múltiple: al menos 1
+  (function(){
+    const form = document.getElementById('form-pregunta');
+    form.addEventListener('submit', function(e){
+      const esMultiple = {{ 'true' if es_multiple else 'false' }};
+      if (esMultiple) {
+        const alguno = form.querySelector('input[name="respuestas_seleccionadas"]:checked');
+        if (!alguno) { e.preventDefault(); alert('Selecciona al menos una respuesta.'); }
+      }
+    });
+  })();
 </script>
-
-
 {% endblock %}

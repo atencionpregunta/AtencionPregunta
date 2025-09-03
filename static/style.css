@@ -73,3 +73,19 @@ button {
 button:hover {
   background-color: #ffc107;
 }
+
+/* Columna de estado (visible en desktop, oculta en móvil) */
+.estado-col { width: 120px; text-align:center; }
+.state{
+  display:inline-flex; align-items:center; gap:.4rem;
+  font-weight:800; font-size:.9rem;
+}
+.state i{ font-size:1rem; }
+.state-ok{ color:#16a34a; }      /* verde */
+.state-bad{ color:#dc2626; }     /* rojo  */
+.state-unk{ color:#6b7280; }     /* gris  */
+
+@media (max-width:900px){
+  thead .estado-col{ display:none }
+  tbody .estado-col{ display:none }
+}

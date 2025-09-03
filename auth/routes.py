@@ -1,10 +1,65 @@
-from flask import render_template, request, redirect, session, url_for, flash, jsonify
-from datetime import datetime
+from flask import render_template, request, redirect, session, url_for, flash, jsonify, make_response
+from datetime import datetime, timedelta
 from db import get_conn, db_lock
 from . import auth_bp
 import sqlite3
 import re
+import secrets
 
+
+# -----------------------------
+# Helpers de sesión / remember
+# -----------------------------
+def _set_session_for(user_row):
+    session["usuario_id"] = user_row["id"]
+    session["usuario_nombre"] = user_row["usuario"]
+
+def _fetch_user_by_token(token: str):
+    if not token:
+        return None
+    with db_lock:
+        with get_conn() as conn:
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT * FROM Usuarios
+                WHERE remember_token = ? AND remember_expira IS NOT NULL
+            """, (token,))
+            user = cur.fetchone()
+            if not user:
+                return None
+            try:
+                exp = datetime.strptime(user["remember_expira"], "%Y-%m-%d %H:%M:%S")
+            except Exception:
+                return None
+            if datetime.now() > exp:
+                # caducado → limpiar
+                cur.execute("UPDATE Usuarios SET remember_token=NULL, remember_expira=NULL WHERE id=?", (user["id"],))
+                conn.commit()
+                return None
+            return user
+
+@auth_bp.before_app_request
+def autologin_from_cookie():
+    if session.get("usuario_id"):
+        return
+    token = request.cookies.get("remember_token")
+    if not token:
+        return
+    user = _fetch_user_by_token(token)
+    if user:
+        _set_session_for(user)
+        # Renovar expiración (ventana deslizante de 30 días)
+        with db_lock:
+            with get_conn() as conn:
+                cur = conn.cursor()
+                nueva = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
+                cur.execute("UPDATE Usuarios SET remember_expira=? WHERE id=?", (nueva, user["id"]))
+                conn.commit()
+
+
+# -----------------------------
+# Validaciones / utilidades
+# -----------------------------
 def usuario_existe(usuario: str) -> bool:
     u = (usuario or "").strip()
     if not u:
@@ -42,6 +97,9 @@ def check_mail():
         return jsonify({"available": False, "reason": "invalid"})
     return jsonify({"available": not mail_existe(mail)})
 
+# -----------------------------
+# Registro
+# -----------------------------
 @auth_bp.route("/crear_usuario", methods=["GET", "POST"])
 def crear_usuario():
     if request.method == "GET":
@@ -72,7 +130,6 @@ def crear_usuario():
     if errores:
         for e in errores:
             flash(e, "error")
-        # Volvemos al formulario preservando los campos rellenados (excepto contraseña)
         return render_template("crear_usuario.html")
 
     try:
@@ -95,13 +152,17 @@ def crear_usuario():
 
     return redirect(url_for("auth.login_form"))
 
+# -----------------------------
+# Login (con sesión persistente + remember opcional)
+# -----------------------------
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login_form():
     if request.method == "GET":
-        return render_template("login.html")
+        return render_template("login.html")  # añade <input type="checkbox" name="remember">
 
     usuario = request.form["usuario"]
     contrasena = request.form["contrasena"]
+    remember = request.form.get("remember")  # checkbox opcional
 
     with db_lock:
         with get_conn() as conn:
@@ -110,12 +171,40 @@ def login_form():
             user = cursor.fetchone()
 
     if user and user["contrasena"] == contrasena:
-        session["usuario_id"] = user["id"]
-        session["usuario_nombre"] = user["usuario"]
+        # 1) Cookie de sesión de Flask persistente (31 días por defecto si no configuras)
+        session.permanent = True
+        _set_session_for(user)
+
+        # 2) Cookie propia remember_token si marcaron "Recuérdame"
+        if remember:
+            token = secrets.token_urlsafe(32)
+            exp = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
+            with db_lock:
+                with get_conn() as conn:
+                    cur = conn.cursor()
+                    cur.execute("UPDATE Usuarios SET remember_token=?, remember_expira=? WHERE id=?",
+                                (token, exp, user["id"]))
+                    conn.commit()
+
+            resp = make_response(redirect(url_for("index")))
+            resp.set_cookie(
+                "remember_token",
+                token,
+                max_age=30*24*60*60,  # 30 días
+                httponly=True,
+                samesite="Lax",
+                secure=False,  # True si usas HTTPS
+                path="/"       # importante para que aplique en todo el sitio
+            )
+            return resp
+
         return redirect(url_for("index"))
     else:
         return "Usuario o contraseña incorrectos"
 
+# -----------------------------
+# Google OAuth (crea remember siempre)
+# -----------------------------
 @auth_bp.route("/google/callback")
 def google_callback():
     from flask_dance.contrib.google import google
@@ -156,15 +245,50 @@ def google_callback():
                     None
                 ))
                 conn.commit()
-
                 cursor.execute("SELECT * FROM Usuarios WHERE mail = ?", (email,))
                 user = cursor.fetchone()
 
-    session["usuario_id"] = user["id"]
-    session["usuario_nombre"] = user["usuario"]
-    return redirect(url_for("index"))
+    # Sesión de Flask persistente
+    session.permanent = True
+    _set_session_for(user)
 
+    # Crear remember_token por defecto para OAuth (30 días)
+    token = secrets.token_urlsafe(32)
+    exp = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
+    with db_lock:
+        with get_conn() as conn:
+            cur = conn.cursor()
+            cur.execute("UPDATE Usuarios SET remember_token=?, remember_expira=? WHERE id=?",
+                        (token, exp, user["id"]))
+            conn.commit()
+
+    resp = make_response(redirect(url_for("index")))
+    resp.set_cookie(
+        "remember_token",
+        token,
+        max_age=30*24*60*60,
+        httponly=True,
+        samesite="Lax",
+        secure=False,  # True si usas HTTPS (Render/producción)
+        path="/"       # MUY IMPORTANTE para que la cookie sirva en '/'
+    )
+    return resp
+
+# -----------------------------
+# Logout
+# -----------------------------
 @auth_bp.route("/logout")
 def logout():
+    user_id = session.get("usuario_id")
+    with db_lock:
+        with get_conn() as conn:
+            cur = conn.cursor()
+            if user_id:
+                cur.execute("UPDATE Usuarios SET remember_token=NULL, remember_expira=NULL WHERE id=?", (user_id,))
+                conn.commit()
     session.clear()
-    return redirect(url_for("index"))
+
+    resp = make_response(redirect(url_for("index")))
+    # borrar cookie remember en el cliente
+    resp.set_cookie("remember_token", "", max_age=0, httponly=True, samesite="Lax", secure=False, path="/")
+    return resp

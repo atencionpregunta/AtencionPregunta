@@ -1,12 +1,70 @@
 /* Estilos base */
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #e0f7fa, #f1f8e9);
-    color: #212529;
+/* Fallback base */
+/* Altura correcta en móviles y zonas seguras (notch) */
+/* --- Safe area + altura real móvil --- */
+/* Altura real móvil + zonas seguras */
+html, body { height: 100%; }
+html { -webkit-text-size-adjust: 100%; } /* evita auto-zoom del texto en iOS */
+
+body{
+  /* tu padding habitual; cámbialo si quieres */
+  padding: 48px 16px 24px;
+  min-height: 100vh;
 }
+
+@supports (height: 100svh) { body { min-height: 100svh; } }
+@supports (height: 100dvh) { body { min-height: 100dvh; } }
+
+@supports (padding: max(0px)) {
+  body {
+    padding-top:    max(48px, env(safe-area-inset-top));
+    padding-right:  max(16px, env(safe-area-inset-right));
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+    padding-left:   max(16px, env(safe-area-inset-left));
+  }
+}
+
+/* El contenedor principal nunca recorta por arriba */
+.center-wrapper { overflow: visible; }
+
+/* La tarjeta incluye el safe-area en su padding superior */
+.card{
+  /* si ya tienes border/radius/box-shadow, no pasa nada por repetir */
+  padding-top: max(22px, calc(22px + env(safe-area-inset-top, 0px)));
+}
+
+/* Evita colapso del margen del primer hijo (H1 o header-row) */
+.card > h1:first-child,
+.card > .header-row:first-child { margin-top: 0; }
+
+/* Empujoncito extra en pantallas estrechas (iPhone SE & cia) */
+@media (max-width: 380px){
+  body  { padding-top: max(56px, env(safe-area-inset-top)); }
+  .card { margin-top: max(12px, env(safe-area-inset-top)); }
+}
+
+body{ font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+/* alturas de viewport modernas (evitan recortes cuando entra/sale la barra de URL) */
+@supports (height: 100svh) { body { min-height: 100svh; } }
+@supports (height: 100dvh) { body { min-height: 100dvh; } }
+
+
+/* HOTFIX: en pantallas estrechas, baja un poco la tarjeta respecto al borde superior */
+@media (max-width: 640px){
+  .card { margin-top: max(12px, env(safe-area-inset-top)); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Por si tu layout usa un contenedor principal, protege también ahí */
+.center-wrapper {
+  /* sin saber tu CSS exacto, esto es seguro y no rompe escritorio */
+  padding-top: max(0px, env(safe-area-inset-top));
+}
+
 
 /* Centro absoluto vertical y horizontal */
 .center-wrapper {
@@ -182,15 +240,6 @@ footer {
         font-size: 1rem;
         padding: 0.9rem;
     }
-}
-/* Estilos base */
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #e0f7fa, #f1f8e9);
-    color: #212529;
 }
 
 /* Centro absoluto vertical y horizontal */
@@ -575,4 +624,48 @@ footer {
 
 .timer-danger {
   --color-main: #dc2626;
+}
+
+.mascota-title{
+  height: 38px;
+  vertical-align: middle;
+  margin-left: .35rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.15));
+}
+@media (max-width: 480px){
+  .mascota-title{ height: 28px; }
+}
+/* Timer en línea, centrado bajo el botón */
+.timer-section{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem;
+  margin-top: 1rem;
+}
+
+.timer{
+  --angle: 360deg;
+  --ring: #22c55e; /* verde normal */
+  width: 72px; height: 72px; border-radius: 999px;
+  background: conic-gradient(var(--ring) var(--angle), #e5e7eb 0);
+  position: relative;
+  box-shadow: inset 0 4px 16px rgba(0,0,0,.08);
+}
+.timer::after{
+  content:"";
+  position: absolute; inset: 6px;
+  border-radius: 999px; background: #fff;
+}
+.timer span{
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  font-weight: 700;
+}
+.timer-warn{ --ring: #f59e0b; }   /* ámbar <10s */
+.timer-danger{ --ring: #ef4444; } /* rojo <5s  */
+
+.timer-label{
+  font-size: .85rem;
+  color: #6b7280;
 }

@@ -3,7 +3,7 @@ import threading
 import os
 
 db_lock = threading.RLock()
-DB_PATH = "/opt/render/db/database.db"
+DB_PATH = "database.db"
 
 def get_conn():
 

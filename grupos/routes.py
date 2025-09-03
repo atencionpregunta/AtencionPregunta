@@ -64,7 +64,7 @@ def crear_grupo():
 
             session["grupo_actual"] = nombre  # guardamos el código como activo (opcional)
             flash(f"Grupo '{nombre}' creado correctamente ✅", "success")
-            return redirect(url_for("index"))
+            return redirect(url_for("grupos.gestionar_grupos"))
 
         except sqlite3.IntegrityError:
             flash("Ya existe un grupo con ese nombre ❌", "error")
@@ -110,7 +110,7 @@ def unirse_grupo():
 
         session["grupo_actual"] = grupo["codigo"]  # opcional
         flash(f"Te has unido al grupo '{grupo['codigo']}' 🎉", "success")
-        return redirect(url_for("index"))
+        return redirect(url_for("grupos.gestionar_grupos"))
 
     # GET
     return render_template("unirse_grupo.html", grupos_usuario=get_grupos_usuario(usuario_id))

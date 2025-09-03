@@ -79,6 +79,8 @@ HORA_SELECCION = time(9, 0, 0)  # 09:00
 
 HORA_SELECCION = time(9, 0, 0)  # ajusta si quieres otra hora
 
+
+
 def get_pregunta_del_dia():
     """
     - Si ya hay pregunta con fecha_mostrada = hoy, devuelve esa.
@@ -130,3 +132,20 @@ def get_pregunta_del_dia():
 
             conn.commit()
             return pregunta, respuestas
+
+
+from db import get_conn, db_lock
+
+def ensure_schema_usuarios():
+    with db_lock:
+        with get_conn() as conn:
+            cur = conn.cursor()
+            cur.execute("PRAGMA table_info(Usuarios)")
+            cols = {row[1].lower() for row in cur.fetchall()}
+
+            if "remember_token" not in cols:
+                cur.execute("ALTER TABLE Usuarios ADD COLUMN remember_token TEXT")
+            if "remember_expira" not in cols:
+                cur.execute("ALTER TABLE Usuarios ADD COLUMN remember_expira TEXT")
+
+            conn.commit()
