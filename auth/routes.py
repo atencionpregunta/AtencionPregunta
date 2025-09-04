@@ -250,6 +250,7 @@ def google_callback():
     info = resp.json()
     email = info.get("email")
     nombre = info.get("name", email)
+    foto_url = info.get("picture")
 
     if not email:
         return "❌ Error: no se obtuvo el email"
@@ -302,6 +303,11 @@ def google_callback():
                         (token, exp, user["id"]))
             conn.commit()
 
+    session["usuario_id"] = user_id
+    session["usuario_nombre"] = nombre
+    session["usuario_email"] = email
+    session["usuario_foto"] = foto_url  # opcional, por rapidez
+    
     resp = make_response(redirect(url_for("index")))
     resp.set_cookie(
         "remember_token",

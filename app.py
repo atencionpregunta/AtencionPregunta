@@ -62,12 +62,14 @@ from grupos import grupos_bp
 from preguntas import preguntas_bp
 from resultados import resultados_bp
 from admin import admin_bp
+from chat import chat_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(grupos_bp)
 app.register_blueprint(preguntas_bp)
 app.register_blueprint(resultados_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(chat_bp)
 
 # --- 6) Ruta principal ---
 @app.route("/")

@@ -80,7 +80,7 @@ def ver_pregunta():
                         return redirect(url_for("preguntas.ver_pregunta"))
                     pregunta_id = row_r["id_pregunta"]
 
-                # ¿ya contestó esta pregunta?
+                # ¿ya contestó esta pregunta? → sigue y muestra resultados (no duplicamos)
                 ya = cur.execute("""
                     SELECT 1 FROM Resultados
                     WHERE id_usuario = ? AND id_pregunta = ?
@@ -95,14 +95,18 @@ def ver_pregunta():
                     flash("Pregunta no encontrada.")
                     return redirect(url_for("preguntas.ver_pregunta"))
 
+                # === Datos auxiliares para REVELAR respuesta (⬅️ CAMBIO) ===
                 multiple = es_multiple(conn, pregunta_id)
-                correctas = {
-                    str(row["id"])
-                    for row in cur.execute(
-                        "SELECT id FROM Respuestas WHERE id_pregunta = ? AND correcta = 1",
-                        (pregunta_id,)
-                    ).fetchall()
-                }
+
+                # ids y textos correctos
+                correct_rows = cur.execute("""
+                    SELECT id, respuesta
+                    FROM Respuestas
+                    WHERE id_pregunta = ? AND correcta = 1
+                    ORDER BY id
+                """, (pregunta_id,)).fetchall()
+                correct_ids = {str(r["id"]) for r in correct_rows}
+                correct_texts = [r["respuesta"] for r in correct_rows]
 
                 # saber si existe la columna 'seleccion_respuestas'
                 tiene_seleccion = _tiene_columna(conn, "Resultados", "seleccion_respuestas")
@@ -119,18 +123,33 @@ def ver_pregunta():
 
                 ahora_txt = ahora_local_str()
 
+                # variables para la vista de respuesta (⬅️ CAMBIO)
+                fue_correcto = False
+                elegidas_texts = []
+                seleccion_csv = ""
+
                 if multiple:
                     # múltiple
                     seleccionadas = request.form.getlist("respuestas_seleccionadas")
                     if not seleccionadas:
-                        print("No has seleccionado ninguna respuesta.")
+                        flash("No has seleccionado ninguna respuesta.")
                         return redirect(url_for("preguntas.ver_pregunta"))
 
                     sel_set = set(seleccionadas)
-                    es_valida = (sel_set == correctas)
-                    correcta_flag = 1 if es_valida else 0
-                    nueva_puntuacion = puntuacion_anterior + 1 if es_valida else puntuacion_anterior
+                    fue_correcto = (sel_set == correct_ids)
+                    correcta_flag = 1 if fue_correcto else 0
+                    nueva_puntuacion = puntuacion_anterior + 1 if fue_correcto else puntuacion_anterior
                     seleccion_csv = "/".join(sorted(sel_set, key=int))
+
+                    # textos elegidos
+                    if sel_set:
+                        qmarks = ",".join(["?"] * len(sel_set))
+                        rows = cur.execute(f"""
+                            SELECT respuesta FROM Respuestas
+                            WHERE id IN ({qmarks})
+                            ORDER BY id
+                        """, list(sel_set)).fetchall()
+                        elegidas_texts = [r["respuesta"] for r in rows]
 
                     for g in grupos:
                         if tiene_seleccion:
@@ -161,16 +180,21 @@ def ver_pregunta():
                     # única
                     id_respuesta = request.form.get("respuesta", type=int)
                     if not id_respuesta:
-                        print("No se ha seleccionado respuesta.")
+                        flash("No se ha seleccionado respuesta.")
                         return redirect(url_for("preguntas.ver_pregunta"))
 
-                    r = cur.execute("SELECT correcta FROM Respuestas WHERE id = ?", (id_respuesta,)).fetchone()
+                    r = cur.execute("SELECT correcta, respuesta FROM Respuestas WHERE id = ?", (id_respuesta,)).fetchone()
                     if not r:
-                        print("Respuesta no encontrada.")
+                        flash("Respuesta no encontrada.")
                         return redirect(url_for("preguntas.ver_pregunta"))
 
-                    correcta_flag = int(r["correcta"])
-                    nueva_puntuacion = puntuacion_anterior + 1 if correcta_flag else puntuacion_anterior
+                    fue_correcto = bool(int(r["correcta"]))
+                    correcta_flag = 1 if fue_correcto else 0
+                    nueva_puntuacion = puntuacion_anterior + 1 if fue_correcto else puntuacion_anterior
+
+                    # texto elegido y CSV
+                    elegidas_texts = [r["respuesta"]]
+                    seleccion_csv = str(id_respuesta)
 
                     for g in grupos:
                         if tiene_seleccion:
@@ -182,7 +206,7 @@ def ver_pregunta():
                             """, (
                                 ahora_txt, usuario_id, g["id"], "2025-T1",
                                 nueva_puntuacion, correcta_flag,
-                                pregunta_id, id_respuesta, str(id_respuesta)
+                                pregunta_id, id_respuesta, seleccion_csv
                             ))
                         else:
                             cur.execute("""
@@ -197,7 +221,25 @@ def ver_pregunta():
                             ))
                     conn.commit()
 
-        return redirect(url_for("resultados.ver_resultados", id_grupo=grupos[0]["id"]))
+                # Fun Fact y assets (⬅️ CAMBIO)
+                fun_fact = None
+                if _tiene_columna(conn, "Preguntas", "fun_fact"):
+                    ff = cur.execute("SELECT fun_fact FROM Preguntas WHERE id = ?", (pregunta_id,)).fetchone()
+                    fun_fact = ff["fun_fact"] if ff and ff["fun_fact"] else None
+
+                # Renderizar PÁGINA INTERMEDIA de revelado (⬅️ CAMBIO)
+                resp = make_response(render_template(
+                    "respuesta.html",
+                    correcto=fue_correcto,
+                    correctas=correct_texts,      # lista de textos correctos
+                    elegidas=elegidas_texts,      # lista de textos que marcó
+                    fun_fact=fun_fact,
+                    ruta_mascota=url_for("static", filename="img\ATPPet-nerd.png")  # ajusta si usas otra ruta
+                ))
+                return nocache(resp)
+
+        # (antes se hacía redirect a resultados, ya NO)  # ⬅️ CAMBIO
+        # return redirect(url_for("res", id_grupo=grupos[0]["id"]))
 
     # ---------------- GET: mostrar pregunta ----------------
     pregunta_actual, respuestas = get_pregunta_del_dia()

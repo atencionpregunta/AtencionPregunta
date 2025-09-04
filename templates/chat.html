@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="chat-wrap fade-in">
+  <div class="chat-header">
+    <h1>💬 Chat del grupo</h1>
+    <a class="btn secondary-btn" href="{{ url_for('resultados.ver_resultados', id_grupo=id_grupo) }}">← Volver a resultados</a>
+  </div>
+
+  <div id="chat-box" class="chat-box">
+    {% set badges = badges|default({}) %}
+    {% if mensajes and mensajes|length > 0 %}
+      {% for m in mensajes %}
+        {% set b = badges.get(m['id_usuario'], {}) %}
+        {% set ac = b.get('acierto') %}
+        {% set rk = b.get('rank') %}
+        {% set nombre = (m['usuario_nombre'] or ('Usuario ' ~ m['id_usuario'])) %}
+        {% set own = (session.get('usuario_id') == m['id_usuario']) %}
+        <div class="msg {{ 'own' if own else 'other' }}" data-id="{{ m['id'] }}">
+          <div class="avatar {{ 'ok' if ac is true else ('ko' if ac is false else 'na') }}">
+            {% if m['foto_url'] %}
+              <img src="{{ m['foto_url'] }}" alt="avatar" loading="lazy">
+            {% else %}
+              <span>{{ (nombre|trim|upper)[:2] }}</span>
+            {% endif %}
+          </div>
+          <div class="bubble">
+            <div class="meta">
+              <strong class="name">
+                {{ nombre }}
+                {% if rk %}<span class="rank">#{{ rk }}</span>{% endif %}
+              </strong>
+            </div>
+            <div class="text">{{ m['contenido'] }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p id="empty-hint" class="empty-hint">Aún no hay mensajes. ¡Escribe el primero!</p>
+    {% endif %}
+  </div>
+
+  <form action="{{ url_for('chat.enviar_mensaje', id_grupo=id_grupo) }}" method="POST" class="chat-form">
+    <input type="text" name="contenido" placeholder="Escribe un mensaje…" required class="chat-input" autocomplete="off" maxlength="500">
+    <button class="btn primary-btn" type="submit">Enviar</button>
+  </form>
+</div>
+
+<script>
+(function(){
+  const box = document.getElementById('chat-box');
+  let lastId = (function(){
+    const last = box.querySelector('.msg:last-of-type');
+    return last ? parseInt(last.dataset.id, 10) : 0;
+  })();
+
+  function escapeHtml(s){
+    const div = document.createElement('div');
+    div.innerText = s || '';
+    return div.innerHTML;
+  }
+
+  function avatarHtml(foto_url, nombre, acierto){
+    const cls = (acierto === true) ? "ok" : (acierto === false) ? "ko" : "na";
+    if (foto_url){
+      return `<div class="avatar ${cls}"><img src="${foto_url}" alt="avatar" loading="lazy"></div>`;
+    } else {
+      const base = (nombre || "U").trim().toUpperCase();
+      const initials = base.slice(0,2);
+      return `<div class="avatar ${cls}"><span>${initials}</span></div>`;
+    }
+  }
+
+  function appendMessage(m){
+    const own = {{ session.get('usuario_id', 0) }} === m.id_usuario;
+    const wrap = document.createElement('div');
+    wrap.className = 'msg ' + (own ? 'own' : 'other');
+    wrap.dataset.id = m.id;
+
+    const safeNombre = escapeHtml(m.usuario_nombre || ('Usuario ' + m.id_usuario));
+    wrap.innerHTML = `
+      ${avatarHtml(m.foto_url, m.usuario_nombre, m.acierto)}
+      <div class="bubble">
+        <div class="meta">
+          <strong class="name">
+            ${safeNombre}
+            ${m.rank ? `<span class="rank">#${m.rank}</span>` : ''}
+          </strong>
+        </div>
+        <div class="text"></div>
+      </div>
+    `;
+    wrap.querySelector('.text').innerText = m.contenido || '';
+
+    const hint = document.getElementById('empty-hint');
+    if (hint) hint.remove();
+    box.appendChild(wrap);
+  }
+
+  function scrollToBottom(){ box.scrollTop = box.scrollHeight; }
+  scrollToBottom();
+
+  async function poll(){
+    try{
+      const url = `{{ url_for('chat.api_mensajes', id_grupo=id_grupo) }}?after_id=${lastId}`;
+      const resp = await fetch(url, { headers: { 'Accept':'application/json' } });
+      if(!resp.ok) return;
+      const data = await resp.json();
+      if(!data.ok) return;
+      const nuevos = data.mensajes || [];
+      if(nuevos.length){
+        for(const m of nuevos){
+          appendMessage(m);
+          lastId = Math.max(lastId, Number(m.id) || 0);
+        }
+        const nearBottom = (box.scrollHeight - box.scrollTop - box.clientHeight) < 80;
+        if (nearBottom) scrollToBottom();
+      }
+    }catch(e){}
+  }
+  setInterval(poll, 3000);
+})();
+</script>
+
+<style>
+:root{
+  --surface:#fff; --on-surface:#111; --border:#e5e7eb; --muted:#f7f8fa;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --surface:#111; --on-surface:#eee; --border:rgba(255,255,255,.15); --muted:#1b1b1b; }
+}
+.chat-wrap{ margin:0 auto; max-width:clamp(320px, 96vw, 980px); padding:12px 0; }
+.chat-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px; }
+.chat-box{
+  background: var(--surface); color: var(--on-surface);
+  border: 1px solid var(--border); border-radius: 14px;
+  padding: 12px; height: min(68vh, 760px); overflow: auto;
+}
+.empty-hint{ opacity:.7; padding:8px; }
+
+.chat-form{ display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; margin-top:12px; }
+.chat-input{
+  width:100%; height:44px; padding:10px 12px;
+  background:#fff; color:#111; border:1px solid #e5e7eb; border-radius:12px;
+}
+@media (prefers-color-scheme: dark){
+  .chat-input{ background:#ffffff; color:#eee; border-color:rgba(255,255,255,.15); }
+}
+.chat-form .btn{ width:auto; height:44px; display:inline-flex; align-items:center; justify-content:center; padding:0 18px; border-radius:12px; }
+
+/* Mensajes */
+.msg{ display:grid; grid-template-columns:44px 1fr; gap:10px; margin:10px 0; align-items:start; }
+.msg.own{ grid-template-columns:1fr 44px; }
+.msg.own .avatar{ order:2; }
+.msg.own .bubble{ order:1; justify-self:end; }
+
+/* Avatar con borde por estado */
+.avatar{
+  width:44px; height:44px; border-radius:50%;
+  overflow:hidden; display:grid; place-items:center;
+  background:#f0f0f0; color:#333; font-weight:700;
+  border:3px solid transparent; box-sizing:border-box;
+}
+.avatar img{ width:100%; height:100%; object-fit:cover; }
+.avatar.ok{ border-color:#1fa463; }   /* verde (acierto) */
+.avatar.ko{ border-color:#e23b3b; }   /* rojo (fallo)   */
+.avatar.na{ border-color:#999; }      /* gris (no resp.) */
+
+.bubble{
+  max-width:min(100%, 720px);
+  padding:10px 12px; border-radius:14px;
+  box-shadow: 0 1px 0 rgba(0,0,0,.06);
+  border:1px solid var(--border); background: var(--muted);
+}
+.meta{ font-size:.9rem; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.name{ font-weight:700; }
+.rank{ margin-left:6px; font-weight:700; font-size:.80rem; padding:2px 6px; border-radius:999px; border:1px solid var(--border); opacity:.9; }
+.text{ margin-top:6px; white-space:pre-wrap; line-height:1.35; }
+
+@media (max-width: 520px){
+  .chat-box{ height: 60vh; }
+}
+</style>
+{% endblock %}

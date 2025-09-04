@@ -48,6 +48,7 @@ def create_schema(conn: sqlite3.Connection):
             fec_ini DATETIME,
             pais TEXT,
             edad INTEGER,
+            foto_url TEXT,
             remember_token TEXT,          
             remember_expira TEXT           
         );
@@ -129,6 +130,24 @@ def create_schema(conn: sqlite3.Connection):
         );
     """)
     conn.commit()
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS Mensajes (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_grupo    INTEGER NOT NULL,
+            id_usuario  INTEGER NOT NULL,
+            contenido   TEXT NOT NULL,
+            created_at  TEXT NOT NULL,           -- "YYYY-MM-DD HH:MM:SS" en hora Madrid
+            FOREIGN KEY (id_grupo)  REFERENCES Grupos(id),
+            FOREIGN KEY (id_usuario) REFERENCES Usuarios(id)
+            );
+    """)
+    conn.commit()
+
+    cur.execute("""
+            CREATE INDEX IF NOT EXISTS idx_mensajes_grupo_fecha
+            ON Mensajes(id_grupo, created_at);
+    """)
 
 def tabla_vacia(conn: sqlite3.Connection, tabla: str) -> bool:
     return conn.execute(f"SELECT COUNT(*) FROM {tabla}").fetchone()[0] == 0

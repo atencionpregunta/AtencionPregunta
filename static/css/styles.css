@@ -1148,3 +1148,46 @@ footer.site-footer{
   margin-top:auto; /* empuja el footer al fondo si hay poco contenido */
 }
 
+/* ===== Resultados responsivo por altura ===== */
+
+/* Base: compacto y pegado arriba (para pantallas bajas) */
+.center-wrapper{
+  /* por si en algún lado quedó height:100vh */
+  height: auto !important;
+
+  min-height: 100dvh;                 /* ocupa alto visible */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;            /* arriba por defecto */
+
+  /* aire en vertical escalado a la altura de pantalla + notch */
+  padding-top:    max(env(safe-area-inset-top),    clamp(8px, 2vh, 24px));
+  padding-bottom: max(env(safe-area-inset-bottom), clamp(8px, 2vh, 24px));
+}
+
+.card{
+  margin-top: 0 !important;
+  /* padding que crece si hay altura */
+  padding: clamp(12px, 3.2vh, 28px) clamp(12px, 3vw, 24px);
+  border-radius: clamp(12px, 2vh, 16px);
+}
+
+/* Si la ventana es ALTA → centrado vertical elegante */
+@media (min-height: 720px){
+  .center-wrapper{ align-items: center; }
+}
+
+/* Si la ventana es MUY BAJA → compactar más tipografía y barras */
+@media (max-height: 560px){
+  .card{ padding: clamp(8px, 2vh, 14px) clamp(10px, 3vw, 16px); }
+  h1{ font-size: clamp(16px, 3.2vh, 22px); margin-bottom: .5rem; }
+  .flash{ padding: 8px 10px; font-size: .9rem; }
+  .scorebar{ height: 18px; } /* si usas barras de puntuación */
+  /* si tu tabla de clasificación tiene th/td, baja un poco la altura */
+  table th, table td{ padding-top: 6px; padding-bottom: 6px; }
+}
+
+/* Opcional: en móvil apretamos un pelín más arriba */
+@media (max-width: 640px){
+  .center-wrapper{ padding-top: max(env(safe-area-inset-top), 10px); }
+}

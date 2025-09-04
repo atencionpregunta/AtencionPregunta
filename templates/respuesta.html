@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="center-wrapper fade-in">
+  <div class="card respuesta-card">
+    <h1>
+      {% if correcto %}✅ ¡Correcto!{% else %}❌ No era esa…{% endif %}
+    </h1>
+
+    <div class="reveal">
+      <img class="mascota" src="static\img\ATPPet-nerd-180.png" alt="Mascota" />
+
+      <div class="bocadillo">
+        {% if correcto %}
+          <p class="big">¡Bien hecho! 👏</p>
+        {% else %}
+          <p class="big">La respuesta correcta es:</p>
+        {% endif %}
+
+        <ul class="correctas">
+          {% for t in correctas %}
+            <li>✔ {{ t }}</li>
+          {% endfor %}
+        </ul>
+
+        {% if elegidas and not correcto %}
+          <p class="tus">Tú marcaste:</p>
+          <ul class="elegidas">
+            {% for t in elegidas %}
+              <li>• {{ t }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if fun_fact %}
+    <div class="funfact">
+      <div class="ff-icon">💡</div>
+      <div>
+        <div class="ff-title">Dato curioso</div>
+        <div class="ff-text">{{ fun_fact }}</div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="actions">
+      <a class="btn primary-btn" href="{{ url_for('resultados.ver_resultados') }}">Ver clasificación</a>
+      <a class="btn secondary-btn" href="{{ url_for('preguntas.ver_pregunta') }}">Volver a la pregunta</a>
+      <a class="btn secondary-btn" href="{{ url_for('index') }}">Inicio</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.center-wrapper{ min-height:100dvh; display:flex; justify-content:center; align-items:flex-start; padding:clamp(8px,2vh,22px) 12px; }
+@media (min-height:720px){ .center-wrapper{ align-items:center; } }
+.respuesta-card{ max-width:760px; }
+.reveal{ display:flex; gap:clamp(10px,2.5vw,20px); align-items:flex-start; margin:8px 0 16px; }
+.mascota{ width:clamp(72px,16vw,120px); height:auto; filter:drop-shadow(0 4px 10px rgba(0,0,0,.12)); }
+.bocadillo{ flex:1; background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:clamp(10px,2.2vh,16px) clamp(12px,2.6vw,18px); position:relative; box-shadow:0 6px 24px rgba(2,6,23,.06); }
+.bocadillo::before{ content:""; position:absolute; left:-10px; top:18px; width:0; height:0; border-style:solid; border-width:10px 10px 10px 0; border-color:transparent #e5e7eb transparent transparent; }
+.bocadillo::after{ content:""; position:absolute; left:-8px; top:20px; width:0; height:0; border-style:solid; border-width:8px 8px 8px 0; border-color:transparent #fff transparent transparent; }
+.big{ font-weight:700; margin:0 0 6px; }
+.correctas, .elegidas{ margin:.25rem 0 .25rem 1rem; padding:0; }
+.correctas li{ list-style:none; margin:2px 0; color:#065f46; font-weight:600; }
+.elegidas li{ list-style:none; margin:2px 0; color:#374151; }
+.tus{ margin:.5rem 0 0; font-size:.95rem; color:#6b7280; }
+.funfact{ display:flex; gap:12px; align-items:flex-start; background:#f8fafc; border:1px solid #e5e7eb; border-radius:14px; padding:12px 14px; margin-top:10px; }
+.ff-icon{ font-size:1.4rem; line-height:1; }
+.ff-title{ font-weight:700; margin-bottom:2px; }
+.ff-text{ color:#334155; }
+.actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+@media (max-width:560px){ .reveal{ flex-direction:column; align-items:center; } .mascota{ width:92px; } .bocadillo::before, .bocadillo::after{ display:none; } }
+
+
+</style>
+{% endblock %}
