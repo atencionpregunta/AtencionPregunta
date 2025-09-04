@@ -81,36 +81,53 @@ HORA_SELECCION = time(9, 0, 0)  # ajusta si quieres otra hora
 
 
 
+from datetime import datetime, time
+from zoneinfo import ZoneInfo
+from db import get_conn, db_lock
+
+TZ = ZoneInfo("Europe/Madrid")
+HORA_SELECCION = time(9, 0, 0)  # 09:00 locales
+
+def _ahora_local():
+    return datetime.now(TZ)
+
+def _ahora_local_str():
+    return _ahora_local().strftime("%Y-%m-%d %H:%M:%S")
+
+def _hoy_local_str():
+    return _ahora_local().date().isoformat()
+
 def get_pregunta_del_dia():
     """
-    - Si ya hay pregunta con fecha_mostrada = hoy, devuelve esa.
-    - Si no hay y ya pasó HORA_SELECCION, elige una (NULL primero, luego la más antigua) y la marca.
+    - Si ya hay pregunta con fecha_mostrada = hoy (en hora local), devuelve esa.
+    - Si no hay y ya pasó HORA_SELECCION (hora local), elige una (NULL primero, luego la más antigua) y la marca con hora local.
     - Carga SIEMPRE las respuestas antes de salir del 'with'.
     """
-    ahora = datetime.now()
-    hoy = ahora.date().isoformat()
+    ahora = _ahora_local()
+    hoy = _hoy_local_str()
 
     with db_lock:
         with get_conn() as conn:
             c = conn.cursor()
             c.execute("PRAGMA foreign_keys = ON")
-            # 1) ¿Ya hay fijada hoy?
+
+            # 1) ¿Ya hay fijada hoy? (comparación por fecha LOCAL)
             c.execute("""
-                SELECT * FROM Preguntas
-                WHERE substr(COALESCE(fecha_mostrada,''),1,10) = ?
+                SELECT *
+                FROM Preguntas
+                WHERE DATE(fecha_mostrada, 'localtime') = ?
                 LIMIT 1
             """, (hoy,))
             pregunta = c.fetchone()
 
-            # 2) Si no hay y ya pasó la hora “oficial”, elegimos y marcamos ahora
+            # 2) Si no hay y ya pasó la hora “oficial” local, elegimos y marcamos ahora
             if not pregunta and ahora.time() >= HORA_SELECCION:
-                # Elegir una no mostrada antes (NULL) y si no, la menos reciente.
                 c.execute("""
                     SELECT *
                     FROM Preguntas
                     ORDER BY 
                         CASE WHEN fecha_mostrada IS NULL THEN 0 ELSE 1 END ASC,
-                        fecha_mostrada ASC,
+                        datetime(fecha_mostrada) ASC,
                         RANDOM()
                     LIMIT 1
                 """)
@@ -118,7 +135,7 @@ def get_pregunta_del_dia():
                 if pregunta:
                     c.execute(
                         "UPDATE Preguntas SET fecha_mostrada = ? WHERE id = ?",
-                        (ahora.strftime("%Y-%m-%d %H:%M:%S"), pregunta["id"])
+                        (_ahora_local_str(), pregunta["id"])
                     )
 
             # 3) Si seguimos sin pregunta, no mostramos nada
@@ -126,8 +143,11 @@ def get_pregunta_del_dia():
                 conn.commit()
                 return None, []
 
-            # 4) Cargar respuestas ANTES de salir del with (mientras la conexión sigue abierta)
-            c.execute("SELECT * FROM Respuestas WHERE id_pregunta = ? ORDER BY id", (pregunta["id"],))
+            # 4) Cargar respuestas ANTES de salir del with
+            c.execute(
+                "SELECT * FROM Respuestas WHERE id_pregunta = ? ORDER BY id",
+                (pregunta["id"],)
+            )
             respuestas = c.fetchall()
 
             conn.commit()

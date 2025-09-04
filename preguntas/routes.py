@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, make_response
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import sqlite3
 
 from db import get_conn, db_lock
@@ -9,6 +10,27 @@ ID_TIMEOUT = 0
 ID_MULTIPLE = -1
 
 preguntas_bp = Blueprint("preguntas", __name__)
+
+# ----------------------------
+# Zona horaria y utilidades
+# ----------------------------
+TZ = ZoneInfo("Europe/Madrid")
+
+def ahora_local():
+    return datetime.now(TZ)
+
+def ahora_local_str():
+    # Texto "YYYY-MM-DD HH:MM:SS" en hora de Madrid
+    return ahora_local().strftime("%Y-%m-%d %H:%M:%S")
+
+def hoy_local_str():
+    # Texto "YYYY-MM-DD" en fecha de Madrid
+    return ahora_local().date().isoformat()
+
+def nocache(resp):
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    resp.headers["Pragma"] = "no-cache"
+    return resp
 
 def es_multiple(conn, pregunta_id: int) -> bool:
     row = conn.execute("""
@@ -34,6 +56,7 @@ def ver_pregunta():
         flash("Debes unirte a un grupo para continuar.", "error")
         return redirect(url_for("grupos.unirse_grupo"))
 
+    # ---------------- POST: registrar respuesta ----------------
     if request.method == "POST":
         pregunta_id = request.form.get("pregunta_id", type=int)
 
@@ -48,7 +71,10 @@ def ver_pregunta():
                     if not id_resp_tmp:
                         flash("No se ha seleccionado respuesta.")
                         return redirect(url_for("preguntas.ver_pregunta"))
-                    row_r = cur.execute("SELECT id_pregunta FROM Respuestas WHERE id = ?", (id_resp_tmp,)).fetchone()
+                    row_r = cur.execute(
+                        "SELECT id_pregunta FROM Respuestas WHERE id = ?",
+                        (id_resp_tmp,)
+                    ).fetchone()
                     if not row_r:
                         flash("Respuesta no encontrada.")
                         return redirect(url_for("preguntas.ver_pregunta"))
@@ -78,10 +104,10 @@ def ver_pregunta():
                     ).fetchall()
                 }
 
-                # saber si existe la columna 'seleccion'
+                # saber si existe la columna 'seleccion_respuestas'
                 tiene_seleccion = _tiene_columna(conn, "Resultados", "seleccion_respuestas")
 
-                # puntuación previa
+                # puntuación previa (último registro del usuario)
                 row_prev = cur.execute("""
                     SELECT puntuacion
                     FROM Resultados
@@ -91,7 +117,7 @@ def ver_pregunta():
                 """, (usuario_id,)).fetchone()
                 puntuacion_anterior = row_prev["puntuacion"] if row_prev else 0
 
-                ahora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                ahora_txt = ahora_local_str()
 
                 if multiple:
                     # múltiple
@@ -114,19 +140,18 @@ def ver_pregunta():
                                      id_pregunta, id_respuesta, seleccion_respuestas)
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                             """, (
-                                ahora, usuario_id, g["id"], "2025-T1",
+                                ahora_txt, usuario_id, g["id"], "2025-T1",
                                 nueva_puntuacion, correcta_flag,
                                 pregunta_id, ID_MULTIPLE, seleccion_csv
                             ))
                         else:
-                            # sin columna 'seleccion' (no guardamos detalles pero no metemos 0)
                             cur.execute("""
                                 INSERT OR IGNORE INTO Resultados
                                     (fecha, id_usuario, id_grupo, temporada, puntuacion, correcta,
                                      id_pregunta, id_respuesta)
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                             """, (
-                                ahora, usuario_id, g["id"], "2025-T1",
+                                ahora_txt, usuario_id, g["id"], "2025-T1",
                                 nueva_puntuacion, correcta_flag,
                                 pregunta_id, ID_MULTIPLE
                             ))
@@ -155,7 +180,7 @@ def ver_pregunta():
                                      id_pregunta, id_respuesta, seleccion_respuestas)
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                             """, (
-                                ahora, usuario_id, g["id"], "2025-T1",
+                                ahora_txt, usuario_id, g["id"], "2025-T1",
                                 nueva_puntuacion, correcta_flag,
                                 pregunta_id, id_respuesta, str(id_respuesta)
                             ))
@@ -166,7 +191,7 @@ def ver_pregunta():
                                      id_pregunta, id_respuesta)
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                             """, (
-                                ahora, usuario_id, g["id"], "2025-T1",
+                                ahora_txt, usuario_id, g["id"], "2025-T1",
                                 nueva_puntuacion, correcta_flag,
                                 pregunta_id, id_respuesta
                             ))
@@ -174,7 +199,7 @@ def ver_pregunta():
 
         return redirect(url_for("resultados.ver_resultados", id_grupo=grupos[0]["id"]))
 
-    # -------- GET --------
+    # ---------------- GET: mostrar pregunta ----------------
     pregunta_actual, respuestas = get_pregunta_del_dia()
     if not pregunta_actual:
         flash("No se ha podido cargar la pregunta del día.")
@@ -198,14 +223,15 @@ def ver_pregunta():
             ruta_imagen = extra["ruta_imagen"] if extra else None
             multiple = es_multiple(conn, pregunta_id)
 
-    return render_template(
+    resp = make_response(render_template(
         "pregunta.html",
         pregunta=pregunta_actual,
         respuestas=respuestas,
         ruta_audio=ruta_audio,
         ruta_imagen=ruta_imagen,
         es_multiple=multiple
-    )
+    ))
+    return nocache(resp)
 
 @preguntas_bp.route("/timeout/<int:pregunta_id>")
 def timeout(pregunta_id):
@@ -213,7 +239,7 @@ def timeout(pregunta_id):
         return redirect(url_for("auth.login_form"))
 
     usuario_id = session["usuario_id"]
-    fecha_hoy = datetime.now().date().isoformat()
+    fecha_hoy = hoy_local_str()
 
     grupos = get_grupos_usuario(usuario_id)
     if not grupos:
@@ -225,9 +251,11 @@ def timeout(pregunta_id):
             cur = conn.cursor()
             cur.execute("PRAGMA foreign_keys = ON")
 
+            # IMPORTANTE: comparar con fecha local en SQLite
             ya_hoy = cur.execute("""
                 SELECT 1 FROM Resultados
-                WHERE id_usuario = ? AND DATE(fecha) = ?
+                WHERE id_usuario = ?
+                  AND DATE(fecha, 'localtime') = ?
                 LIMIT 1
             """, (usuario_id, fecha_hoy)).fetchone()
             if ya_hoy:
@@ -242,7 +270,7 @@ def timeout(pregunta_id):
             """, (usuario_id,)).fetchone()
             puntuacion_anterior = row_prev["puntuacion"] if row_prev else 0
 
-            ahora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            ahora_txt = ahora_local_str()
 
             tiene_seleccion = _tiene_columna(conn, "Resultados", "seleccion_respuestas")
 
@@ -254,7 +282,7 @@ def timeout(pregunta_id):
                              id_pregunta, id_respuesta, seleccion_respuestas)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, (
-                        ahora, usuario_id, g["id"], "2025-T1",
+                        ahora_txt, usuario_id, g["id"], "2025-T1",
                         puntuacion_anterior, 0,
                         pregunta_id, ID_TIMEOUT, "[TIMEOUT]"
                     ))
@@ -265,7 +293,7 @@ def timeout(pregunta_id):
                              id_pregunta, id_respuesta)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     """, (
-                        ahora, usuario_id, g["id"], "2025-T1",
+                        ahora_txt, usuario_id, g["id"], "2025-T1",
                         puntuacion_anterior, 0,
                         pregunta_id, ID_TIMEOUT
                     ))
