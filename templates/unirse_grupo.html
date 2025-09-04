@@ -19,6 +19,7 @@
       .grupos-usuario { margin-top:20px; }
       .grupos-usuario ul { list-style:none; padding:0; }
       .grupos-usuario li { margin:6px 0; display:flex; align-items:center; gap:8px; }
+      
     </style>
 </head>
 <body>
@@ -56,6 +57,11 @@
   </div>
 
   <table class="publicos-table">
+     <colgroup>
+      <col style="width:40%">
+      <col style="width:30%">
+      <col style="width:30%">
+  </colgroup>
     <thead>
       <tr>
         <th>Grupo</th>
@@ -96,7 +102,7 @@
       return `
         <tr>
           <td>${nombre}</td>
-          <td style="text-align:center; white-space:nowrap;">${label}</td>
+          <td style="text-align:center; white-space:nowrap;">${n}</td>
           <td style="text-align:right;">
             <button type="button" class="btn primary-btn btn-sm" onclick="
               document.getElementById('codigo_grupo').value='${nombre}';

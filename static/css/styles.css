@@ -940,3 +940,211 @@ footer{
 .publicos-table tbody tr:hover{ background:#f3f4f6; }
 
 .btn-sm{ padding:6px 10px; font-size:.9rem; border-radius:8px; }
+
+/* Barra: usa grid para apilar fill + label y centrar SIEMPRE el número */
+/* Barra: apila fill + label y centra SIEMPRE el número */
+.scorebar{
+  position:relative;
+  width:100%;
+  height:24px;
+  background:#f3f4f6;
+  border-radius:12px;
+  overflow:hidden;
+  border:1px solid #eceff3;
+}
+
+/* Relleno como antes */
+.fill{
+  height:100%;
+  transition:width .6s ease;
+}
+.fill-ok  { background: linear-gradient(90deg, hsl(var(--ok-hsl) / .85),  hsl(var(--ok-hsl) / .65)); }
+.fill-bad { background: linear-gradient(90deg, hsl(var(--bad-hsl)/ .85),  hsl(var(--bad-hsl)/ .65)); }
+
+/* Número centrado SIEMPRE */
+.score-label{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+  color:#111827;
+  font-size:.85rem;
+  pointer-events:none;
+  z-index:1;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings:"tnum" 1, "lnum" 1;
+}
+
+.grupos-usuario { margin-top:20px; }
+    .grupos-usuario ul { list-style:none; padding:0; }
+    .grupos-usuario li { margin:6px 0; display:flex; align-items:center; gap:8px; }
+
+    /* --- Explorador de públicos --- */
+    .publicos { margin-top: 22px; }
+    .publicos__search input{
+      width:100%; padding:10px 12px; border:1px solid #e5e7eb; border-radius:10px;
+      font-size: 0.95rem; outline:none;
+    }
+    .publicos-table{
+      width:100%; margin-top:10px; border-collapse:separate; border-spacing:0;
+      border:1px solid #eef0f5; border-radius:12px; overflow:hidden; background:#fff;
+      table-layout: fixed;                    /* 💡 clave para móvil */
+    }
+    .publicos-table thead th{
+      background:#f8fafc; color:#475569; font-weight:700; font-size:.85rem;
+      text-align:left; padding:10px 12px; border-bottom:1px solid #eef0f5; white-space:nowrap;
+    }
+    .publicos-table tbody td{
+      padding:12px; border-bottom:1px solid #f1f5f9; vertical-align:middle;
+    }
+    .publicos-table tbody tr:last-child td{ border-bottom:none; }
+    .publicos-table td:first-child{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .publicos-table td:nth-child(2){ text-align:center; white-space:nowrap; }
+    .publicos-table td:last-child{ text-align:right; }
+    .btn-sm{ padding:6px 12px; font-size:.9rem; border-radius:10px; }
+
+    /* ====== MÓVIL ====== */
+    @media (max-width: 520px){
+      .publicos-table thead th{ font-size:.75rem; padding:8px 10px; }
+      .publicos-table tbody td{ padding:10px; }
+      .publicos-table td:first-child{ max-width: 0; }
+      .publicos-table td:nth-child(2){ font-size:.85rem; }
+      .btn-sm{ padding:6px 10px; font-size:.85rem; }
+    }
+
+    /* --- Tabla grupos públicos --- */
+.publicos-table{
+  width:100%;
+  table-layout: fixed !important;           /* evita saltos raros */
+  border-collapse: separate;
+  border-spacing: 0;
+  border:1px solid #eef0f5;
+  border-radius:12px;
+  overflow:hidden;
+  background:#fff;
+}
+.publicos-table thead th{
+  background:#f8fafc;
+  color:#475569;
+  font-weight:700;
+  font-size:.9rem;
+  padding:6px 12px;
+  text-align:left;                           /* header izq por defecto */
+  border-bottom:1px solid #eef0f5;
+}
+.publicos-table tbody td{
+  padding:6px;
+  border-bottom:1px solid #f1f5f9;
+  vertical-align:middle;
+}
+.publicos-table tbody tr:last-child td{ border-bottom:none; }
+
+/* columnas */
+.publicos-table td:first-child{
+  text-align:left;
+  padding-left:12px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; /* nombre en una línea */
+}
+.publicos-table td:nth-child(2){
+  text-align:center;
+  white-space:nowrap;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+.publicos-table td:last-child{
+  text-align:right;
+  padding-right:12px;
+}
+
+/* botón "Unirse" compacto */
+.btn-join{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:8px 12px;
+  border-radius:9999px;
+  border:1px solid #dbeafe;
+  background:#1d4ed8; color:#fff; font-weight:700; font-size:.9rem;
+  box-shadow:0 4px 12px rgba(29,78,216,.15);
+}
+.btn-join:hover{ filter: brightness(1.05); }
+
+/* móvil */
+@media (max-width:520px){
+  .publicos-table thead th{ font-size:.78rem; padding:8px 10px; }
+  .publicos-table tbody td{ padding:10px; }
+  .btn-join{ padding:7px 10px; font-size:.85rem; }
+}
+
+/* Filas de la tabla de grupos públicos más bajas */
+.publicos-table thead th,
+.publicos-table tbody td {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+@media (max-width:520px){
+  .publicos-table thead th,
+  .publicos-table tbody td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;   /* por defecto arriba en escritorio */
+  padding:48px 16px;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* En pantallas pequeñas, centrar verticalmente */
+@media (max-width: 768px){
+  body{
+    align-items:center;
+    padding:24px 12px;   /* menos padding para que quede más ajustado */
+  }
+}
+
+/* ----- Footer global centrado, full width ----- */
+footer.site-footer{
+  width:100%;
+  max-width:1000px;          /* igual que tu .card */
+  margin:16px auto 0;        /* debajo del contenido, centrado */
+  padding:10px 12px;
+  text-align:center;
+  color:#64748b;
+  border-top:1px solid #e5e7eb;
+}
+
+/* Si el footer vive dentro de una grid de dos columnas, que ocupe ambas */
+.layout > footer.site-footer{
+  grid-column: 1 / -1 !important;
+  justify-self: stretch;
+}
+
+/* En móvil: un poco más de aire abajo y sin rarezas laterales */
+@media (max-width: 768px){
+  footer.site-footer{
+    margin-top:12px;
+    padding:12px 12px 20px;
+    border-top:1px solid #eef2f7;
+  }
+}
+
+/* opcional, si quieres footer pegado abajo de la ventana */
+html, body { height:100%; }
+body{
+  display:flex;
+  flex-direction:column;
+}
+main, .center-wrapper, .card { /* el contenedor principal */
+  margin: 0 auto;
+}
+footer.site-footer{
+  margin-top:auto; /* empuja el footer al fondo si hay poco contenido */
+}
+
