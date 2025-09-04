@@ -236,6 +236,10 @@ def login_form():
 @auth_bp.route("/google/callback")
 def google_callback():
     from flask_dance.contrib.google import google
+    from datetime import datetime, timedelta
+    import secrets
+    from flask import make_response
+
     if not google.authorized:
         return redirect(url_for("google.login"))
 
@@ -248,66 +252,80 @@ def google_callback():
         return "❌ Error al obtener datos del usuario"
 
     info = resp.json()
-    email = info.get("email")
-    nombre = info.get("name", email)
+    email   = info.get("email")
+    nombre  = info.get("name", email)
     foto_url = info.get("picture")
 
     if not email:
         return "❌ Error: no se obtuvo el email"
 
+    # ---------- Crear o recuperar usuario ----------
     with db_lock:
         with get_conn() as conn:
             cursor = conn.cursor()
+
             cursor.execute("SELECT * FROM Usuarios WHERE mail = ?", (email,))
             user = cursor.fetchone()
 
             if not user:
                 # Crear usuario nuevo
                 cursor.execute("""
-                    INSERT INTO Usuarios (mail, usuario, contrasena, fec_ini, pais, edad)
-                    VALUES (?, ?, ?, ?, ?, ?)
+                    INSERT INTO Usuarios (mail, usuario, contrasena, fec_ini, pais, edad, foto_url)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
                 """, (
                     email,
                     nombre,
                     None,
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "Google",
-                    None
+                    None,
+                    foto_url  # opcional si tienes la columna
                 ))
                 user_id = cursor.lastrowid
 
-                # ✅ Asegurar pertenencia a 'general'
+                # Asegurar pertenencia a 'general'
                 _ensure_user_in_general(cursor, user_id)
 
                 conn.commit()
 
-                # Refrescar user para sesión
+                # Refrescar user para sesión si lo necesitas
                 cursor.execute("SELECT * FROM Usuarios WHERE id = ?", (user_id,))
                 user = cursor.fetchone()
             else:
-                # Usuario existente: asegurar pertenencia a 'general'
-                _ensure_user_in_general(cursor, user["id"])
+                # Usuario existente
+                user_id = user["id"]
+
+                # (Opcional) actualizar nombre/foto si han cambiado
+                cursor.execute("""
+                    UPDATE Usuarios
+                    SET usuario = COALESCE(?, usuario),
+                        foto_url = COALESCE(?, foto_url)
+                    WHERE id = ?
+                """, (nombre, foto_url, user_id))
+
+                # Asegurar pertenencia a 'general'
+                _ensure_user_in_general(cursor, user_id)
                 conn.commit()
 
-    # Sesión de Flask persistente
+    # ---------- Sesión ----------
     session.permanent = True
-    _set_session_for(user)
+    session["usuario_id"]    = user_id
+    session["usuario_nombre"] = nombre
+    session["usuario_email"]  = email
+    session["usuario_foto"]   = foto_url  # opcional
 
-    # Crear remember_token por defecto para OAuth (30 días)
+    # ---------- Remember token (30 días) ----------
     token = secrets.token_urlsafe(32)
     exp = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
     with db_lock:
         with get_conn() as conn:
             cur = conn.cursor()
-            cur.execute("UPDATE Usuarios SET remember_token=?, remember_expira=? WHERE id=?",
-                        (token, exp, user["id"]))
+            cur.execute(
+                "UPDATE Usuarios SET remember_token=?, remember_expira=? WHERE id=?",
+                (token, exp, user_id)
+            )
             conn.commit()
 
-    session["usuario_id"] = user_id
-    session["usuario_nombre"] = nombre
-    session["usuario_email"] = email
-    session["usuario_foto"] = foto_url  # opcional, por rapidez
-    
     resp = make_response(redirect(url_for("index")))
     resp.set_cookie(
         "remember_token",
@@ -315,8 +333,8 @@ def google_callback():
         max_age=30*24*60*60,
         httponly=True,
         samesite="Lax",
-        secure=False,  # True si usas HTTPS (Render/producción)
-        path="/"       # MUY IMPORTANTE para que la cookie sirva en '/'
+        secure=False,  # ponlo True en producción bajo HTTPS
+        path="/"
     )
     return resp
 
