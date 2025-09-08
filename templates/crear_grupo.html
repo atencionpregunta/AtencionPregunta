@@ -4,36 +4,13 @@
     <meta charset="UTF-8" />
     <title>Crear Grupo · Reto Diario</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/styles.css') }}"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="{{ url_for('static', filename='img/ATPPet-32.png') }}"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="{{ url_for('static', filename='img/ATPPet-16.png') }}"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/ATPPet-32.png') }}" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/ATPPet-16.png') }}" />
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/ATPPet-180.png') }}" />
 
-    <!-- iOS / atajo a pantalla de inicio -->
-    <link
-      rel="apple-touch-icon"
-      href="{{ url_for('static', filename='img/ATPPet-180.png') }}"
-    />
     <style>
       .hint { font-size: 0.95rem; margin-top: 6px; min-height: 1.2em; }
       .hint.ok { color: #1e8543; }
@@ -45,9 +22,11 @@
       .grupos-usuario ul { list-style: none; padding: 0; }
       .grupos-usuario li { margin: 6px 0; display: flex; align-items: center; gap: 8px; }
 
+      .inline { display: inline-flex; align-items: center; gap: 8px; }
       .inline input[type="checkbox"] { transform: scale(1.15); }
     </style>
   </head>
+
   <body>
     <main class="center-wrapper">
       <div class="card fade-in">
@@ -61,34 +40,16 @@
 
         <h1><i class="fa-solid fa-users-gear"></i> Crear Grupo</h1>
 
-        <form
-          method="POST"
-          action="{{ url_for('grupos.crear_grupo') }}"
-          class="formulario"
-          id="form-crear-grupo"
-          novalidate
-        >
+        <form method="POST" action="{{ url_for('grupos.crear_grupo') }}" class="formulario" id="form-crear-grupo" novalidate>
           <div class="form-group">
             <label for="nombre_grupo">Nombre del grupo:</label>
-            <input
-              type="text"
-              name="nombre_grupo"
-              id="nombre_grupo"
-              required
-              autocomplete="off"
-            />
-            <div id="nombre_hint" class="hint neutral">
-              Escribe un nombre de grupo.
-            </div>
+            <input type="text" name="nombre_grupo" id="nombre_grupo" required autocomplete="off" />
+            <div id="nombre_hint" class="hint neutral">Escribe un nombre de grupo.</div>
           </div>
 
           <div class="form-group">
             <label for="contrasena_grupo">Contraseña (opcional):</label>
-            <input
-              type="password"
-              name="contrasena_grupo"
-              id="contrasena_grupo"
-            />
+            <input type="password" name="contrasena_grupo" id="contrasena_grupo" />
           </div>
 
           <div class="form-group">
@@ -101,18 +62,11 @@
 
           <!-- SWITCH: limitar temporada por duración -->
           <div class="form-group">
-            <label
-              class="inline"
-              for="duracion_enabled"  <!-- <- CORREGIDO: debe coincidir con el id del checkbox -->
-              <input
-                type="checkbox"
-                id="duracion_enabled"
-                name="duracion_enabled"
+            <label class="inline" for="duracion_enabled">
+              <input type="checkbox" id="duracion_enabled" name="duracion_enabled" />
               ¿Limitar temporada por duración?
             </label>
-            <div class="hint neutral">
-              Actívalo para fijar una duración en días (p. ej., 30).
-            </div>
+            <div class="hint neutral">Actívalo para fijar una duración en días (p. ej., 30).</div>
           </div>
 
           <!-- INPUT: duración (días). Solo visible si el switch está activo -->
@@ -138,14 +92,14 @@
         </form>
 
         {% if grupos_usuario %}
-        <div class="grupos-usuario">
-          <h3>Tus grupos actuales</h3>
-          <ul>
-            {% for grupo in grupos_usuario %}
-              <li><i class="fa-solid fa-users"></i> {{ grupo.codigo }}</li>
-            {% endfor %}
-          </ul>
-        </div>
+          <div class="grupos-usuario">
+            <h3>Tus grupos actuales</h3>
+            <ul>
+              {% for grupo in grupos_usuario %}
+                <li><i class="fa-solid fa-users"></i> {{ grupo.codigo }}</li>
+              {% endfor %}
+            </ul>
+          </div>
         {% endif %}
       </div>
     </main>
@@ -155,12 +109,19 @@
     </footer>
 
     <script>
-      // --- Utilidades mínimas ---
+      // ---------- Utilidades ----------
       const $ = (sel) => document.querySelector(sel);
       const add = (el, cls) => el.classList.add(cls);
       const rmv = (el, cls) => el.classList.remove(cls);
+      const debounce = (fn, ms = 350) => {
+        let t;
+        return (...args) => {
+          clearTimeout(t);
+          t = setTimeout(() => fn.apply(null, args), ms);
+        };
+      };
 
-      // --- Elementos ---
+      // ---------- Elementos ----------
       const form = $('#form-crear-grupo');
       const nombre = $('#nombre_grupo');
       const hintNombre = $('#nombre_hint');
@@ -170,57 +131,125 @@
       const wrapDuracion = $('#duracion_wrap');
       const inputDuracion = $('#duracion_dias');
 
-      // --- Validaciones ---
-      // Regla sencilla: 3-40 caracteres visibles (letras, números, espacios y _-., no solo espacios)
+      // Endpoint para comprobar disponibilidad (ajústalo si tu ruta es otra)
+      const CHECK_URL = "/grupos/check-nombre";
+
+      // Regla local: 3-40 (letras, números, espacios y _-.)
       const reNombre = /^[\p{L}\p{N}\s_.-]{3,40}$/u;
 
-      function validarNombre() {
+      // Estado interno
+      let ultimoConsultado = "";
+      let ultimaRespuestaPara = "";
+
+      function estadoHint(tipo, texto) {
+        rmv(hintNombre, 'ok'); rmv(hintNombre, 'bad'); rmv(hintNombre, 'neutral');
+        add(hintNombre, tipo);
+        hintNombre.textContent = texto;
+      }
+
+      function setSubmitEnabled(on) { btnCrear.disabled = !on; }
+
+      function validarNombreLocal() {
         const v = (nombre.value || '').trim();
         if (!v) {
-          btnCrear.disabled = true;
-          rmv(hintNombre, 'ok'); rmv(hintNombre, 'bad'); add(hintNombre, 'neutral');
-          hintNombre.textContent = 'Escribe un nombre de grupo.';
-          return false;
+          setSubmitEnabled(false);
+          estadoHint('neutral', 'Escribe un nombre de grupo.');
+          return { ok: false, value: v };
         }
         if (!reNombre.test(v)) {
-          btnCrear.disabled = true;
-          rmv(hintNombre, 'ok'); rmv(hintNombre, 'neutral'); add(hintNombre, 'bad');
-          hintNombre.textContent = 'Entre 3 y 40 caracteres. Letras/números/espacios/._-';
-          return false;
+          setSubmitEnabled(false);
+          estadoHint('bad', 'Entre 3 y 40 caracteres. Letras/números/espacios/._-');
+          return { ok: false, value: v };
         }
-        // OK
-        btnCrear.disabled = false;
-        rmv(hintNombre, 'bad'); rmv(hintNombre, 'neutral'); add(hintNombre, 'ok');
-        hintNombre.textContent = 'Nombre válido.';
-        return true;
+        // Pasa validación local → aún no habilitamos submit, esperamos al servidor
+        estadoHint('neutral', 'Comprobando disponibilidad…');
+        setSubmitEnabled(false);
+        return { ok: true, value: v };
       }
+
+      const comprobarDisponibilidad = debounce(async () => {
+        const v = (nombre.value || '').trim();
+        // Evita consultas si no pasa la local o si no ha cambiado
+        const { ok } = validarNombreLocal();
+        if (!ok || v === ultimoConsultado) return;
+
+        ultimoConsultado = v;
+        try {
+          const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(v)}`, {
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store'
+          });
+          if (!resp.ok) throw new Error('HTTP ' + resp.status);
+          const data = await resp.json();
+          // Si el usuario cambió el campo mientras tanto, ignora esta respuesta
+          if ((nombre.value || '').trim() !== v) return;
+
+          if (data && data.exists) {
+            estadoHint('bad', 'Ya existe un grupo con ese nombre.');
+            setSubmitEnabled(false);
+          } else {
+            estadoHint('ok', 'Disponible.');
+            setSubmitEnabled(true);
+          }
+          ultimaRespuestaPara = v;
+        } catch (e) {
+          // En fallo de red: deja aviso pero permite enviar (el servidor validará)
+          if ((nombre.value || '').trim() !== v) return;
+          estadoHint('neutral', 'No se pudo comprobar ahora; se validará al enviar.');
+          setSubmitEnabled(true);
+        }
+      }, 350);
 
       function toggleDuracion() {
         const on = chkDuracion.checked;
         wrapDuracion.style.display = on ? 'block' : 'none';
-        // Si está activo, que sea requerido; si no, quítalo.
-        inputDuracion.toggleAttribute('required', on);
+        if (on) inputDuracion.setAttribute('required', 'required');
+        else inputDuracion.removeAttribute('required');
       }
 
-      // --- Eventos ---
+      // Eventos
       document.addEventListener('DOMContentLoaded', () => {
-        // Estado inicial
-        validarNombre();
+        validarNombreLocal();
         toggleDuracion();
-
-        // Si el servidor envió el checkbox marcado (postback), respetar estado
-        // (ya lo hace toggleDuracion leyendo .checked)
       });
 
-      nombre.addEventListener('input', validarNombre);
+      nombre.addEventListener('input', () => {
+        const { ok } = validarNombreLocal();
+        if (ok) comprobarDisponibilidad();
+      });
       chkDuracion.addEventListener('change', toggleDuracion);
 
-      // Evitar enviar si el nombre no es válido (por seguridad)
-      form.addEventListener('submit', (e) => {
-        if (!validarNombre()) {
+      // Seguridad extra al enviar
+      form.addEventListener('submit', async (e) => {
+        // 1) Local
+        const { ok, value } = validarNombreLocal();
+        if (!ok) { e.preventDefault(); nombre.focus(); return; }
+
+        // 2) Si lo que hay en el input no es igual al último valor comprobado y marcado "Disponible",
+        // vuelve a comprobar rápido
+        if (value !== ultimaRespuestaPara) {
           e.preventDefault();
-          nombre.focus();
+          await (async () => {
+            try {
+              const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(value)}`, { headers: { 'Accept': 'application/json' }});
+              const data = await resp.json();
+              if (data && data.exists) {
+                estadoHint('bad', 'Ya existe un grupo con ese nombre.');
+                setSubmitEnabled(false);
+                return;
+              }
+              estadoHint('ok', 'Disponible.');
+              setSubmitEnabled(true);
+              form.submit(); // re-envía tras confirmar
+            } catch {
+              // Si falla, dejamos que server valide
+              form.submit();
+            }
+          })();
+          return;
         }
+
+        // 3) Validación de duración si procede
         if (chkDuracion.checked) {
           const val = Number(inputDuracion.value);
           if (!Number.isFinite(val) || val < 1 || val > 365) {
@@ -231,13 +260,5 @@
         }
       });
     </script>
-
-    <!-- Este script de "renderLista" es de otra pantalla; no hace falta aquí.
-         Si lo necesitas, colócalo solo donde exista #publicos_list y #codigo_grupo. -->
-    <!--
-    <script>
-      function renderLista(items){ ... }
-    </script>
-    -->
   </body>
 </html>

@@ -3,6 +3,7 @@ from db import get_conn, db_lock
 from utils import get_grupos_usuario
 from datetime import datetime
 from zoneinfo import ZoneInfo
+import sqlite3
 
 # OJO: el nombre del blueprint debe ser "resultados" para que el endpoint sea resultados.ver_resultados
 resultados_bp = Blueprint("resultados", __name__)
@@ -28,9 +29,10 @@ def ver_resultados():
     id_grupo = id_grupo_req if id_grupo_req in ids_propios else grupos[0]["id"]
 
     with db_lock, get_conn() as conn:
+        conn.row_factory = sqlite3.Row
         cur = conn.cursor()
 
-        # 1) Pregunta actual = la de fecha_mostrada más reciente (si existe)
+        # 1) Pregunta del momento = última con fecha_mostrada (si existe)
         cur.execute("""
             SELECT id
             FROM Preguntas
@@ -39,75 +41,118 @@ def ver_resultados():
             LIMIT 1
         """)
         row = cur.fetchone()
-        id_pregunta_actual = row["id"] if row else None
+        id_pregunta_momento = row["id"] if row else None
 
-        # Fallback: si no hay fecha_mostrada, usa la última pregunta usada en Resultados del grupo
-        if id_pregunta_actual is None:
+        # Fallback: si no hay fecha_mostrada → última usada en Resultados del grupo
+        if id_pregunta_momento is None:
             cur.execute("""
                 SELECT id_pregunta
                 FROM Resultados
                 WHERE id_grupo = ?
-                ORDER BY datetime(fecha) DESC
+                ORDER BY datetime(fecha) DESC, id_pregunta DESC
                 LIMIT 1
             """, (id_grupo,))
             r2 = cur.fetchone()
-            id_pregunta_actual = r2["id_pregunta"] if r2 else None
+            id_pregunta_momento = r2["id_pregunta"] if r2 else None
 
         resultados = []
-        if id_pregunta_actual is not None:
-            # 2) Estado por usuario para ESA pregunta (incluye a todos los miembros del grupo)
+        if id_pregunta_momento is not None:
+            # 2) Miembros del grupo + acumulado histórico (por grupo) + estado en la PREGUNTA DEL MOMENTO
             cur.execute("""
-                WITH estado AS (
-                  SELECT
-                    id_usuario,
-                    SUM(COALESCE(puntuacion,0))                                AS puntos_preg,
-                    MAX(CASE WHEN correcta = 1 THEN 1 ELSE 0 END)              AS correcta_flag
-                  FROM Resultados
-                  WHERE id_grupo = ? AND id_pregunta = ?
-                  GROUP BY id_usuario
+                WITH miembros AS (
+                  SELECT GU.id_usuario, COALESCE(U.usuario, U.mail, 'Usuario ' || U.id) AS usuario
+                  FROM grupo_usuario GU
+                  JOIN Usuarios U ON U.id = GU.id_usuario
+                  WHERE GU.id_grupo = :id_grupo
+                ),
+                acum AS (
+                  SELECT r.id_usuario,
+                         SUM(CASE WHEN r.correcta = 1 THEN 1 ELSE 0 END)       AS aciertos_tot,
+                         SUM(COALESCE(r.puntuacion, 0))                         AS puntos_tot
+                  FROM Resultados r
+                  WHERE r.id_grupo = :id_grupo
+                  GROUP BY r.id_usuario
+                ),
+                momento AS (
+                  SELECT r.id_usuario,
+                         MAX(CASE WHEN r.correcta = 1 THEN 1 ELSE 0 END)        AS correcta_momento,
+                         SUM(COALESCE(r.puntuacion, 0))                          AS puntos_momento
+                  FROM Resultados r
+                  WHERE r.id_grupo = :id_grupo AND r.id_pregunta = :id_pregunta_momento
+                  GROUP BY r.id_usuario
                 )
-                SELECT
-                  U.id                                                       AS id_usuario,
-                  COALESCE(U.usuario, U.mail, 'Usuario ' || U.id)            AS usuario,
-                  COALESCE(e.puntos_preg, 0)                                 AS puntuacion,
-                  e.correcta_flag                                            AS correcta
-                FROM grupo_usuario GU
-                JOIN Usuarios U ON U.id = GU.id_usuario
-                LEFT JOIN estado e  ON e.id_usuario = U.id
-                WHERE GU.id_grupo = ?
-                ORDER BY COALESCE(e.puntos_preg, 0) DESC,
-                         U.usuario COLLATE NOCASE ASC
-            """, (id_grupo, id_pregunta_actual, id_grupo))
+                SELECT  m.id_usuario,
+                        m.usuario,
+                        COALESCE(a.aciertos_tot, 0)    AS aciertos_tot,     -- acumulado por aciertos
+                        COALESCE(a.puntos_tot, 0)      AS puntos_tot,       -- acumulado por puntos
+                        COALESCE(mo.puntos_momento,0)  AS puntos_momento,   -- puntos en la pregunta del momento
+                        mo.correcta_momento            AS correcta_momento  -- 1/0/NULL (colores)
+                FROM miembros m
+                LEFT JOIN acum a    ON a.id_usuario  = m.id_usuario
+                LEFT JOIN momento mo ON mo.id_usuario = m.id_usuario
+                ORDER BY aciertos_tot DESC, m.usuario COLLATE NOCASE ASC
+            """, {"id_grupo": id_grupo, "id_pregunta_momento": id_pregunta_momento})
             rows = cur.fetchall()
 
+            # ⚠️ Por defecto usamos ACERTADOS acumulados como 'puntuacion' (ranking).
+            # Si prefieres puntos acumulados, cambia a r["puntos_tot"] y ajusta el ORDER BY de arriba.
             resultados = [
                 {
                     "id_usuario": r["id_usuario"],
                     "usuario": r["usuario"],
-                    "puntuacion": r["puntuacion"],   # puntos en la PREGUNTA ACTUAL
-                    "correcta": r["correcta"],       # 1/0 o None si no ha respondido la actual
+                    "puntuacion": r["aciertos_tot"],          # ← acumulado: aciertos totales
+                    "puntos_tot": r["puntos_tot"],            # (por si lo usas)
+                    "puntos_momento": r["puntos_momento"],    # puntos SOLO en la pregunta del momento
+                    "correcta": r["correcta_momento"],        # ← colores por pregunta del momento
                 }
                 for r in rows
             ]
         else:
-            # No hay pregunta actual detectable → lista miembros del grupo con 0/None
+            # No hay pregunta del momento detectable → lista miembros con acumulado y sin color
             cur.execute("""
-                SELECT U.id AS id_usuario,
-                       COALESCE(U.usuario, U.mail, 'Usuario ' || U.id) AS usuario
-                FROM grupo_usuario GU
-                JOIN Usuarios U ON U.id = GU.id_usuario
-                WHERE GU.id_grupo = ?
-                ORDER BY U.usuario COLLATE NOCASE ASC
-            """, (id_grupo,))
+                WITH miembros AS (
+                  SELECT GU.id_usuario, COALESCE(U.usuario, U.mail, 'Usuario ' || U.id) AS usuario
+                  FROM grupo_usuario GU
+                  JOIN Usuarios U ON U.id = GU.id_usuario
+                  WHERE GU.id_grupo = :id_grupo
+                ),
+                acum AS (
+                  SELECT r.id_usuario,
+                         SUM(CASE WHEN r.correcta = 1 THEN 1 ELSE 0 END) AS aciertos_tot,
+                         SUM(COALESCE(r.puntuacion, 0))                   AS puntos_tot
+                  FROM Resultados r
+                  WHERE r.id_grupo = :id_grupo
+                  GROUP BY r.id_usuario
+                )
+                SELECT m.id_usuario, m.usuario,
+                       COALESCE(a.aciertos_tot, 0) AS aciertos_tot,
+                       COALESCE(a.puntos_tot, 0)   AS puntos_tot
+                FROM miembros m
+                LEFT JOIN acum a ON a.id_usuario = m.id_usuario
+                ORDER BY aciertos_tot DESC, m.usuario COLLATE NOCASE ASC
+            """, {"id_grupo": id_grupo})
             rows = cur.fetchall()
             resultados = [
-                {"id_usuario": r["id_usuario"], "usuario": r["usuario"], "puntuacion": 0, "correcta": None}
+                {
+                    "id_usuario": r["id_usuario"],
+                    "usuario": r["usuario"],
+                    "puntuacion": r["aciertos_tot"],   # acumulado
+                    "puntos_tot": r["puntos_tot"],
+                    "puntos_momento": 0,
+                    "correcta": None                   # sin pregunta del momento → sin color
+                }
                 for r in rows
             ]
 
+    # max_p para la barra (evita división por 0)
+    max_p = max((r["puntuacion"] or 0) for r in resultados) if resultados else 1
+    if max_p == 0:
+        max_p = 1
+
     return render_template(
-        "resultado.html",
-        grupos_usuario=grupos,   # para el <select>
-        id_grupo=id_grupo,       # seleccionado
-        resultados=resultados    # tu tabla (usa r.correcta / r.puntuacion como ya tienes)
+        "resultado.html",        # (asegúrate de usar el nombre correcto de tu plantilla)
+        grupos_usuario=grupos,    # para sidebar / select
+        id_grupo=id_grupo,        # seleccionado
+        resultados=resultados,    # filas: r.puntuacion (acumulado), r.correcta (momento)
+        max_p=max_p
     )
