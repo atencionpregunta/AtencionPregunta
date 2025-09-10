@@ -13,6 +13,14 @@ id;id_pregunta;respuesta;correcta
 12;2;Clavecín;False
 13;2;Clavicordio;False
 14;2;Violonchelo;False
+15;3;Chatarra;True
+16;3;Chusma;False
+17;4;Blanquear;True
+18;4;Pochar;False
+19;5;Del viento;True
+20;5;De la lluvia;False
+21;6;Si el nudo es ancho;False
+22;6;En ningún caso;True
 23;7;Leonardo - Catanas;False
 24;7;Michelangelo - Nunchakus;False
 25;7;Rafael - Sais;False
@@ -22,13 +30,6 @@ id;id_pregunta;respuesta;correcta
 29;8;180°;False
 30;8;360°;False
 31;8;720°;False
-39;10;Hierro;True
-40;10;Silicio;False
-41;10;Magnesio;False
-42;10;Aluminio;False
-43;10;Cobre;False
-44;10;Calcio;False
-45;10;Titanio;False
 32;9;Pancréas;False
 33;9;Colon;False
 34;9;Boca;False
@@ -36,6 +37,13 @@ id;id_pregunta;respuesta;correcta
 36;9;Faringe;False
 37;9;Bazo;True
 38;9;Sigma;False
+39;10;Hierro;True
+40;10;Silicio;False
+41;10;Magnesio;False
+42;10;Aluminio;False
+43;10;Cobre;False
+44;10;Calcio;False
+45;10;Titanio;False
 69;14;Verbos copulativos;False
 70;14;Verbos transitivos;False
 71;14;Verbos reflexivos;False

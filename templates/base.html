@@ -6,27 +6,40 @@
   <title>{% block title %}Atención Pregunta{% endblock %}</title>
 
   <!-- Fuentes y librerías -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-  <!-- Tu CSS global -->
+  <!-- CSS global -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
-  <link rel="icon" type="image/png" sizes="32x32"
-    href="{{ url_for('static', filename='img/ATPPet-32.png') }}">
-  <link rel="icon" type="image/png" sizes="16x16"
-    href="{{ url_for('static', filename='img/ATPPet-16.png') }}">
-
-<!-- iOS / atajo a pantalla de inicio -->
-  <link rel="apple-touch-icon"
-    href="{{ url_for('static', filename='img/ATPPet-180.png') }}">
+  <!-- Favicon / PWA -->
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/ATPPet-32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/ATPPet-16.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/ATPPet-180.png') }}">
 
   {% block extra_head %}{% endblock %}
 </head>
-<body>
+
+<body class="{{ body_class|default('app-shell tone-soft') }}">
   <main class="center-wrapper">
-    {% block content %}{% endblock %}
+    <div class="card {{ card_class|default('') }}">
+      {% block content %}{% endblock %}
+    </div>
   </main>
 
+  {# Zona para botones flotantes (ej. chat en móvil) #}
+  {% block floating %}{% endblock %}
+
+  {# Script opcional: recordar el tono (suave/vivo) #}
+  <script>
+    (function () {
+      const body = document.body;
+      const saved = localStorage.getItem('toneMode');
+      if (saved) { body.classList.remove('tone-soft','tone-strong'); body.classList.add(saved); }
+      window.__setTone = m => { body.classList.remove('tone-soft','tone-strong'); body.classList.add(m); localStorage.setItem('toneMode', m); };
+    })();
+  </script>
+
+  {% block scripts %}{% endblock %}
 </body>
 </html>

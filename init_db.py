@@ -84,8 +84,10 @@ def create_schema(conn: sqlite3.Connection):
         CREATE TABLE IF NOT EXISTS Preguntas (
             id INTEGER PRIMARY KEY,
             pregunta TEXT,
+            tipo TEXT,
             categoria TEXT,
             dificultad TEXT,
+            fun_fact TEXT,
             fecha_creacion DATETIME,
             fecha_mostrada DATE,
             ruta_audio TEXT,
@@ -110,6 +112,23 @@ def create_schema(conn: sqlite3.Connection):
     cur.execute("""
         INSERT OR IGNORE INTO Respuestas (id, id_pregunta, respuesta, correcta)
         VALUES (-1, NULL, '[MULTIPLE]', 0);
+    """)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS Temporadas (
+        id            INTEGER PRIMARY KEY,
+        id_grupo      INTEGER NOT NULL,
+        nombre        TEXT,                  -- ej. "2025-T1" (opcional)
+        fecha_inicio  TEXT NOT NULL,         -- "YYYY-MM-DD"
+        fecha_fin     TEXT,                  -- NULL = indefinida o calculada por duración
+        duracion_dias INTEGER,               -- NULL = sin límite
+        activa        INTEGER NOT NULL DEFAULT 1,
+        FOREIGN KEY (id_grupo) REFERENCES Grupos(id)
+        );
+    """)
+
+    cur.execute("""
+        CREATE INDEX IF NOT EXISTS ix_temp_grupo_activa
+        ON Temporadas(id_grupo, activa);
     """)
 
     cur.execute("""
@@ -174,7 +193,7 @@ def _leer_csv(path, expected_fields):
             yield row
 
 def importar_csvs(conn: sqlite3.Connection, preguntas_csv: str, respuestas_csv: str):
-    preguntas_cols = ["id","pregunta","categoria","dificultad","fecha_creacion","fecha_mostrada","ruta_audio","ruta_imagen"]
+    preguntas_cols = ["id","pregunta","tipo","categoria","dificultad", "fun_fact", "fecha_creacion","fecha_mostrada","ruta_audio","ruta_imagen"]
     respuestas_cols = ["id","id_pregunta","respuesta","correcta"]
 
     cur = conn.cursor()
@@ -189,13 +208,15 @@ def importar_csvs(conn: sqlite3.Connection, preguntas_csv: str, respuestas_csv: 
 
             cur.execute("""
                 INSERT OR REPLACE INTO Preguntas
-                (id, pregunta, categoria, dificultad, fecha_creacion, fecha_mostrada, ruta_audio, ruta_imagen)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (id, pregunta, tipo, categoria, dificultad, "fun_fact", fecha_creacion, fecha_mostrada, ruta_audio, ruta_imagen)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)
             """, (
                 pid,
                 pregunta_txt,
+                (row.get("tipo") or None),
                 (row.get("categoria") or None),
                 (row.get("dificultad") or None),
+                (row.get("fun_fact") or None),
                 (row.get("fecha_creacion") or None),
                 (row.get("fecha_mostrada") or None),
                 (row.get("ruta_audio") or None),

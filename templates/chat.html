@@ -1,48 +1,54 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="chat-wrap fade-in">
-  <div class="chat-header">
-    <h1>💬 Chat del grupo</h1>
-    <a class="btn secondary-btn" href="{{ url_for('resultados.ver_resultados', id_grupo=id_grupo) }}">← Volver a resultados</a>
-  </div>
+<div class="chat-page">
+  <div class="card chat-card fade-in">
+    <header class="chat-header">
+      <a class="btn-link back" href="{{ url_for('resultados.ver_resultados', id_grupo=id_grupo) }}" aria-label="Volver a resultados">
+        <i class="fa-solid fa-arrow-left"></i>
+      </a>
+      <h1>💬 Chat del grupo</h1>
+      <span class="spacer"></span>
+    </header>
 
-  <div id="chat-box" class="chat-box">
-    {% set badges = badges|default({}) %}
-    {% if mensajes and mensajes|length > 0 %}
-      {% for m in mensajes %}
-        {% set b = badges.get(m['id_usuario'], {}) %}
-        {% set ac = b.get('acierto') %}
-        {% set rk = b.get('rank') %}
-        {% set nombre = (m['usuario_nombre'] or ('Usuario ' ~ m['id_usuario'])) %}
-        {% set own = (session.get('usuario_id') == m['id_usuario']) %}
-        <div class="msg {{ 'own' if own else 'other' }}" data-id="{{ m['id'] }}">
-          <div class="avatar {{ 'ok' if ac is true else ('ko' if ac is false else 'na') }}">
-            {% if m['foto_url'] %}
-              <img src="{{ m['foto_url'] }}" alt="avatar" loading="lazy">
-            {% else %}
-              <span>{{ (nombre|trim|upper)[:2] }}</span>
-            {% endif %}
-          </div>
-          <div class="bubble">
-            <div class="meta">
-              <strong class="name">
-                {{ nombre }}
-                {% if rk %}<span class="rank">#{{ rk }}</span>{% endif %}
-              </strong>
+    <div id="chat-box" class="chat-box">
+      {% set badges = badges|default({}) %}
+      {% if mensajes and mensajes|length > 0 %}
+        {% for m in mensajes %}
+          {% set b = badges.get(m['id_usuario'], {}) %}
+          {% set ac = b.get('acierto') %}
+          {% set rk = b.get('rank') %}
+          {% set nombre = (m['usuario_nombre'] or ('Usuario ' ~ m['id_usuario'])) %}
+          {% set own = (session.get('usuario_id') == m['id_usuario']) %}
+          <div class="msg {{ 'own' if own else 'other' }}" data-id="{{ m['id'] }}">
+            <div class="avatar {{ 'ok' if ac is true else ('ko' if ac is false else 'na') }}">
+              {% if m['foto_url'] %}
+                <img src="{{ m['foto_url'] }}" alt="avatar" loading="lazy">
+              {% else %}
+                <span>{{ (nombre|trim|upper)[:2] }}</span>
+              {% endif %}
             </div>
-            <div class="text">{{ m['contenido'] }}</div>
+            <div class="bubble">
+              <div class="meta">
+                <strong class="name">
+                  {{ nombre }}
+                  {% if rk %}<span class="rank">#{{ rk }}</span>{% endif %}
+                </strong>
+              </div>
+              <div class="text">{{ m['contenido'] }}</div>
+            </div>
           </div>
-        </div>
-      {% endfor %}
-    {% else %}
-      <p id="empty-hint" class="empty-hint">Aún no hay mensajes. ¡Escribe el primero!</p>
-    {% endif %}
-  </div>
+        {% endfor %}
+      {% else %}
+        <p id="empty-hint" class="empty-hint">Aún no hay mensajes. ¡Escribe el primero!</p>
+      {% endif %}
+    </div>
 
-  <form action="{{ url_for('chat.enviar_mensaje', id_grupo=id_grupo) }}" method="POST" class="chat-form">
-    <input type="text" name="contenido" placeholder="Escribe un mensaje…" required class="chat-input" autocomplete="off" maxlength="500">
-    <button class="btn primary-btn" type="submit">Enviar</button>
-  </form>
+    <form action="{{ url_for('chat.enviar_mensaje', id_grupo=id_grupo) }}" method="POST" class="chat-form">
+      <input type="text" name="contenido" placeholder="Escribe un mensaje…" required class="chat-input" autocomplete="off" maxlength="500">
+      <button class="btn primary-btn send" type="submit">Enviar</button>
+    </form>
+  </div>
 </div>
 
 <script>
@@ -108,11 +114,11 @@
       if(!data.ok) return;
       const nuevos = data.mensajes || [];
       if(nuevos.length){
+        const nearBottom = (box.scrollHeight - box.scrollTop - box.clientHeight) < 80;
         for(const m of nuevos){
           appendMessage(m);
           lastId = Math.max(lastId, Number(m.id) || 0);
         }
-        const nearBottom = (box.scrollHeight - box.scrollTop - box.clientHeight) < 80;
         if (nearBottom) scrollToBottom();
       }
     }catch(e){}
@@ -122,62 +128,83 @@
 </script>
 
 <style>
+/* ===== tokens (coinciden con el resto) ===== */
 :root{
-  --surface:#fff; --on-surface:#111; --border:#e5e7eb; --muted:#f7f8fa;
+  --line:#e8eaf0; --card:#fff; --text:#111827; --muted:#6b7280;
+  --chip:#eef6ff; --chip-b:#dbeafe;
+  --ok:#22c55e; --bad:#ef4444; --unk:#9ca3af;
+  --blue1:#2563eb; --blue2:#1d4ed8;
 }
-@media (prefers-color-scheme: dark){
-  :root{ --surface:#111; --on-surface:#eee; --border:rgba(255,255,255,.15); --muted:#1b1b1b; }
+/* ===== layout general ===== */
+.chat-page{ padding:12px; display:flex; justify-content:center; }
+.chat-card{
+  width:100%; max-width:980px; background:var(--card);
+  border:1px solid var(--line); border-radius:18px;
+  box-shadow:0 12px 40px rgba(2,6,23,.06); padding:16px;
 }
-.chat-wrap{ margin:0 auto; max-width:clamp(320px, 96vw, 980px); padding:12px 0; }
-.chat-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px; }
+
+/* ===== header con título centrado ===== */
+.chat-header{
+  display:grid; grid-template-columns:40px 1fr 40px; align-items:center; gap:8px; margin-bottom:8px;
+}
+.chat-header h1{ margin:0; text-align:center; font-size:1.4rem; }
+.chat-header .back{ justify-self:start; }
+.chat-header .spacer{ display:block; }
+
+/* ===== caja de mensajes ===== */
 .chat-box{
-  background: var(--surface); color: var(--on-surface);
-  border: 1px solid var(--border); border-radius: 14px;
-  padding: 12px; height: min(68vh, 760px); overflow: auto;
+  background:#fafbff; border:1px solid var(--line); border-radius:14px;
+  padding:12px; height:min(68vh, 720px); overflow:auto;
 }
-.empty-hint{ opacity:.7; padding:8px; }
+.empty-hint{ opacity:.7; padding:8px; text-align:center; }
 
-.chat-form{ display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; margin-top:12px; }
+/* ===== composer ===== */
+.chat-form{ display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; margin-top:10px; }
 .chat-input{
-  width:100%; height:44px; padding:10px 12px;
-  background:#fff; color:#111; border:1px solid #e5e7eb; border-radius:12px;
+  height:46px; padding:12px 12px; border:1px solid var(--line);
+  border-radius:12px; background:#fff; color:var(--text);
 }
-@media (prefers-color-scheme: dark){
-  .chat-input{ background:#ffffff; color:#eee; border-color:rgba(255,255,255,.15); }
+.chat-form .btn.send{
+  height:46px; padding:0 18px; border-radius:12px; font-weight:800;
+  background:linear-gradient(135deg, var(--blue1), var(--blue2));
 }
-.chat-form .btn{ width:auto; height:44px; display:inline-flex; align-items:center; justify-content:center; padding:0 18px; border-radius:12px; }
 
-/* Mensajes */
-.msg{ display:grid; grid-template-columns:44px 1fr; gap:10px; margin:10px 0; align-items:start; }
+/* ===== mensajes ===== */
+.msg{
+  display:grid; grid-template-columns:44px 1fr; gap:8px; margin:8px 0; align-items:start;
+}
 .msg.own{ grid-template-columns:1fr 44px; }
 .msg.own .avatar{ order:2; }
-.msg.own .bubble{ order:1; justify-self:end; }
+.msg.own .bubble{ order:1; justify-self:end; background:var(--chip); border-color:var(--chip-b); }
 
-/* Avatar con borde por estado */
 .avatar{
-  width:44px; height:44px; border-radius:50%;
-  overflow:hidden; display:grid; place-items:center;
-  background:#f0f0f0; color:#333; font-weight:700;
-  border:3px solid transparent; box-sizing:border-box;
+  width:44px; height:44px; border-radius:999px; overflow:hidden;
+  display:grid; place-items:center; font-weight:800; background:#eef2ff; color:#3730a3;
+  border:3px solid var(--unk);
 }
+.avatar.ok{ border-color: var(--ok); }
+.avatar.ko{ border-color: var(--bad); }
+.avatar.na{ border-color: var(--unk); }
 .avatar img{ width:100%; height:100%; object-fit:cover; }
-.avatar.ok{ border-color:#1fa463; }   /* verde (acierto) */
-.avatar.ko{ border-color:#e23b3b; }   /* rojo (fallo)   */
-.avatar.na{ border-color:#999; }      /* gris (no resp.) */
 
 .bubble{
-  max-width:min(100%, 720px);
-  padding:10px 12px; border-radius:14px;
-  box-shadow: 0 1px 0 rgba(0,0,0,.06);
-  border:1px solid var(--border); background: var(--muted);
+  max-width:min(100%, 720px); padding:10px 12px; border-radius:14px;
+  background:#fff; border:1px solid var(--line);
+  box-shadow:0 1px 0 rgba(0,0,0,.04);
 }
 .meta{ font-size:.9rem; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-.name{ font-weight:700; }
-.rank{ margin-left:6px; font-weight:700; font-size:.80rem; padding:2px 6px; border-radius:999px; border:1px solid var(--border); opacity:.9; }
+.name{ font-weight:800; }
+.rank{ font-weight:800; font-size:.78rem; padding:2px 6px; border-radius:999px; border:1px solid var(--line); background:#f8fafc; }
 .text{ margin-top:6px; white-space:pre-wrap; line-height:1.35; }
 
-@media (max-width: 520px){
-  .chat-box{ height: 60vh; }
+/* compacta separaciones (como el resto) */
+.msg + .msg{ margin-top:6px; }
+
+/* responsive */
+@media (max-width:520px){
+  .chat-card{ padding:12px; }
+  .chat-header h1{ font-size:1.2rem; }
+  .chat-box{ height:60vh; }
 }
 </style>
 {% endblock %}

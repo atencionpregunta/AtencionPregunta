@@ -5,6 +5,7 @@ from . import auth_bp
 import sqlite3
 import re
 import secrets
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # =============================
 # Config: ID del grupo 'general'
@@ -134,6 +135,7 @@ def crear_usuario():
     pais      = (request.form.get("pais") or "").strip()
     edad_raw  = (request.form.get("edad") or "").strip()
     edad      = int(edad_raw) if edad_raw.isdigit() else None
+    hashed = generate_password_hash(contrasena, method="pbkdf2:sha256", salt_length=16)
 
     # Validaciones servidor
     errores = []
@@ -163,7 +165,7 @@ def crear_usuario():
                     INSERT INTO Usuarios (usuario, mail, contrasena, fec_ini, pais, edad)
                     VALUES (?, ?, ?, ?, ?, ?)
                 """, (
-                    usuario, mail, contrasena,
+                    usuario, mail, hashed,
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     pais or None, edad
                 ))
@@ -198,37 +200,60 @@ def login_form():
             cursor.execute("SELECT * FROM Usuarios WHERE usuario = ?", (usuario,))
             user = cursor.fetchone()
 
-    if user and user["contrasena"] == contrasena:
-        # 1) Cookie de sesión de Flask persistente (31 días por defecto si no configuras)
-        session.permanent = True
-        _set_session_for(user)
+    ok = False
+    if user:
+        stored = user["contrasena"]
 
-        # 2) Cookie propia remember_token si marcaron "Recuérdame"
-        if remember:
-            token = secrets.token_urlsafe(32)
-            exp = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
-            with db_lock:
-                with get_conn() as conn:
-                    cur = conn.cursor()
-                    cur.execute("UPDATE Usuarios SET remember_token=?, remember_expira=? WHERE id=?",
-                                (token, exp, user["id"]))
-                    conn.commit()
+        # Caso 1: hash correcto (werkzeug)
+        if stored and isinstance(stored, str) and stored.startswith("pbkdf2:"):
+            ok = check_password_hash(stored, contrasena)
 
-            resp = make_response(redirect(url_for("index")))
-            resp.set_cookie(
-                "remember_token",
-                token,
-                max_age=30*24*60*60,  # 30 días
-                httponly=True,
-                samesite="Lax",
-                secure=False,  # True si usas HTTPS
-                path="/"       # importante para que aplique en todo el sitio
-            )
-            return resp
+        # Caso 2: cuentas antiguas con texto plano -> aceptar una vez y migrar a hash
+        elif stored and isinstance(stored, str) and not stored.startswith("pbkdf2:"):
+            if stored == contrasena:
+                ok = True
+                new_h = generate_password_hash(contrasena, method="pbkdf2:sha256", salt_length=16)
+                with db_lock:
+                    with get_conn() as conn:
+                        c2 = conn.cursor()
+                        c2.execute("UPDATE Usuarios SET contrasena=? WHERE id=?", (new_h, user["id"]))
+                        conn.commit()
 
-        return redirect(url_for("index"))
-    else:
+        # Caso 3: usuarios OAuth (stored es NULL) -> no pasan por este login
+        else:
+            ok = False
+
+    if not ok:
         return "Usuario o contraseña incorrectos"
+
+    # 1) Cookie de sesión persistente
+    session.permanent = True
+    _set_session_for(user)
+
+    # 2) Cookie remember opcional
+    if remember:
+        token = secrets.token_urlsafe(32)
+        exp = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
+        with db_lock:
+            with get_conn() as conn:
+                cur = conn.cursor()
+                cur.execute("UPDATE Usuarios SET remember_token=?, remember_expira=? WHERE id=?",
+                            (token, exp, user["id"]))
+                conn.commit()
+
+        resp = make_response(redirect(url_for("index")))
+        resp.set_cookie(
+            "remember_token",
+            token,
+            max_age=30*24*60*60,  # 30 días
+            httponly=True,
+            samesite="Lax",
+            secure=False,  # True si usas HTTPS
+            path="/"
+        )
+        return resp
+
+    return redirect(url_for("index"))
 
 # -----------------------------
 # Google OAuth (crea remember siempre)

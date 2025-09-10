@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from db import get_conn, db_lock
-from utils import get_grupos_usuario
+from utils import get_grupos_usuario, dias_temporada_restantes, ensure_active_temporada
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import sqlite3
@@ -27,6 +27,7 @@ def ver_resultados():
     id_grupo_req = request.args.get("id_grupo", type=int)
     ids_propios = {g["id"] for g in grupos}
     id_grupo = id_grupo_req if id_grupo_req in ids_propios else grupos[0]["id"]
+    id_temp = ensure_active_temporada(id_grupo)
 
     with db_lock, get_conn() as conn:
         conn.row_factory = sqlite3.Row
@@ -70,7 +71,7 @@ def ver_resultados():
                          SUM(CASE WHEN r.correcta = 1 THEN 1 ELSE 0 END)       AS aciertos_tot,
                          SUM(COALESCE(r.puntuacion, 0))                         AS puntos_tot
                   FROM Resultados r
-                  WHERE r.id_grupo = :id_grupo
+                  WHERE r.id_grupo = :id_grupo and r.temporada = :id_temp
                   GROUP BY r.id_usuario
                 ),
                 momento AS (
@@ -78,7 +79,7 @@ def ver_resultados():
                          MAX(CASE WHEN r.correcta = 1 THEN 1 ELSE 0 END)        AS correcta_momento,
                          SUM(COALESCE(r.puntuacion, 0))                          AS puntos_momento
                   FROM Resultados r
-                  WHERE r.id_grupo = :id_grupo AND r.id_pregunta = :id_pregunta_momento
+                  WHERE r.id_grupo = :id_grupo AND r.id_pregunta = :id_pregunta_momento and r.temporada = :id_temp
                   GROUP BY r.id_usuario
                 )
                 SELECT  m.id_usuario,
@@ -91,7 +92,7 @@ def ver_resultados():
                 LEFT JOIN acum a    ON a.id_usuario  = m.id_usuario
                 LEFT JOIN momento mo ON mo.id_usuario = m.id_usuario
                 ORDER BY aciertos_tot DESC, m.usuario COLLATE NOCASE ASC
-            """, {"id_grupo": id_grupo, "id_pregunta_momento": id_pregunta_momento})
+            """, {"id_grupo": id_grupo, "id_pregunta_momento": id_pregunta_momento, "id_temp" : id_temp})
             rows = cur.fetchall()
 
             # ⚠️ Por defecto usamos ACERTADOS acumulados como 'puntuacion' (ranking).
@@ -121,7 +122,7 @@ def ver_resultados():
                          SUM(CASE WHEN r.correcta = 1 THEN 1 ELSE 0 END) AS aciertos_tot,
                          SUM(COALESCE(r.puntuacion, 0))                   AS puntos_tot
                   FROM Resultados r
-                  WHERE r.id_grupo = :id_grupo
+                  WHERE r.id_grupo = :id_grupo and r.temporada = :id_temp
                   GROUP BY r.id_usuario
                 )
                 SELECT m.id_usuario, m.usuario,
@@ -149,10 +150,21 @@ def ver_resultados():
     if max_p == 0:
         max_p = 1
 
+    dias_restantes = dias_temporada_restantes(id_grupo)
+
+    temp_id = ensure_active_temporada(id_grupo)  # fuera del db_lock para evitar bloqueos
+    with get_conn() as _c:
+        _cur = _c.cursor()
+        row_t = _cur.execute("SELECT nombre FROM Temporadas WHERE id=?", (temp_id,)).fetchone()
+        print(row_t["nombre"])
+        temporada_nombre = row_t["nombre"] if row_t and row_t["nombre"] else str(temp_id)
+
     return render_template(
         "resultado.html",        # (asegúrate de usar el nombre correcto de tu plantilla)
         grupos_usuario=grupos,    # para sidebar / select
         id_grupo=id_grupo,        # seleccionado
         resultados=resultados,    # filas: r.puntuacion (acumulado), r.correcta (momento)
+        nombre_temp = temporada_nombre,
+        dias_restantes=dias_restantes,
         max_p=max_p
     )

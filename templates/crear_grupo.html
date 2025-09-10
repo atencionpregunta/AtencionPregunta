@@ -1,264 +1,248 @@
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Crear Grupo · Reto Diario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/ATPPet-32.png') }}" />
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/ATPPet-16.png') }}" />
-    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/ATPPet-180.png') }}" />
+{% extends "base.html" %}
+{% set body_class = 'app-shell tone-soft page-grupos' %}
+{% block title %}Crear Grupo · Reto Diario{% endblock %}
 
-    <style>
-      .hint { font-size: 0.95rem; margin-top: 6px; min-height: 1.2em; }
-      .hint.ok { color: #1e8543; }
-      .hint.bad { color: #c62828; }
-      .hint.neutral { color: #6b7280; }
-      .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+{% block extra_head %}
+<style>
+  /* Estilos específicos de esta página */
+  .hint{ font-size:.95rem; margin-top:6px; min-height:1.2em; }
+  .hint.ok{ color:#1e8543; }
+  .hint.bad{ color:#c62828; }
+  .hint.neutral{ color:#6b7280; }
+  .inline{ display:inline-flex; align-items:center; gap:8px; }
+  .inline input[type="checkbox"]{ transform:scale(1.15); }
+  .primary-btn:disabled{ opacity:.6; cursor:not-allowed; box-shadow:none; }
+  .grupos-usuario{ margin-top:16px; }
+  .grupos-usuario ul{ list-style:none; padding:0; margin:6px 0 0; }
+  .grupos-usuario li{ margin:6px 0; display:flex; align-items:center; gap:8px; }
+  .page-grupos #form-crear-grupo .form-actions{
+    display: grid;
+    grid-template-columns: 1fr;      /* móvil / estrecho: 1 columna */
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .page-grupos #form-crear-grupo .form-actions .primary-btn{
+    width: 100%;                     /* aquí está la clave */
+    justify-self: stretch;
+  }
+  .page-grupos #form-crear-grupo .form-actions .secondary-btn{
+    width: auto;                     /* que el “Volver” no se estire */
+    justify-self: start;
+  }
 
-      .grupos-usuario { margin-top: 20px; }
-      .grupos-usuario ul { list-style: none; padding: 0; }
-      .grupos-usuario li { margin: 6px 0; display: flex; align-items: center; gap: 8px; }
+  /* En escritorio: botón principal ancho completo + enlace al lado */
+  @media (min-width: 769px){
+    .page-grupos #form-crear-grupo .form-actions{
+      grid-template-columns: 1fr auto; /* principal se estira, volver queda compacto */
+    }
+  }
+</style>
+</style>
+{% endblock %}
 
-      .inline { display: inline-flex; align-items: center; gap: 8px; }
-      .inline input[type="checkbox"] { transform: scale(1.15); }
-    </style>
-  </head>
+{% block content %}
+  <header class="header">
+    <div class="title">
+      <a class="btn-link" href="{{ url_for('index') }}" title="Volver al inicio">
+        <i class="fa-solid fa-arrow-left"></i>
+      </a>
+      <h2><i class="fa-solid fa-users-gear"></i> Crear grupo</h2>
+    </div>
+    <div class="chips">
+      <span class="chip"><i class="fa-solid fa-lock"></i> Contraseña opcional</span>
+    </div>
+  </header>
 
-  <body>
-    <main class="center-wrapper">
-      <div class="card fade-in">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="flash {{ category }}">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 
-        <h1><i class="fa-solid fa-users-gear"></i> Crear Grupo</h1>
+  <form method="POST" action="{{ url_for('grupos.crear_grupo') }}" id="form-crear-grupo" novalidate>
+    <div class="form-row">
+      <label for="nombre_grupo"><strong>Nombre del grupo</strong></label>
+      <input class="input" type="text" name="nombre_grupo" id="nombre_grupo"
+             required autocomplete="off" value="{{ request.form.get('nombre_grupo','') }}" />
+      <div id="nombre_hint" class="hint neutral">Escribe un nombre de grupo.</div>
+    </div>
 
-        <form method="POST" action="{{ url_for('grupos.crear_grupo') }}" class="formulario" id="form-crear-grupo" novalidate>
-          <div class="form-group">
-            <label for="nombre_grupo">Nombre del grupo:</label>
-            <input type="text" name="nombre_grupo" id="nombre_grupo" required autocomplete="off" />
-            <div id="nombre_hint" class="hint neutral">Escribe un nombre de grupo.</div>
-          </div>
+    <div class="form-row">
+      <label for="contrasena_grupo"><strong>Contraseña (opcional)</strong></label>
+      <input class="input" type="password" name="contrasena_grupo" id="contrasena_grupo" />
+    </div>
 
-          <div class="form-group">
-            <label for="contrasena_grupo">Contraseña (opcional):</label>
-            <input type="password" name="contrasena_grupo" id="contrasena_grupo" />
-          </div>
+    <div class="form-row">
+      <label for="tipo_grupo"><strong>Tipo de grupo</strong></label>
+      <select class="input" name="tipo_grupo" id="tipo_grupo" required>
+        <option value="publico" {% if request.form.get('tipo_grupo','publico')=='publico' %}selected{% endif %}>Público</option>
+        <option value="privado" {% if request.form.get('tipo_grupo')=='privado' %}selected{% endif %}>Privado</option>
+      </select>
+    </div>
 
-          <div class="form-group">
-            <label for="tipo_grupo">Tipo de grupo:</label>
-            <select name="tipo_grupo" id="tipo_grupo" required>
-              <option value="publico">Público</option>
-              <option value="privado">Privado</option>
-            </select>
-          </div>
+    <!-- SWITCH: limitar temporada por duración -->
+    <div class="form-row">
+      <label class="inline" for="duracion_enabled">
+        <input type="checkbox" id="duracion_enabled" name="duracion_enabled"
+               {% if request.form.get('duracion_enabled') %}checked{% endif %} />
+        ¿Limitar temporada por duración?
+      </label>
+      <div class="hint neutral">Actívalo para fijar una duración en días (p. ej., 30).</div>
+    </div>
 
-          <!-- SWITCH: limitar temporada por duración -->
-          <div class="form-group">
-            <label class="inline" for="duracion_enabled">
-              <input type="checkbox" id="duracion_enabled" name="duracion_enabled" />
-              ¿Limitar temporada por duración?
-            </label>
-            <div class="hint neutral">Actívalo para fijar una duración en días (p. ej., 30).</div>
-          </div>
+    <!-- INPUT: duración (días). Solo visible si el switch está activo -->
+    <div class="form-row" id="duracion_wrap" style="display:none">
+      <label for="duracion_dias"><strong>Duración (días)</strong></label>
+      <input class="input" type="number" name="duracion_dias" id="duracion_dias"
+             min="1" max="365" step="1" inputmode="numeric"
+             value="{{ request.form.get('duracion_dias', '30') }}" />
+      <div class="hint neutral">Entre 1 y 365 días.</div>
+    </div>
 
-          <!-- INPUT: duración (días). Solo visible si el switch está activo -->
-          <div class="form-group" id="duracion_wrap" style="display: none">
-            <label for="duracion_dias">Duración (días):</label>
-            <input
-              type="number"
-              name="duracion_dias"
-              id="duracion_dias"
-              min="1"
-              max="365"
-              step="1"
-              inputmode="numeric"
-              value="{{ request.form.get('duracion_dias', '30') }}"
-            />
-            <div class="hint neutral">Entre 1 y 365 días.</div>
-          </div>
+    <div class="form-actions" style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button type="submit" class="primary-btn" id="btn-crear" disabled>
+        <i class="fa-solid fa-plus"></i> Crear grupo
+      </button>
+    </div>
+  </form>
 
-          <button type="submit" class="btn primary-btn" id="btn-crear" disabled>
-            <i class="fa-solid fa-plus"></i> Crear grupo
-          </button>
-          <a href="{{ url_for('index') }}" class="btn secondary-btn">⬅️ Volver al inicio</a>
-        </form>
+  {% if grupos_usuario %}
+    <div class="grupos-usuario">
+      <h3>Tus grupos actuales</h3>
+      <ul>
+        {% for grupo in grupos_usuario %}
+          <li><i class="fa-solid fa-users"></i> {{ grupo.codigo }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+{% endblock %}
 
-        {% if grupos_usuario %}
-          <div class="grupos-usuario">
-            <h3>Tus grupos actuales</h3>
-            <ul>
-              {% for grupo in grupos_usuario %}
-                <li><i class="fa-solid fa-users"></i> {{ grupo.codigo }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-        {% endif %}
-      </div>
-    </main>
+{% block scripts %}
+<script>
+  // ---------- Utilidades ----------
+  const $ = (sel) => document.querySelector(sel);
+  const add = (el, cls) => el.classList.add(cls);
+  const rmv = (el, cls) => el.classList.remove(cls);
+  const debounce = (fn, ms = 350) => { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; };
 
-    <footer>
-      <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
-    </footer>
+  // ---------- Elementos ----------
+  const form = $('#form-crear-grupo');
+  const nombre = $('#nombre_grupo');
+  const hintNombre = $('#nombre_hint');
+  const btnCrear = $('#btn-crear');
 
-    <script>
-      // ---------- Utilidades ----------
-      const $ = (sel) => document.querySelector(sel);
-      const add = (el, cls) => el.classList.add(cls);
-      const rmv = (el, cls) => el.classList.remove(cls);
-      const debounce = (fn, ms = 350) => {
-        let t;
-        return (...args) => {
-          clearTimeout(t);
-          t = setTimeout(() => fn.apply(null, args), ms);
-        };
-      };
+  const chkDuracion = $('#duracion_enabled');
+  const wrapDuracion = $('#duracion_wrap');
+  const inputDuracion = $('#duracion_dias');
 
-      // ---------- Elementos ----------
-      const form = $('#form-crear-grupo');
-      const nombre = $('#nombre_grupo');
-      const hintNombre = $('#nombre_hint');
-      const btnCrear = $('#btn-crear');
+  // Endpoint para comprobar disponibilidad (nocase)
+  const CHECK_URL = "{{ url_for('grupos.check_nombre') }}";
 
-      const chkDuracion = $('#duracion_enabled');
-      const wrapDuracion = $('#duracion_wrap');
-      const inputDuracion = $('#duracion_dias');
+  // Regla local: 3-40 (letras, números, espacios y _-.)
+  const reNombre = /^[\p{L}\p{N}\s_.-]{3,40}$/u;
 
-      // Endpoint para comprobar disponibilidad (ajústalo si tu ruta es otra)
-      const CHECK_URL = "/grupos/check-nombre";
+  // Estado interno
+  let ultimoConsultado = "";
+  let ultimaRespuestaPara = "";
 
-      // Regla local: 3-40 (letras, números, espacios y _-.)
-      const reNombre = /^[\p{L}\p{N}\s_.-]{3,40}$/u;
+  function estadoHint(tipo, texto) {
+    rmv(hintNombre, 'ok'); rmv(hintNombre, 'bad'); rmv(hintNombre, 'neutral');
+    add(hintNombre, tipo);
+    hintNombre.textContent = texto;
+  }
+  function setSubmitEnabled(on) { btnCrear.disabled = !on; }
 
-      // Estado interno
-      let ultimoConsultado = "";
-      let ultimaRespuestaPara = "";
+  function validarNombreLocal() {
+    const v = (nombre.value || '').trim();
+    if (!v) { setSubmitEnabled(false); estadoHint('neutral', 'Escribe un nombre de grupo.'); return { ok:false, value:v }; }
+    if (!reNombre.test(v)) {
+      setSubmitEnabled(false);
+      estadoHint('bad', 'Entre 3 y 40 caracteres. Letras/números/espacios/._-');
+      return { ok:false, value:v };
+    }
+    estadoHint('neutral', 'Comprobando disponibilidad…');
+    setSubmitEnabled(false);
+    return { ok:true, value:v };
+  }
 
-      function estadoHint(tipo, texto) {
-        rmv(hintNombre, 'ok'); rmv(hintNombre, 'bad'); rmv(hintNombre, 'neutral');
-        add(hintNombre, tipo);
-        hintNombre.textContent = texto;
-      }
+  const comprobarDisponibilidad = debounce(async () => {
+    const v = (nombre.value || '').trim();
+    const { ok } = validarNombreLocal();
+    if (!ok || v === ultimoConsultado) return;
 
-      function setSubmitEnabled(on) { btnCrear.disabled = !on; }
+    ultimoConsultado = v;
+    try{
+      const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(v)}`, { headers:{'Accept':'application/json'}, cache:'no-store' });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
 
-      function validarNombreLocal() {
-        const v = (nombre.value || '').trim();
-        if (!v) {
-          setSubmitEnabled(false);
-          estadoHint('neutral', 'Escribe un nombre de grupo.');
-          return { ok: false, value: v };
-        }
-        if (!reNombre.test(v)) {
-          setSubmitEnabled(false);
-          estadoHint('bad', 'Entre 3 y 40 caracteres. Letras/números/espacios/._-');
-          return { ok: false, value: v };
-        }
-        // Pasa validación local → aún no habilitamos submit, esperamos al servidor
-        estadoHint('neutral', 'Comprobando disponibilidad…');
+      if ((nombre.value || '').trim() !== v) return; // el usuario siguió tecleando
+
+      if (data && data.exists){
+        estadoHint('bad', 'Ya existe un grupo con ese nombre.');
         setSubmitEnabled(false);
-        return { ok: true, value: v };
+      }else{
+        estadoHint('ok', 'Disponible.');
+        setSubmitEnabled(true);
       }
+      ultimaRespuestaPara = v;
+    }catch{
+      if ((nombre.value || '').trim() !== v) return;
+      estadoHint('neutral', 'No se pudo comprobar ahora; se validará al enviar.');
+      setSubmitEnabled(true);
+    }
+  }, 350);
 
-      const comprobarDisponibilidad = debounce(async () => {
-        const v = (nombre.value || '').trim();
-        // Evita consultas si no pasa la local o si no ha cambiado
-        const { ok } = validarNombreLocal();
-        if (!ok || v === ultimoConsultado) return;
+  function toggleDuracion() {
+    const on = chkDuracion.checked;
+    wrapDuracion.style.display = on ? 'block' : 'none';
+    if (on) inputDuracion.setAttribute('required', 'required');
+    else inputDuracion.removeAttribute('required');
+  }
 
-        ultimoConsultado = v;
-        try {
-          const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(v)}`, {
-            headers: { 'Accept': 'application/json' },
-            cache: 'no-store'
-          });
-          if (!resp.ok) throw new Error('HTTP ' + resp.status);
-          const data = await resp.json();
-          // Si el usuario cambió el campo mientras tanto, ignora esta respuesta
-          if ((nombre.value || '').trim() !== v) return;
+  // Eventos
+  document.addEventListener('DOMContentLoaded', () => {
+    validarNombreLocal();
+    toggleDuracion();
+  });
+  nombre.addEventListener('input', () => { const { ok } = validarNombreLocal(); if (ok) comprobarDisponibilidad(); });
+  chkDuracion.addEventListener('change', toggleDuracion);
 
-          if (data && data.exists) {
-            estadoHint('bad', 'Ya existe un grupo con ese nombre.');
-            setSubmitEnabled(false);
-          } else {
-            estadoHint('ok', 'Disponible.');
-            setSubmitEnabled(true);
-          }
-          ultimaRespuestaPara = v;
-        } catch (e) {
-          // En fallo de red: deja aviso pero permite enviar (el servidor validará)
-          if ((nombre.value || '').trim() !== v) return;
-          estadoHint('neutral', 'No se pudo comprobar ahora; se validará al enviar.');
-          setSubmitEnabled(true);
-        }
-      }, 350);
+  // Seguridad extra al enviar
+  form.addEventListener('submit', async (e) => {
+    const { ok, value } = validarNombreLocal();
+    if (!ok){ e.preventDefault(); nombre.focus(); return; }
 
-      function toggleDuracion() {
-        const on = chkDuracion.checked;
-        wrapDuracion.style.display = on ? 'block' : 'none';
-        if (on) inputDuracion.setAttribute('required', 'required');
-        else inputDuracion.removeAttribute('required');
-      }
-
-      // Eventos
-      document.addEventListener('DOMContentLoaded', () => {
-        validarNombreLocal();
-        toggleDuracion();
-      });
-
-      nombre.addEventListener('input', () => {
-        const { ok } = validarNombreLocal();
-        if (ok) comprobarDisponibilidad();
-      });
-      chkDuracion.addEventListener('change', toggleDuracion);
-
-      // Seguridad extra al enviar
-      form.addEventListener('submit', async (e) => {
-        // 1) Local
-        const { ok, value } = validarNombreLocal();
-        if (!ok) { e.preventDefault(); nombre.focus(); return; }
-
-        // 2) Si lo que hay en el input no es igual al último valor comprobado y marcado "Disponible",
-        // vuelve a comprobar rápido
-        if (value !== ultimaRespuestaPara) {
-          e.preventDefault();
-          await (async () => {
-            try {
-              const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(value)}`, { headers: { 'Accept': 'application/json' }});
-              const data = await resp.json();
-              if (data && data.exists) {
-                estadoHint('bad', 'Ya existe un grupo con ese nombre.');
-                setSubmitEnabled(false);
-                return;
-              }
-              estadoHint('ok', 'Disponible.');
-              setSubmitEnabled(true);
-              form.submit(); // re-envía tras confirmar
-            } catch {
-              // Si falla, dejamos que server valide
-              form.submit();
-            }
-          })();
+    if (value !== ultimaRespuestaPara){
+      e.preventDefault();
+      try{
+        const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(value)}`, { headers:{'Accept':'application/json'} });
+        const data = await resp.json();
+        if (data && data.exists){
+          estadoHint('bad', 'Ya existe un grupo con ese nombre.');
+          setSubmitEnabled(false);
           return;
         }
+        estadoHint('ok', 'Disponible.');
+        setSubmitEnabled(true);
+        form.submit(); // re-envía tras confirmar
+      }catch{
+        form.submit(); // deja que el servidor valide
+      }
+      return;
+    }
 
-        // 3) Validación de duración si procede
-        if (chkDuracion.checked) {
-          const val = Number(inputDuracion.value);
-          if (!Number.isFinite(val) || val < 1 || val > 365) {
-            e.preventDefault();
-            inputDuracion.focus();
-            alert('La duración debe ser un número entre 1 y 365.');
-          }
-        }
-      });
-    </script>
-  </body>
-</html>
+    if (chkDuracion.checked){
+      const val = Number(inputDuracion.value);
+      if (!Number.isFinite(val) || val < 1 || val > 365){
+        e.preventDefault();
+        inputDuracion.focus();
+        alert('La duración debe ser un número entre 1 y 365.');
+      }
+    }
+  });
+</script>
+{% endblock %}

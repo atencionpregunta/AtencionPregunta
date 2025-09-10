@@ -1,28 +1,153 @@
 {% extends "base.html" %}
 
+{% block title %}Resultado · Reto Diario{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* --- Tu tarjeta propia --- */
+  .r-shell{
+    min-height:100dvh; display:flex; justify-content:center; align-items:flex-start;
+    padding:clamp(8px,2vh,22px) 12px;
+  }
+  @media (min-height:720px){ .r-shell{ align-items:center; } }
+
+  .r-card{
+    width:100%; max-width:760px; background:#fff; border:1px solid #e5e7eb;
+    border-radius:16px; box-shadow:0 12px 40px rgba(2,6,23,.06); padding:20px;
+  }
+  .r-card::before,.r-card::after{ content:none !important; }
+
+  .reveal{ display:flex; gap:clamp(10px,2.5vw,20px); align-items:flex-start; margin:8px 0 16px; }
+  .mascota{ width:clamp(72px,16vw,120px); height:auto; filter:drop-shadow(0 4px 10px rgba(0,0,0,.12)); }
+  .bocadillo{ flex:1; background:#fff; border:1px solid #e5e7eb; border-radius:16px;
+    padding:clamp(10px,2.2vh,16px) clamp(12px,2.6vw,18px); position:relative;
+    box-shadow:0 6px 24px rgba(2,6,23,.06);
+  }
+  .bocadillo::before{ content:""; position:absolute; left:-10px; top:18px; width:0; height:0;
+    border-style:solid; border-width:10px 10px 10px 0; border-color:transparent #e5e7eb transparent transparent;
+  }
+  .bocadillo::after{ content:""; position:absolute; left:-8px; top:20px; width:0; height:0;
+    border-style:solid; border-width:8px 8px 8px 0; border-color:transparent #fff transparent transparent;
+  }
+  .big{ font-weight:700; margin:0 0 6px; }
+  .correctas{ margin:.25rem 0 .25rem 1rem; padding:0; }
+  .correctas li{ list-style:none; margin:2px 0; color:#065f46; font-weight:600; }
+  .funfact{ display:flex; gap:12px; align-items:flex-start; background:#f8fafc; border:1px solid #e5e7eb;
+    border-radius:14px; padding:12px 14px; margin-top:10px;
+  }
+  .ff-icon{ font-size:1.4rem; line-height:1; }
+  .ff-title{ font-weight:700; margin-bottom:2px; }
+  .ff-text{ color:#334155; }
+  .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+
+  @media (max-width:560px){
+    .reveal{ flex-direction:column; align-items:center; }
+    .mascota{ width:92px; }
+    .bocadillo::before, .bocadillo::after{ display:none; }
+  }
+
+  /* --- Intento CSS de neutralizar wrappers del layout --- */
+  main.center-wrapper,
+  main.center-wrapper > .card{
+    background:transparent !important; border:0 !important; box-shadow:none !important;
+    padding:0 !important; margin:0 !important;
+  }
+  main.center-wrapper::before, main.center-wrapper::after,
+  main.center-wrapper > .card::before, main.center-wrapper > .card::after{
+    content:none !important;
+  }
+
+  /* Fuerza centrado absoluto del contenido de la página */
+  html, body { height: 100%; }
+
+  .r-shell{
+    position: fixed;       /* ocupa toda la ventana */
+    inset: 0;              /* top/right/bottom/left = 0 */
+    display: grid;         /* centrado con grid */
+    place-items: center;   /* centra horizontal y vertical */
+    padding: max(12px, env(safe-area-inset-top))
+             12px
+             max(12px, env(safe-area-inset-bottom));
+    overflow: auto;        /* por si hay scroll */
+    background: transparent; /* no pintes fondo aquí */
+  }
+
+  /* Cuando la ventana es baja, alinea arriba para que no “salte” */
+  @media (max-height: 720px){
+    .r-shell{ align-content: start; }
+  }
+
+  /* tu tarjeta puede quedar igual que ya la tienes */
+  .r-card{
+    width: 100%;
+    max-width: 760px;
+    background:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:16px;
+    box-shadow:0 12px 40px rgba(2,6,23,.06);
+    padding:20px;
+  }
+
+  .r-card{ padding:18px; }
+  .reveal{ margin:6px 0 12px; gap:12px; }
+  .funfact{ margin-top:8px; padding:10px 12px; }
+
+  /* Botones: más gruesos y con menos hueco entre ellos */
+  .actions{
+    display:grid;
+    grid-template-columns: 1fr; /* una columna, botones a lo ancho */
+    gap:8px;                    /* menos separación entre botones */
+    margin-top:12px;
+  }
+  .actions .btn{
+    width:100%;
+    min-height:46px;            /* ↑ altura mínima (target táctil) */
+    padding:12px 16px;          /* ↑ grosor visual */
+    border-radius:12px;
+    font-weight:800;
+    font-size:.95rem;
+    line-height:1.1;
+    margin:0;                   /* por si tu .btn trae márgenes */
+  }
+  .actions .primary-btn{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:#fff;
+    box-shadow:0 6px 18px rgba(29,78,216,.20);
+    border:0;
+  }
+  .actions .secondary-btn{
+    background:#fff;
+    border:1.5px solid #e5e7eb; /* un pelín más grueso */
+    color:#111827;
+  }
+
+  /* Opcional: aún más compacto en pantallas pequeñas */
+  @media (max-width:560px){
+    .actions{ gap:6px; }
+    .actions .btn{ min-height:48px; font-size:1rem; }
+  }
+
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="center-wrapper fade-in">
-  <div class="card respuesta-card">
-    <h1>
-      {% if correcto %}✅ ¡Correcto!{% else %}❌ No era esa…{% endif %}
-    </h1>
+<div class="r-shell fade-in">
+  <div class="r-card">
+    <h1>{% if correcto %}✅ ¡Correcto!{% else %}❌ No era esa…{% endif %}</h1>
 
     <div class="reveal">
-      <img class="mascota" src="static\img\ATPPet-nerd-180.png" alt="Mascota" />
-
+      <img class="mascota" src="{{ url_for('static', filename='img/ATPPet-nerd-180.png') }}" alt="Mascota">
       <div class="bocadillo">
         {% if correcto %}
           <p class="big">¡Bien hecho! 👏</p>
         {% else %}
           <p class="big">La respuesta correcta es:</p>
         {% endif %}
-
         <ul class="correctas">
           {% for t in correctas %}
             <li>✔ {{ t }}</li>
           {% endfor %}
         </ul>
-
       </div>
     </div>
 
@@ -43,30 +168,31 @@
     </div>
   </div>
 </div>
-{% endblock %}
 
-{% block extra_css %}
-<style>
-.center-wrapper{ min-height:100dvh; display:flex; justify-content:center; align-items:flex-start; padding:clamp(8px,2vh,22px) 12px; }
-@media (min-height:720px){ .center-wrapper{ align-items:center; } }
-.respuesta-card{ max-width:760px; }
-.reveal{ display:flex; gap:clamp(10px,2.5vw,20px); align-items:flex-start; margin:8px 0 16px; }
-.mascota{ width:clamp(72px,16vw,120px); height:auto; filter:drop-shadow(0 4px 10px rgba(0,0,0,.12)); }
-.bocadillo{ flex:1; background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:clamp(10px,2.2vh,16px) clamp(12px,2.6vw,18px); position:relative; box-shadow:0 6px 24px rgba(2,6,23,.06); }
-.bocadillo::before{ content:""; position:absolute; left:-10px; top:18px; width:0; height:0; border-style:solid; border-width:10px 10px 10px 0; border-color:transparent #e5e7eb transparent transparent; }
-.bocadillo::after{ content:""; position:absolute; left:-8px; top:20px; width:0; height:0; border-style:solid; border-width:8px 8px 8px 0; border-color:transparent #fff transparent transparent; }
-.big{ font-weight:700; margin:0 0 6px; }
-.correctas, .elegidas{ margin:.25rem 0 .25rem 1rem; padding:0; }
-.correctas li{ list-style:none; margin:2px 0; color:#065f46; font-weight:600; }
-.elegidas li{ list-style:none; margin:2px 0; color:#374151; }
-.tus{ margin:.5rem 0 0; font-size:.95rem; color:#6b7280; }
-.funfact{ display:flex; gap:12px; align-items:flex-start; background:#f8fafc; border:1px solid #e5e7eb; border-radius:14px; padding:12px 14px; margin-top:10px; }
-.ff-icon{ font-size:1.4rem; line-height:1; }
-.ff-title{ font-weight:700; margin-bottom:2px; }
-.ff-text{ color:#334155; }
-.actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
-@media (max-width:560px){ .reveal{ flex-direction:column; align-items:center; } .mascota{ width:92px; } .bocadillo::before, .bocadillo::after{ display:none; } }
+<script>
+  // Plan B: si el CSS no gana por cascada, forzamos en runtime.
+  (function(){
+    // añade una marca a <body> por si quieres estilos scopeados
+    document.body.classList.add('page-respuesta');
 
-
-</style>
+    var main = document.querySelector('main.center-wrapper');
+    if(main){
+      main.style.background = 'transparent';
+      main.style.boxShadow  = 'none';
+      main.style.border     = '0';
+      main.style.padding    = '0';
+      // Esto elimina físicamente el “rectángulo”
+      main.style.display    = 'contents';
+    }
+    var wrapCard = document.querySelector('main.center-wrapper > .card');
+    if(wrapCard){
+      wrapCard.style.background = 'transparent';
+      wrapCard.style.boxShadow  = 'none';
+      wrapCard.style.border     = '0';
+      wrapCard.style.padding    = '0';
+      wrapCard.style.margin     = '0';
+      wrapCard.style.display    = 'contents';
+    }
+  })();
+</script>
 {% endblock %}

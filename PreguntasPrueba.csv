@@ -1,8 +1,12 @@
-id;pregunta;categoria;dificultad;fecha_creacion;fecha_mostrada;ruta_audio;ruta_imagen
-1;"Todos hemos escuchado mil veces ""Sarandonga"", pero que día se va a comer el ""arroz con bacalao"" ????";Encuestas WhatsApp;Media;2023-01-14T11:43;;;
-2;¿Cuál de los siguientes instrumentos es un instrumento de *CUERDA PULSADA* ??????;Encuestas WhatsApp;Media;2023-01-14T13:55;;;
-7;cuál de las siguientes combinaciones tortuga ninja- arma es *INCORRECTA* ???? ??;Encuestas WhatsApp;Media;2023-01-15T15:45;;;
-8;¿Cuántos grados son necesarios para que dos ángulos sean complementarios? ????;Encuestas WhatsApp;Media;2023-01-16T10:46;;;
-10;¿Cual es el mineral más abundante del núcleo de La Tierra? ???? ??;Encuestas WhatsApp;Media;2023-01-17T09:49;;;
-9;¿Cuál de los siguientes organos *NO* forma parte del aparato digestivo? ??;Encuestas WhatsApp;Media;2023-01-16T19:01;;;
-14;¿Cuál de las siguientes opciones *NO* es una clasificación de verbos según su significado? ?? ??;Encuestas WhatsApp;Media;2023-01-20T09:33;;;
+id;pregunta;tipo;categoria;dificultad;fun_fact;fecha_creacion;fecha_mostrada;ruta_audio;ruta_imagen
+1;"Todos hemos escuchado mil veces ""Sarandonga"", pero que día se va a comer el ""arroz con bacalao"" ????";Normal;Encuestas WhatsApp;Media;Sarandonga un arroz con bacalao, sarandonga que mañana es domingo!;2023-01-14T11:43;;;
+2;¿Cuál de los siguientes instrumentos es un instrumento de *CUERDA PULSADA* ??????;Normal;Encuestas WhatsApp;Media;La lira era tan importante en la Antigua Grecia que estaba asociada al dios Apolo. Se consideraba símbolo de equilibrio y armonía del universo, y se usaba para acompañar la poesía y los cantos épicos.;2023-01-14T13:55;;;
+3;¿Cuál de estás palabras procede del Euskera? ??;Relampago;Encuestas WhatsApp;Media;;2023-01-15T15:35;;;
+4;Cuál es la técnica culinaria que consiste en semicocinar alimentos sumergiendolos en agua hirviendo ???? ??;Relampago;Encuestas WhatsApp;Media;;2023-01-15T15:37;;;
+5;La escala de Beaufort es una medida empirica de ls intensidad ... ?? ??;Relampago;Encuestas WhatsApp;Media;;2023-01-15T15:39;;;
+6;Por protocolo puedes llevar el primer botón de la camisa desabrochado con corbata ?? ??;Relampago;Encuestas WhatsApp;Media;;2023-01-15T15:41;;;
+7;Cuál de las siguientes combinaciones tortuga ninja- arma es *INCORRECTA* ???? ??;Relampago;Encuestas WhatsApp;Media;En algunas adaptaciones censuradas en Europa (años 90), a Michelangelo le cambiaron los nunchakus por un lazo porque se consideraban un arma peligrosa para los niños.;2023-01-15T15:45;;;
+8;¿Cuántos grados son necesarios para que dos ángulos sean complementarios? ????;Normal;Encuestas WhatsApp;Media;El término complementario viene del latín complementum, que significa “lo que completa”. Es decir, un ángulo “complementa” al otro hasta llegar a 90°.;2023-01-16T10:46;;;
+9;¿Cuál de los siguientes organos *NO* forma parte del aparato digestivo? ??;Normal;Encuestas WhatsApp;Media;Aunque el bazo no es esencial para la vida (puede extirparse si es necesario), las personas sin bazo son más vulnerables a ciertas infecciones.;2023-01-16T19:01;;;
+10;¿Cual es el mineral más abundante del núcleo de La Tierra? ???? ??;Normal;Encuestas WhatsApp;Media;El movimiento del hierro líquido en el núcleo externo es el que genera el campo magnético terrestre, que nos protege de la radiación solar.;2023-01-17T09:49;;;
+14;¿Cuál de las siguientes opciones *NO* es una clasificación de verbos según su significado? ?? ??;Normal;Encuestas WhatsApp;Media;Los verbos copulativos (como ser, estar y parecer) no expresan acción por sí mismos, sino que sirven de “puente” para unir el sujeto con un atributo.;2023-01-20T09:33;;;

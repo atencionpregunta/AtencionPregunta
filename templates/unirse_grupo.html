@@ -1,123 +1,114 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Unirse a Grupo · Reto Diario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="icon" type="image/png" sizes="32x32"
-      href="{{ url_for('static', filename='img/ATPPet-32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16"
-      href="{{ url_for('static', filename='img/ATPPet-16.png') }}">
+{% extends "base.html" %}
+{% set body_class = 'app-shell tone-soft page-grupos' %}
+{% block title %}Unirse a Grupo · Reto Diario{% endblock %}
 
-    <!-- iOS / atajo a pantalla de inicio -->
-    <link rel="apple-touch-icon"
-      href="{{ url_for('static', filename='img/ATPPet-180.png') }}">
-    <style>
-      .grupos-usuario { margin-top:20px; }
-      .grupos-usuario ul { list-style:none; padding:0; }
-      .grupos-usuario li { margin:6px 0; display:flex; align-items:center; gap:8px; }
-      
-    </style>
-</head>
-<body>
-    <main class="center-wrapper">
-        <div class="card fade-in">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                    <div class="flash {{ category }}">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            <h1><i class="fa-solid fa-users"></i> Unirse a Grupo</h1>
-            <form method="POST" action="{{ url_for('grupos.unirse_grupo') }}" class="formulario">
-                <div class="form-group">
-                    <label for="codigo_grupo">Nombre o código del grupo:</label>
-                    <input type="text" name="codigo_grupo" id="codigo_grupo" required>
-                </div>
-                <div class="form-group">
-                    <label for="contrasena_grupo">Contraseña (si tiene):</label>
-                    <input type="password" name="contrasena_grupo" id="contrasena_grupo">
-                </div>
-                <button type="submit" class="btn primary-btn">
-                    <i class="fa-solid fa-door-open"></i> Unirse al grupo
-                </button>
-                <a href="{{ url_for('index') }}" class="btn secondary-btn">⬅️ Volver al inicio</a>
-            </form>
-
-           <!-- EXPLORADOR DE GRUPOS PÚBLICOS -->
-         <div class="publicos">
-  <h3><i class="fa-solid fa-globe"></i> Grupos públicos</h3>
-
-  <div class="publicos__search">
-    <input type="text" id="search_publicos" placeholder="Buscar grupo público…" autocomplete="off">
+{% block content %}
+<header class="header">
+  <div class="title">
+    <a class="btn-link" href="{{ url_for('index') }}" title="Volver al inicio">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <h2><i class="fa-solid fa-users"></i> Unirse a grupo</h2>
   </div>
+  <div class="chips">
+    <span class="chip"><i class="fa-solid fa-globe"></i> Explora públicos</span>
+  </div>
+</header>
 
-  <table class="publicos-table">
-     <colgroup>
-      <col style="width:40%">
-      <col style="width:30%">
-      <col style="width:30%">
-  </colgroup>
-    <thead>
-      <tr>
-        <th>Grupo</th>
-        <th>Miembros</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody id="publicos_list">
-      <tr><td colspan="3" class="hint neutral">Escribe para buscar o pulsa “Buscar”.</td></tr>
-    </tbody>
-  </table>
+<div class="form-shell">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="{{ url_for('grupos.unirse_grupo') }}">
+    <div class="form-row">
+      <label for="codigo_grupo"><strong>Nombre o código del grupo</strong></label>
+      <input class="input" type="text" name="codigo_grupo" id="codigo_grupo" required>
+    </div>
+    <div class="form-row">
+      <label for="contrasena_grupo"><strong>Contraseña (si tiene)</strong></label>
+      <input class="input" type="password" name="contrasena_grupo" id="contrasena_grupo">
+    </div>
+
+<button type="submit" class="primary-btn primary-btn--full">
+  <i class="fa-solid fa-door-open"></i> Unirse al grupo
+</button>
+
+
+  </form>
+
+  <!-- Explorador de grupos públicos -->
+  <div class="publicos">
+    <h3><i class="fa-solid fa-globe"></i> Grupos públicos</h3>
+
+    <div class="publicos__search">
+      <input class="input" type="text" id="search_publicos" placeholder="Buscar grupo público…" autocomplete="off">
+    </div>
+
+    <table class="publicos-table">
+      <colgroup>
+        <col style="width:40%">
+        <col style="width:30%">
+        <col style="width:30%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Grupo</th>
+          <th>Miembros</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="publicos_list">
+        <tr><td colspan="3" class="hint neutral">Escribe para buscar…</td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
+{% endblock %}
 
-    </main>
-    <footer>
-        <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
-    </footer>
-</body>
-
+{% block scripts %}
 <script>
 (function(){
   const formJoin    = document.querySelector('form[action="{{ url_for("grupos.unirse_grupo") }}"]');
   const inputCodigo = document.getElementById("codigo_grupo");
   const listEl      = document.getElementById("publicos_list");
   const qInput      = document.getElementById("search_publicos");
+  const LIST_URL    = "{{ url_for('grupos.listar_publicos') }}";
 
-  // Render filas en la tabla
+  function escapeHtml(s){ return (s??'').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+
   function renderLista(items){
-    if (!listEl || listEl.tagName !== 'TBODY') return;
+    if (!listEl) return;
     if (!items.length){
       listEl.innerHTML = '<tr><td colspan="3" class="hint neutral">No hay resultados.</td></tr>';
       return;
     }
-    const rows = items.map(g => {
-      const nombre = (g.codigo ?? '').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    listEl.innerHTML = items.map(g => {
+      const nombre = escapeHtml(g.codigo);
       const n = Number(g.miembros ?? 0);
-      const label = n + (n === 1 ? ' miembro' : ' miembros');
       return `
         <tr>
           <td>${nombre}</td>
           <td style="text-align:center; white-space:nowrap;">${n}</td>
           <td style="text-align:right;">
-            <button type="button" class="btn primary-btn btn-sm" onclick="
-              document.getElementById('codigo_grupo').value='${nombre}';
-              document.querySelector('form[action=\\'{{ url_for("grupos.unirse_grupo") }}\\']').submit();
-            ">Unirse</button>
+            <button type="button" class="primary-btn btn-sm join-btn" data-code="${nombre}">Unirse</button>
           </td>
         </tr>`;
     }).join("");
-    listEl.innerHTML = rows;
   }
 
-  // Debounce helper
-  function debounce(fn, delay=300){
-    let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), delay); };
-  }
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.join-btn');
+    if (!btn) return;
+    inputCodigo.value = btn.dataset.code || '';
+    formJoin.submit();
+  });
+
+  function debounce(fn, delay=300){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), delay); }; }
 
   let aborter = null;
   async function cargarPublicos(q=""){
@@ -128,7 +119,7 @@
     listEl.innerHTML = '<tr><td colspan="3" class="hint neutral">Buscando…</td></tr>';
 
     try{
-      const url = new URL("{{ url_for('grupos.listar_publicos') if url_for else '/grupos/publicos' }}", window.location.origin);
+      const url = new URL(LIST_URL, window.location.origin);
       if (q.trim()) url.searchParams.set("q", q.trim());
       url.searchParams.set("limit", "25");
       const res = await fetch(url.toString(), { credentials:"same-origin", signal: aborter.signal });
@@ -136,25 +127,17 @@
       const data = await res.json();
       renderLista(data.items || []);
     }catch(e){
-      if (e.name === 'AbortError') return; // se canceló por nueva búsqueda
+      if (e.name === 'AbortError') return;
       listEl.innerHTML = '<tr><td colspan="3" class="hint bad">Error al cargar grupos.</td></tr>';
       console.error(e);
     }
   }
 
-  // Buscar al teclear (con debounce)
   const debounced = debounce(() => cargarPublicos(qInput.value), 300);
   qInput.addEventListener('input', debounced);
+  qInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); cargarPublicos(qInput.value); }});
 
-  // Enter fuerza búsqueda inmediata (opcional)
-  qInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); cargarPublicos(qInput.value); }
-  });
-
-  // Primera carga (sin filtro)
   cargarPublicos("");
 })();
 </script>
-
-
-</html>
+{% endblock %}

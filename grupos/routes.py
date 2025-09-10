@@ -226,3 +226,13 @@ def listar_publicos():
 
     items = [{"id": r["id"], "codigo": r["codigo"], "miembros": r["miembros"]} for r in rows]
     return jsonify({"items": items, "limit": limit, "offset": offset})
+
+@grupos_bp.get("/grupos/check-nombre")
+def check_nombre():
+    q = (request.args.get("q") or "").strip()
+    if not q:
+        return jsonify({"exists": False})
+    with db_lock, get_conn() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT 1 FROM Grupos WHERE codigo = ? COLLATE NOCASE", (q,))
+        return jsonify({"exists": cur.fetchone() is not None})
