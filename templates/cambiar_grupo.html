@@ -1,60 +1,129 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Cambiar Grupo Activo · Reto Diario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="icon" type="image/png" sizes="32x32"
-      href="{{ url_for('static', filename='img/ATPPet-32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16"
-      href="{{ url_for('static', filename='img/ATPPet-16.png') }}">
+{% extends "base.html" %}
+{% set body_class = 'page-cambiar-grupo' %}
+{% block title %}Cambiar grupo activo · Reto Diario{% endblock %}
 
-<!-- iOS / atajo a pantalla de inicio -->
-    <link rel="apple-touch-icon"
-        href="{{ url_for('static', filename='img/ATPPet-180.png') }}">
-</head>
+{% block extra_head %}
+<style>
+  /* —— Form layout —— */
+  .form-cambiar-grupo {
+    display: grid;
+    gap: 12px;
+  }
 
-<body>
-    <main class="center-wrapper">
-        <div class="card fade-in">
-            <h1><i class="fa-solid fa-people-group"></i> Cambiar Grupo Activo</h1>
+  .form-row {
+    display: grid;
+    gap: 6px;
+  }
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="flash {{ category }}">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+  .form-row label {
+    font-weight: 700;
+    font-size: .95rem;
+  }
 
-            {% if grupos %}
-                <form method="POST">
-                    <div class="form-group">
-                        <label for="grupo_codigo">Selecciona un grupo:</label>
-                        <select name="grupo_codigo" id="grupo_codigo" required class="btn">
-                            {% for grupo in grupos %}
-                                <option value="{{ grupo.codigo }}">{{ grupo.codigo }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <button type="submit" class="btn primary-btn" style="margin-top: 1.5rem;">
-                        <i class="fa-solid fa-check"></i> Activar Grupo
-                    </button>
-                    <a href="/" class="btn secondary-btn">⬅️ Volver al inicio</a>
-                </form>
-            {% else %}
-                <p>No perteneces a ningún grupo.</p>
-                <a href="/unirse_grupo" class="btn primary-btn">👥 Unirse a grupo</a>
-                <a href="/crear_grupo" class="btn secondary-btn">🆕 Crear grupo</a>
-            {% endif %}
+  /* —— Select estilizado para encajar con tu UI —— */
+  .select-wrap {
+    position: relative;
+  }
+
+  .select-wrap::after {
+    content: "\f107"; /* chevron-down (FA) */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    opacity: .6;
+  }
+
+  select.input-select {
+    width: 100%;
+    padding: 12px 40px 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    font: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    box-shadow: 0 3px 10px rgba(0,0,0,.05);
+  }
+
+  select.input-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(239,68,68,.15);
+  }
+
+  /* —— Flashes —— */
+  .flash { 
+    padding: 10px 12px; 
+    border-radius: 12px; 
+    margin-bottom: 8px; 
+    font-weight: 600;
+  }
+  .flash.success { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+  .flash.error   { background:#fef2f2; color:#7f1d1d; border:1px solid #fecaca; }
+  .flash.info    { background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; }
+
+  /* —— Acciones —— */
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+    align-items: center; /* centra botones */
+  }
+
+  /* Helper por si quieres centrar un botón concreto */
+  .btn-centrado { display:block; margin: 0 auto; }
+</style>
+{% endblock %}
+
+{% block content %}
+  <header class="header" style="text-align:center; margin-bottom: 8px;">
+    <h1><i class="fa-solid fa-people-group"></i> Cambiar Grupo Activo</h1>
+    <p class="lead">Elige el grupo con el que quieres jugar ahora.</p>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% if grupos %}
+    <form method="POST" class="form-cambiar-grupo" novalidate>
+      <div class="form-row">
+        <label for="grupo_codigo">Selecciona un grupo</label>
+        <div class="select-wrap">
+          <select name="grupo_codigo" id="grupo_codigo" required class="input-select">
+            {% for grupo in grupos %}
+              <option value="{{ grupo.codigo }}">{{ grupo.codigo }}</option>
+            {% endfor %}
+          </select>
         </div>
-    </main>
+      </div>
 
-    <footer>
-        <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
-    </footer>
-</body>
-</html>
+      <div class="actions">
+        <button type="submit" class="btn primary-btn btn-centrado">
+          <i class="fa-solid fa-check"></i> Activar grupo
+        </button>
+        <a href="{{ url_for('resultados.ver_resultados') }}" class="btn secondary-btn">
+          ⬅️ Volver al inicio
+        </a>
+      </div>
+    </form>
+  {% else %}
+    <p class="lead" style="text-align:center;margin: 8px 0 14px;">
+      No perteneces a ningún grupo todavía.
+    </p>
+    <div class="actions">
+      <a href="{{ url_for('grupos.unirse_grupo') }}" class="btn primary-btn">👥 Unirse a grupo</a>
+      <a href="{{ url_for('grupos.crear_grupo') }}" class="btn secondary-btn">🆕 Crear grupo</a>
+    </div>
+  {% endif %}
+{% endblock %}

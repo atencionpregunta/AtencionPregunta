@@ -1,157 +1,204 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Usuario · Reto Diario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="icon" type="image/png" sizes="32x32"
-      href="{{ url_for('static', filename='img/ATPPet-32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16"
-      href="{{ url_for('static', filename='img/ATPPet-16.png') }}">
+{% extends "base.html" %}
+{% set body_class = 'app-shell tone-soft page-auth' %}
+{% block title %}Crear Usuario · Reto Diario{% endblock %}
 
-    <!-- iOS / atajo a pantalla de inicio -->
-    <link rel="apple-touch-icon"
-      href="{{ url_for('static', filename='img/ATPPet-180.png') }}">
-      
-    <style>
-      .hint { font-size:.95rem; margin-top:6px; min-height:1.2em; }
-      .hint.ok { color:#1e8543; }
-      .hint.bad { color:#c62828; }
-      .hint.neutral { color:#6b7280; }
-      .btn[disabled] { opacity:.5; cursor:not-allowed; }
-    </style>
-</head>
-<body>
-    <main class="center-wrapper">
-        <div class="card fade-in">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                {% for category, message in messages %}
-                  <div class="flash {{ category }}">{{ message }}</div>
-                {% endfor %}
-              {% endif %}
-            {% endwith %}
+{% block extra_head %}
+<style>
+  :root{
+    --input-h: 46px;
+    --input-px: 14px;
+    --input-radius: 999px;
+  }
 
-            <h1><i class="fa-solid fa-user-plus"></i> Crear Usuario</h1>
+  /* Encabezado */
+  .page-auth .header .title h2{ display:flex; align-items:center; gap:8px; }
 
-            <form method="POST" action="{{ url_for('auth.crear_usuario') }}" class="formulario" id="form-crear-usuario" novalidate>
-                <div class="form-group">
-                    <label for="usuario">Nombre de usuario:</label>
-                    <input type="text" name="usuario" id="usuario" required autocomplete="off" value="{{ request.form.get('usuario','') }}">
-                    <div id="usuario_hint" class="hint neutral">Elige tu nombre de usuario.</div>
-                </div>
+  /* Inputs y filas */
+  .form-row{ display:grid; gap:6px; margin-top:10px; }
+  .form-row label{ font-weight:700; font-size:.95rem; }
 
-                <div class="form-group">
-                    <label for="mail">Email:</label>
-                    <input type="email" name="mail" id="mail" required autocomplete="off" value="{{ request.form.get('mail','') }}">
-                    <div id="mail_hint" class="hint neutral">Introduce tu email.</div>
-                </div>
+  .input{
+    display:block; width:100%;
+    height:var(--input-h);
+    box-sizing:border-box;
+    padding:0 var(--input-px);
+    border:1px solid var(--line);
+    border-radius:var(--input-radius);
+    background:#fff;
+    font:inherit; line-height:normal; outline:none;
+    box-shadow:0 3px 10px rgba(0,0,0,.05);
+  }
+  .input:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(239,68,68,.15);
+  }
+  /* email/number/password son inputs también */
+  input[type="number"].input{ padding-right: 10px; }
+  input[type="password"].input{ letter-spacing: .02em; }
 
-                <div class="form-group">
-                    <label for="contrasena">Contraseña:</label>
-                    <input type="password" name="contrasena" id="contrasena" required>
-                    <div id="pass_hint" class="hint neutral">Mínimo 4 caracteres.</div>
-                </div>
+  /* Tips/estados */
+  .hint{ font-size:.95rem; margin-top:6px; min-height:1.2em; }
+  .hint.ok{ color:#1e8543; }
+  .hint.bad{ color:#c62828; }
+  .hint.neutral{ color:#6b7280; }
 
-                <div class="form-group">
-                    <label for="pais">País:</label>
-                    <input type="text" name="pais" id="pais" value="{{ request.form.get('pais','') }}">
-                </div>
+  /* Botón crear + volver */
+  .form-actions{
+    display:grid; grid-template-columns:1fr; gap:10px; margin-top:12px;
+  }
+  .form-actions .primary-btn{ width:100%; justify-self:stretch; }
+  .form-actions .secondary-btn{ width:auto; justify-self:start; }
 
-                <div class="form-group">
-                    <label for="edad">Edad:</label>
-                    <input type="number" name="edad" id="edad" min="1" value="{{ request.form.get('edad','') }}">
-                </div>
+  @media (min-width:769px){
+    .form-actions{ grid-template-columns:1fr auto; }
+  }
 
-                <button type="submit" class="btn primary-btn" id="btn-crear" disabled>
-                    <i class="fa-solid fa-check"></i> Crear Usuario
-                </button>
-            </form>
-        </div>
-    </main>
-    <footer>
-        <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
-    </footer>
+  .btn[disabled]{ opacity:.5; cursor:not-allowed; box-shadow:none; }
+</style>
+{% endblock %}
 
-    <script>
-      function debounce(fn, delay=300){ let t; return (...a)=>{clearTimeout(t); t=setTimeout(()=>fn(...a),delay);} }
-      const el = {
-        form: document.getElementById("form-crear-usuario"),
-        usuario: document.getElementById("usuario"),
-        usuarioHint: document.getElementById("usuario_hint"),
-        mail: document.getElementById("mail"),
-        mailHint: document.getElementById("mail_hint"),
-        pass: document.getElementById("contrasena"),
-        passHint: document.getElementById("pass_hint"),
-        submit: document.getElementById("btn-crear"),
-      };
+{% block content %}
+<header class="header">
+  <div class="title">
+    <a class="btn-link" href="{{ url_for('auth.login_form') }}" title="Volver al inicio de sesión">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <h2><i class="fa-solid fa-user-plus"></i> Crear usuario</h2>
+  </div>
+  <div class="chips">
+    <span class="chip"><i class="fa-solid fa-shield-halved"></i> Revisión de disponibilidad en vivo</span>
+  </div>
+</header>
 
-      let usuarioOK = false, mailOK = false, passOK = false;
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 
-      const setHint = (node, state, msg="")=>{
-        // state: neutral | ok | bad
-        node.className = "hint " + (state || "neutral");
-        node.textContent = msg;
-      };
+<form method="POST"
+      action="{{ url_for('auth.crear_usuario') }}"
+      id="form-crear-usuario"
+      novalidate>
+  <div class="form-row">
+    <label for="usuario"><strong>Nombre de usuario</strong></label>
+    <input class="input" type="text" name="usuario" id="usuario"
+           required autocomplete="off" value="{{ request.form.get('usuario','') }}">
+    <div id="usuario_hint" class="hint neutral">Elige tu nombre de usuario.</div>
+  </div>
 
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  <div class="form-row">
+    <label for="mail"><strong>Email</strong></label>
+    <input class="input" type="email" name="mail" id="mail"
+           required autocomplete="off" value="{{ request.form.get('mail','') }}">
+    <div id="mail_hint" class="hint neutral">Introduce tu email.</div>
+  </div>
 
-      const refreshSubmit = ()=>{
-        el.submit.disabled = !(usuarioOK && mailOK && passOK);
-      };
+  <div class="form-row">
+    <label for="contrasena"><strong>Contraseña</strong></label>
+    <input class="input" type="password" name="contrasena" id="contrasena" required>
+    <div id="pass_hint" class="hint neutral">Mínimo 4 caracteres.</div>
+  </div>
 
-      const checkUsuario = debounce(async ()=>{
-        const v = (el.usuario.value||"").trim();
-        if(!v){ usuarioOK=false; setHint(el.usuarioHint,"neutral","Elige tu nombre de usuario."); return refreshSubmit(); }
-        setHint(el.usuarioHint,"neutral","Comprobando disponibilidad…");
-        try{
-          const url = new URL("{{ url_for('auth.check_usuario') }}", window.location.origin);
-          url.searchParams.set("usuario", v);
-          const res = await fetch(url, { credentials:"same-origin" });
-          const data = await res.json();
-          if(data.available){ usuarioOK = true; setHint(el.usuarioHint,"ok","Nombre disponible ✔"); }
-          else { usuarioOK=false; setHint(el.usuarioHint,"bad","Ese usuario ya existe."); }
-        }catch{ usuarioOK=false; setHint(el.usuarioHint,"bad","No se pudo comprobar ahora."); }
-        refreshSubmit();
-      }, 350);
+  <div class="form-row">
+    <label for="pais"><strong>País</strong></label>
+    <input class="input" type="text" name="pais" id="pais"
+           value="{{ request.form.get('pais','') }}">
+  </div>
 
-      const checkMail = debounce(async ()=>{
-        const v = (el.mail.value||"").trim();
-        if(!v){ mailOK=false; setHint(el.mailHint,"neutral","Introduce tu email."); return refreshSubmit(); }
-        if(!emailRegex.test(v)){ mailOK=false; setHint(el.mailHint,"bad","Formato de email no válido."); return refreshSubmit(); }
+  <div class="form-row">
+    <label for="edad"><strong>Edad</strong></label>
+    <input class="input" type="number" name="edad" id="edad" min="1"
+           value="{{ request.form.get('edad','') }}">
+  </div>
 
-        setHint(el.mailHint,"neutral","Comprobando disponibilidad…");
-        try{
-          const url = new URL("{{ url_for('auth.check_mail') }}", window.location.origin);
-          url.searchParams.set("mail", v);
-          const res = await fetch(url, { credentials:"same-origin" });
-          const data = await res.json();
-          if(data.available){ mailOK = true; setHint(el.mailHint,"ok","Email disponible ✔"); }
-          else { mailOK=false; setHint(el.mailHint,"bad","Ese email ya está en uso."); }
-        }catch{ mailOK=false; setHint(el.mailHint,"bad","No se pudo comprobar ahora."); }
-        refreshSubmit();
-      }, 350);
+  <div class="form-actions">
+    <button type="submit" class="btn primary-btn" id="btn-crear" disabled>
+      <i class="fa-solid fa-check"></i> Crear usuario
+    </button>
+  </div>
+</form>
+{% endblock %}
 
-      const checkPass = ()=>{
-        const v = el.pass.value || "";
-        if(v.length >= 4){ passOK = true; setHint(el.passHint,"ok","OK ✔"); }
-        else { passOK=false; setHint(el.passHint,"neutral","Mínimo 4 caracteres."); }
-        refreshSubmit();
-      };
+{% block scripts %}
+<script>
+(function(){
+  function debounce(fn, delay=300){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),delay); }; }
 
-      el.usuario.addEventListener("input", checkUsuario);
-      el.mail.addEventListener("input", checkMail);
-      el.pass.addEventListener("input", checkPass);
+  const el = {
+    form: document.getElementById("form-crear-usuario"),
+    usuario: document.getElementById("usuario"),
+    usuarioHint: document.getElementById("usuario_hint"),
+    mail: document.getElementById("mail"),
+    mailHint: document.getElementById("mail_hint"),
+    pass: document.getElementById("contrasena"),
+    passHint: document.getElementById("pass_hint"),
+    submit: document.getElementById("btn-crear"),
+  };
 
-      el.form.addEventListener("submit",(e)=>{
-        if(el.submit.disabled) e.preventDefault();
-      });
+  let usuarioOK = false, mailOK = false, passOK = false;
 
-      // Estado inicial
-      refreshSubmit();
-    </script>
-</body>
-</html>
+  const setHint = (node, state, msg="")=>{
+    node.className = "hint " + (state || "neutral");
+    node.textContent = msg;
+  };
+
+  const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+
+  const refreshSubmit = ()=>{ el.submit.disabled = !(usuarioOK && mailOK && passOK); };
+
+  const checkUsuario = debounce(async ()=>{
+    const v = (el.usuario.value||"").replace(/\\s+/g,' ').trim();
+    el.usuario.value = v;
+    if(!v){ usuarioOK=false; setHint(el.usuarioHint,"neutral","Elige tu nombre de usuario."); return refreshSubmit(); }
+    setHint(el.usuarioHint,"neutral","Comprobando disponibilidad…");
+    try{
+      const url = new URL("{{ url_for('auth.check_usuario') }}", window.location.origin);
+      url.searchParams.set("usuario", v);
+      const res = await fetch(url, { credentials:"same-origin" });
+      const data = await res.json();
+      if(data.available){ usuarioOK = true; setHint(el.usuarioHint,"ok","Nombre disponible ✔"); }
+      else { usuarioOK=false; setHint(el.usuarioHint,"bad","Ese usuario ya existe."); }
+    }catch{ usuarioOK=false; setHint(el.usuarioHint,"bad","No se pudo comprobar ahora."); }
+    refreshSubmit();
+  }, 350);
+
+  const checkMail = debounce(async ()=>{
+    const v = (el.mail.value||"").trim();
+    if(!v){ mailOK=false; setHint(el.mailHint,"neutral","Introduce tu email."); return refreshSubmit(); }
+    if(!emailRegex.test(v)){ mailOK=false; setHint(el.mailHint,"bad","Formato de email no válido."); return refreshSubmit(); }
+
+    setHint(el.mailHint,"neutral","Comprobando disponibilidad…");
+    try{
+      const url = new URL("{{ url_for('auth.check_mail') }}", window.location.origin);
+      url.searchParams.set("mail", v);
+      const res = await fetch(url, { credentials:"same-origin" });
+      const data = await res.json();
+      if(data.available){ mailOK = true; setHint(el.mailHint,"ok","Email disponible ✔"); }
+      else { mailOK=false; setHint(el.mailHint,"bad","Ese email ya está en uso."); }
+    }catch{ mailOK=false; setHint(el.mailHint,"bad","No se pudo comprobar ahora."); }
+    refreshSubmit();
+  }, 350);
+
+  const checkPass = ()=>{
+    const v = el.pass.value || "";
+    if(v.length >= 4){ passOK = true; setHint(el.passHint,"ok","OK ✔"); }
+    else { passOK=false; setHint(el.passHint,"neutral","Mínimo 4 caracteres."); }
+    refreshSubmit();
+  };
+
+  el.usuario.addEventListener("input", checkUsuario);
+  el.mail.addEventListener("input", checkMail);
+  el.pass.addEventListener("input", checkPass);
+
+  el.form.addEventListener("submit",(e)=>{
+    if(el.submit.disabled) e.preventDefault();
+  });
+
+  // Estado inicial
+  refreshSubmit();
+})();
+</script>
+{% endblock %}

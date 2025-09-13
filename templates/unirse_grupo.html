@@ -2,6 +2,418 @@
 {% set body_class = 'app-shell tone-soft page-grupos' %}
 {% block title %}Unirse a Grupo · Reto Diario{% endblock %}
 
+{% block extra_head %}
+<style>
+  :root {
+    --line: #e8eaf0;
+    --muted: #6b7280;
+    --ink: #111827;
+    --chip: #f6f8ff;
+    --chip-b: #e6eafe;
+    --ok: #16a34a;
+    --bad: #dc2626;
+  }
+
+  .shell {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Header ----------- */
+  .header .title h2 {
+    margin: 0;
+    font-size: 1.6rem;
+  }
+
+  .chips .chip {
+    background: #f8fafc;
+    border: 1px solid var(--line);
+  }
+
+  /* ---------- Filter bar (pill) ----------- */
+  .filterbar {
+    background: #fafbff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 12px;
+    margin: 10px 0 14px;
+    box-shadow: 0 8px 22px rgba(2, 6, 23, .04) inset;
+  }
+
+  .filters {
+    display: grid;
+    grid-template-columns: 1.2fr .7fr .8fr .9fr .9fr;
+    gap: 10px;
+    align-items: end;
+  }
+
+  .field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .field label {
+    font-weight: 800;
+    font-size: .92rem;
+    color: #1f2937;
+  }
+
+  /* Inputs coherentes con tu sistema */
+  .input {
+    height: 46px;
+    padding: 12px 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--ink);
+    transition: border-color .15s, box-shadow .18s, background-color .18s;
+    font: inherit;
+    outline: 0;
+  }
+
+  .input:focus {
+    border-color: #d6dae3;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .10);
+  }
+
+  .input::placeholder {
+    color: #9ca3af;
+  }
+
+  @media (max-width:900px) {
+    .filters {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .field.range {
+      grid-column: 1 / -1;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+  }
+
+  /* ---------- Tabla de grupos ----------- */
+  .gtable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .gtable thead th {
+    text-align: left;
+    font-weight: 900;
+    font-size: .78rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #64748b;
+    padding: 10px;
+    background: #fafafa;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .gtable tbody tr {
+    transition: background .15s ease, transform .03s ease;
+  }
+
+  .gtable tbody td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #f1f4f8;
+    vertical-align: middle;
+  }
+
+  .gtable tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .gtable tbody tr:hover {
+    background: #fbfdff;
+  }
+
+  .gtable tbody tr:active {
+    transform: scale(.999);
+  }
+
+  .gname {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    font-weight: 800;
+  }
+
+  .gname .icon {
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    border: 1px solid;
+  }
+
+  .gname .icon.public {
+    background: #e7f2ff;
+    color: #1d4ed8;
+    border-color: #cfe4ff;
+  }
+
+  .gname .icon.private {
+    background: #fde8e8;
+    color: #b91c1c;
+    border-color: #f5c2c2;
+  }
+
+  .badge-type {
+    margin-left: .3rem;
+    font-size: .68rem;
+    font-weight: 800;
+    padding: .14rem .45rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: #f8fafc;
+    color: #475569;
+  }
+
+  .meta {
+    color: #334155;
+    font-weight: 700;
+    font-size: .95rem;
+    white-space: nowrap;
+  }
+
+  .duration {
+    color: #0f172a;
+    font-weight: 800;
+  }
+
+  .inf {
+    color: #64748b;
+    font-weight: 700;
+  }
+
+  .actions-cell {
+    text-align: right;
+  }
+
+  .join-btn.btn {
+    padding: 10px 14px;
+    border-radius: 999px;
+    font-weight: 900;
+  }
+
+  .join-btn i {
+    font-size: .95rem;
+  }
+
+  .hint {
+    color: var(--muted);
+    text-align: center;
+    padding: 12px;
+  }
+
+  .hint.bad {
+    color: #b91c1c;
+  }
+
+  /* ---------- Modal contraseña ----------- */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, .45);
+    display: none;
+    z-index: 90;
+  }
+
+  .modal-backdrop.is-open {
+    display: grid;
+    place-items: center;
+    padding: 16px;
+  }
+
+  .modal {
+    width: min(92vw, 420px);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 22px 60px rgba(2, 6, 23, .25);
+    padding: 16px;
+  }
+
+  .modal h3 {
+    margin: 0 0 6px;
+    font-size: 1.18rem;
+  }
+
+  .modal .row {
+    display: grid;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .modal .actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+
+  .field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .field label {
+    font-weight: 800;
+    font-size: .92rem;
+    color: #1f2937;
+  }
+
+  .range-inputs {
+    display: flex;
+    gap: 8px;
+  }
+
+  .range-inputs .input {
+    flex: 1;
+  }
+
+  /* El campo búsqueda que ocupe toda la fila */
+  .field.search {
+    grid-column: 1 / -1;
+  }
+
+  .slider-wrap {
+    position: relative;
+    width: 100%;
+    height: 36px;
+  }
+
+  /* Ocultamos el track nativo */
+  .slider-wrap input[type=range] {
+    position: absolute;
+    width: 100%;
+    top: 12px;
+    pointer-events: none;
+    /* ambos solapados, sólo arrastramos thumbs */
+    background: none;
+    -webkit-appearance: none;
+  }
+
+  .slider-wrap input[type=range]::-webkit-slider-runnable-track {
+    background: transparent;
+    height: 4px;
+  }
+
+  .slider-wrap input[type=range]::-moz-range-track {
+    background: transparent;
+    height: 4px;
+  }
+
+  /* Pulgar (thumb) */
+  .slider-wrap input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    pointer-events: auto;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2563eb;
+    border: 2px solid #fff;
+    box-shadow: 0 0 4px rgba(0, 0, 0, .25);
+    cursor: pointer;
+  }
+
+  .slider-wrap input[type=range]::-moz-range-thumb {
+    pointer-events: auto;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2563eb;
+    border: 2px solid #fff;
+    box-shadow: 0 0 4px rgba(0, 0, 0, .25);
+    cursor: pointer;
+  }
+
+  /* Barra de fondo */
+  .slider-track {
+    position: absolute;
+    top: 16px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    border-radius: 4px;
+    background: #d1d5db;
+
+    .field.range {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+  
+    /* Pill de progreso compacta */
+    .temp-pill {
+      display: inline-grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 8px;
+      min-width: 160px;
+    }
+
+    .temp-bar {
+      position: relative;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .temp-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 0%;
+      background: linear-gradient(90deg, #16a34a, #22c55e);
+      border-radius: 999px;
+      transition: width .4s ease;
+    }
+
+    .temp-label {
+      font-weight: 800;
+      font-size: .9rem;
+      color: #111827;
+    }
+
+    .temp-hint {
+      color: #64748b;
+      font-weight: 700;
+      font-size: .82rem;
+    }
+
+    /* estados */
+    .temp--ongoing .temp-fill {
+      background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    }
+
+    .temp--done .temp-fill {
+      background: linear-gradient(90deg, #dc2626, #ef4444);
+    }
+
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <header class="header">
   <div class="title">
@@ -11,133 +423,268 @@
     <h2><i class="fa-solid fa-users"></i> Unirse a grupo</h2>
   </div>
   <div class="chips">
-    <span class="chip"><i class="fa-solid fa-globe"></i> Explora públicos</span>
+    <span class="chip"><i class="fa-solid fa-filter"></i> Filtra y únete con 1 clic</span>
   </div>
 </header>
 
-<div class="form-shell">
+<div class="shell">
   {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="flash {{ category }}">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <div class="flash {{ category }}">{{ message }}</div>
+  {% endfor %}
+  {% endif %}
   {% endwith %}
 
-  <form method="POST" action="{{ url_for('grupos.unirse_grupo') }}">
-    <div class="form-row">
-      <label for="codigo_grupo"><strong>Nombre o código del grupo</strong></label>
-      <input class="input" type="text" name="codigo_grupo" id="codigo_grupo" required>
+  <!-- Filter bar -->
+  <div class="filterbar">
+    <div class="filters" id="filters">
+      <div class="field">
+        <label><strong>Tipo</strong></label>
+        <select class="input" id="f_tipo">
+          <option value="">Todos</option>
+          <option value="publico">Público</option>
+          <option value="privado">Privado</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label><strong>Ordenar por</strong></label>
+        <select class="input" id="f_sort">
+          <option value="miembros_desc">Miembros ↓</option>
+          <option value="miembros_asc">Miembros ↑</option>
+          <option value="duracion_asc">Duración ↑</option>
+          <option value="duracion_desc">Duración ↓</option>
+        </select>
+      </div>
+
+
+      <div class="field search">
+        <label><strong>Búsqueda</strong></label>
+        <input class="input" type="text" id="f_q" placeholder="Buscar por nombre o código…" autocomplete="off">
+      </div>
     </div>
-    <div class="form-row">
-      <label for="contrasena_grupo"><strong>Contraseña (si tiene)</strong></label>
-      <input class="input" type="password" name="contrasena_grupo" id="contrasena_grupo">
-    </div>
-
-<button type="submit" class="primary-btn primary-btn--full">
-  <i class="fa-solid fa-door-open"></i> Unirse al grupo
-</button>
+  </div>
 
 
+
+  <!-- Tabla -->
+  <table class="gtable">
+    <colgroup>
+      <col style="width:54%">
+      <col style="width:16%">
+      <col style="width:16%">
+      <col style="width:14%">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>Grupo</th>
+        <th>Miembros</th>
+        <th>Duración</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="g_list">
+      <tr>
+        <td colspan="4" class="hint neutral">Cargando…</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Form “silencioso” para unirse -->
+  <form id="joinForm" method="POST" action="{{ url_for('grupos.unirse_grupo') }}" style="display:none;">
+    <input type="hidden" name="codigo_grupo" id="join_code">
+    <input type="hidden" name="contrasena_grupo" id="join_pass">
   </form>
+</div>
 
-  <!-- Explorador de grupos públicos -->
-  <div class="publicos">
-    <h3><i class="fa-solid fa-globe"></i> Grupos públicos</h3>
-
-    <div class="publicos__search">
-      <input class="input" type="text" id="search_publicos" placeholder="Buscar grupo público…" autocomplete="off">
+<!-- Modal contraseña -->
+<div class="modal-backdrop" id="pwModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+    <h3 id="pwTitle"><i class="fa-solid fa-lock"></i> Este grupo es privado</h3>
+    <p class="hint" id="pwSubtitle">Introduce la contraseña para <b id="pwGroup">…</b></p>
+    <div class="row">
+      <label for="pwInput"><strong>Contraseña</strong></label>
+      <input class="input" type="password" id="pwInput" placeholder="••••••" autocomplete="off">
     </div>
-
-    <table class="publicos-table">
-      <colgroup>
-        <col style="width:40%">
-        <col style="width:30%">
-        <col style="width:30%">
-      </colgroup>
-      <thead>
-        <tr>
-          <th>Grupo</th>
-          <th>Miembros</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="publicos_list">
-        <tr><td colspan="3" class="hint neutral">Escribe para buscar…</td></tr>
-      </tbody>
-    </table>
+    <div class="actions">
+      <button type="button" class="btn secondary-btn small-btn" id="pwCancel">Cancelar</button>
+      <button type="button" class="btn primary-btn small-btn" id="pwOk">
+        <i class="fa-solid fa-door-open"></i> Unirse
+      </button>
+    </div>
   </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-(function(){
-  const formJoin    = document.querySelector('form[action="{{ url_for("grupos.unirse_grupo") }}"]');
-  const inputCodigo = document.getElementById("codigo_grupo");
-  const listEl      = document.getElementById("publicos_list");
-  const qInput      = document.getElementById("search_publicos");
-  const LIST_URL    = "{{ url_for('grupos.listar_publicos') }}";
+  (function () {
+    const listEl = document.getElementById('g_list');
 
-  function escapeHtml(s){ return (s??'').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+    // Filtros
+    const f_q = document.getElementById('f_q');
+    const f_tipo = document.getElementById('f_tipo');
+    const f_sort = document.getElementById('f_sort');
 
-  function renderLista(items){
-    if (!listEl) return;
-    if (!items.length){
-      listEl.innerHTML = '<tr><td colspan="3" class="hint neutral">No hay resultados.</td></tr>';
-      return;
+
+    // Modal
+    const modal = document.getElementById('pwModal');
+    const pwInput = document.getElementById('pwInput');
+    const pwOk = document.getElementById('pwOk');
+    const pwCancel = document.getElementById('pwCancel');
+    const pwGroupEl = document.getElementById('pwGroup');
+
+    // Join form oculto
+    const joinForm = document.getElementById('joinForm');
+    const joinCode = document.getElementById('join_code');
+    const joinPass = document.getElementById('join_pass');
+
+    const URL_BUSCAR = "{{ url_for('grupos.buscar_grupos') }}";
+
+    function escapeHtml(s) { return (s ?? '').toString().replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])); }
+
+    function renderRows(items) {
+      if (!items || !items.length) {
+        listEl.innerHTML = '<tr><td colspan="4" class="hint neutral">Sin resultados.</td></tr>';
+        return;
+      }
+      listEl.innerHTML = items.map(g => {
+        const nombre = escapeHtml(g.codigo);
+        const tipo = (g.tipo || (g.requiere_password ? 'privado' : 'publico')) || 'publico';
+        const icon = tipo === 'privado'
+          ? '<span class="icon private"><i class="fa-solid fa-lock"></i></span>'
+          : '<span class="icon public"><i class="fa-solid fa-unlock"></i></span>';
+        const badge = tipo === 'privado' ? '<span class="badge-type">Privado</span>' : '<span class="badge-type">Público</span>';
+        const miembros = Number(g.miembros ?? 0);
+
+        // --- TEMPORADA ---
+        const estado = g.estado_temp || (g.duracion_dias == null ? 'ongoing' : 'active');
+        const pct = (g.progreso_pct == null) ? 0 : Math.max(0, Math.min(100, g.progreso_pct));
+        const label = g.progreso_label || (g.duracion_dias == null ? `${g.dias_transcurridos || 0} d · ∞` : '');
+        const hint = (g.duracion_dias == null)
+          ? 'Temporada sin límite'
+          : (g.dias_restantes === 0 ? 'Finalizada' : `${g.dias_restantes}`);
+
+        const tempHtml = `
+      <div class="temp-pill temp--${estado}" title="${hint}">
+  
+        <div class="temp-bar"><div class="temp-fill" style="width:${pct}%;"></div></div>
+        <span class="temp-label">${label}</span>
+      </div>`;
+
+        const btnTxt = (tipo === 'privado') ? 'Entrar' : 'Unirse';
+
+        return `
+      <tr data-code="${nombre}" data-tipo="${tipo}">
+        <td>
+          <div class="gname">${icon}<span>${nombre}</span>${badge}</div>
+        </td>
+        <td class="meta">${miembros}</td>
+        <td class="meta">${tempHtml}</td>
+        <td class="actions-cell">
+          <button type="button" class="btn primary-btn join-btn">
+            <i class="fa-solid fa-door-open"></i> ${btnTxt}
+          </button>
+        </td>
+      </tr>
+    `;
+      }).join('');
     }
-    listEl.innerHTML = items.map(g => {
-      const nombre = escapeHtml(g.codigo);
-      const n = Number(g.miembros ?? 0);
-      return `
-        <tr>
-          <td>${nombre}</td>
-          <td style="text-align:center; white-space:nowrap;">${n}</td>
-          <td style="text-align:right;">
-            <button type="button" class="primary-btn btn-sm join-btn" data-code="${nombre}">Unirse</button>
-          </td>
-        </tr>`;
-    }).join("");
-  }
 
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.join-btn');
-    if (!btn) return;
-    inputCodigo.value = btn.dataset.code || '';
-    formJoin.submit();
-  });
 
-  function debounce(fn, delay=300){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), delay); }; }
+    // Clic unirse
+    listEl.addEventListener('click', (e) => {
+      const tr = e.target.closest('tr[data-code]');
+      if (!tr) return;
+      const code = tr.getAttribute('data-code');
+      const tipo = tr.getAttribute('data-tipo');
+      if (tipo === 'privado') {
+        pwGroupEl.textContent = code;
+        joinCode.value = code;
+        joinPass.value = '';
+        modal.classList.add('is-open');
+        pwInput.value = '';
+        setTimeout(() => pwInput.focus(), 20);
+      } else {
+        joinCode.value = code;
+        joinPass.value = '';
+        joinForm.submit();
+      }
+    });
 
-  let aborter = null;
-  async function cargarPublicos(q=""){
-    if (!listEl) return;
-    if (aborter) aborter.abort();
-    aborter = new AbortController();
+    pwCancel.addEventListener('click', () => modal.classList.remove('is-open'));
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('is-open'); });
+    pwOk.addEventListener('click', () => { joinPass.value = pwInput.value || ''; joinForm.submit(); });
 
-    listEl.innerHTML = '<tr><td colspan="3" class="hint neutral">Buscando…</td></tr>';
+    // Filtros (cliente)
+    function debounce(fn, ms = 300) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
 
-    try{
-      const url = new URL(LIST_URL, window.location.origin);
-      if (q.trim()) url.searchParams.set("q", q.trim());
-      url.searchParams.set("limit", "25");
-      const res = await fetch(url.toString(), { credentials:"same-origin", signal: aborter.signal });
-      if (!res.ok) throw new Error("HTTP "+res.status);
-      const data = await res.json();
-      renderLista(data.items || []);
-    }catch(e){
-      if (e.name === 'AbortError') return;
-      listEl.innerHTML = '<tr><td colspan="3" class="hint bad">Error al cargar grupos.</td></tr>';
-      console.error(e);
+    let baseItems = [];
+    function applyFilters(){
+  const q = (f_q.value || '').trim().toLowerCase();
+  const tipo = f_tipo.value;
+  const sort = f_sort.value;
+
+  let arr = baseItems.slice().map(g => ({
+    ...g,
+    _tipo: (g.tipo || (g.requiere_password ? 'privado' : 'publico')) || 'publico',
+    _dur : (g.duracion_dias != null) ? Number(g.duracion_dias) : Infinity,
+    _name: (g.codigo || '').toString().toLowerCase(),
+    _miem: Number(g.miembros ?? 0)
+  }));
+
+  if(q) arr = arr.filter(g => g._name.includes(q));
+  if(tipo) arr = arr.filter(g => g._tipo === tipo);
+
+  const cmp = {
+    'miembros_desc': (a,b)=> b._miem - a._miem,
+    'miembros_asc' : (a,b)=> a._miem - b._miem,
+    'duracion_asc' : (a,b)=> a._dur - b._dur,
+    'duracion_desc': (a,b)=> b._dur - a._dur,
+  }[sort] || ((a,b)=> b._miem - a._miem);
+
+  arr.sort(cmp);
+  renderRows(arr);
+}
+const rerender = debounce(applyFilters, 120);
+f_q.addEventListener('input', rerender);
+[f_tipo, f_sort].forEach(el => el.addEventListener('change', rerender));
+
+    // Carga del backend
+    async function fetchGroups() {
+      listEl.innerHTML = '<tr><td colspan="4" class="hint neutral">Cargando…</td></tr>';
+      try {
+        const u = new URL(URL_BUSCAR, window.location.origin);
+        const res = await fetch(u, { headers: { 'Accept': 'application/json' } });
+        const data = await res.json();
+        baseItems = data.items || [];
+        applyFilters();
+      } catch (e) {
+        console.error(e);
+        listEl.innerHTML = '<tr><td colspan="4" class="hint bad">No se pudo cargar la lista.</td></tr>';
+      }
     }
-  }
+    fetchGroups();
 
-  const debounced = debounce(() => cargarPublicos(qInput.value), 300);
-  qInput.addEventListener('input', debounced);
-  qInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); cargarPublicos(qInput.value); }});
+    // Ayuda (?)
+    (function () {
+      const root = document.getElementById('helpRoot');
+      const btn = document.getElementById('helpBtn');
+      const card = document.getElementById('helpCard');
+      const close = document.getElementById('helpClose');
+      if (!root || !btn || !card || !close) return;
+      function open() { card.classList.add('is-open'); btn.setAttribute('aria-expanded', 'true'); }
+      function closeH() { card.classList.remove('is-open'); btn.setAttribute('aria-expanded', 'false'); }
+      function toggle() { card.classList.contains('is-open') ? closeH() : open(); }
+      btn.addEventListener('click', toggle);
+      close.addEventListener('click', closeH);
+      document.addEventListener('click', e => { if (!root.contains(e.target)) closeH(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeH(); });
+    })();
+  })();
 
-  cargarPublicos("");
-})();
+
+
 </script>
 {% endblock %}

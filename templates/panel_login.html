@@ -1,12 +1,50 @@
 {% extends "base.html" %}
+{% set body_class = 'app-shell tone-soft page-auth' %}
+{% block title %}Modo administrador · Reto Diario{% endblock %}
+
+{% block extra_head %}
+<style>
+  :root{ --input-h:46px; --input-px:14px; --input-radius:999px; }
+
+  .admin-card{ max-width:420px; margin:auto; }
+  .form-row{ display:grid; gap:6px; margin-top:10px; }
+  .form-row label{ font-weight:700; font-size:.95rem; }
+
+  .input{
+    display:block; width:100%; height:var(--input-h);
+    box-sizing:border-box; padding:0 var(--input-px);
+    border:1px solid var(--line); border-radius:var(--input-radius);
+    background:#fff; font:inherit; outline:none;
+    box-shadow:0 3px 10px rgba(0,0,0,.05);
+  }
+  .input:focus{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(239,68,68,.15); }
+
+  .actions{ margin-top:16px; display:grid; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="card fade-in" style="max-width:420px;margin:auto;">
+<div class="card fade-in admin-card">
   <h1>🔐 Modo administrador</h1>
-  <form action="{{ url_for('admin.login_admin') }}" method="post" class="card" style="padding:16px;">
-    <label for="admin_password">Contraseña</label>
-    <input id="admin_password" type="password" name="admin_password" required
-           style="width:100%;padding:8px;margin:8px 0;">
-    <button type="submit" class="btn">Entrar</button>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form action="{{ url_for('admin.login_admin') }}" method="post" novalidate>
+    <div class="form-row">
+      <label for="admin_password"><strong>Contraseña</strong></label>
+      <input id="admin_password" class="input" type="password" name="admin_password" required>
+    </div>
+    <div class="actions">
+      <button type="submit" class="btn primary-btn">
+        <i class="fa-solid fa-right-to-bracket"></i> Entrar
+      </button>
+    </div>
   </form>
 </div>
 {% endblock %}

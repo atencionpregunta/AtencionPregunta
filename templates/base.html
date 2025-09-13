@@ -1,45 +1,271 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>{% block title %}Atención Pregunta{% endblock %}</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Reto Diario{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Fuentes y librerías -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Fuente e iconos -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
 
-  <!-- CSS global -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="{{ url_for('static', filename='img/ATPPet-32.png') }}"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="{{ url_for('static', filename='img/ATPPet-16.png') }}"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="{{ url_for('static', filename='img/ATPPet-180.png') }}"
+    />
 
-  <!-- Favicon / PWA -->
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/ATPPet-32.png') }}">
-  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/ATPPet-16.png') }}">
-  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/ATPPet-180.png') }}">
+    <style>
+      :root {
+        --bg: #ffffff;
+        --text: #111111;
+        --muted: #6b7280;
+        --line: #e5e7eb;
 
-  {% block extra_head %}{% endblock %}
-</head>
+        --primary: #ef4444;
+        /* rojo principal */
+        --primary-dark: #dc2626;
+        /* rojo oscuro */
+        --radius: 18px;
+      }
 
-<body class="{{ body_class|default('app-shell tone-soft') }}">
-  <main class="center-wrapper">
-    <div class="card {{ card_class|default('') }}">
-      {% block content %}{% endblock %}
-    </div>
-  </main>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        background: linear-gradient(
+          160deg,
+          #fda4af 0%,
+          #fecdd3 50%,
+          #ffffff 100%
+        );
+        color: var(--text);
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
 
-  {# Zona para botones flotantes (ej. chat en móvil) #}
-  {% block floating %}{% endblock %}
+      main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        /* centrado vertical */
+        justify-content: center;
+        /* centrado horizontal */
+        padding: 16px;
+      }
 
-  {# Script opcional: recordar el tono (suave/vivo) #}
-  <script>
-    (function () {
-      const body = document.body;
-      const saved = localStorage.getItem('toneMode');
-      if (saved) { body.classList.remove('tone-soft','tone-strong'); body.classList.add(saved); }
-      window.__setTone = m => { body.classList.remove('tone-soft','tone-strong'); body.classList.add(m); localStorage.setItem('toneMode', m); };
-    })();
-  </script>
+      .card {
+        width: 100%;
+        max-width: 760px;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        background: #fff;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+        padding: clamp(18px, 2.5vw, 28px);
+      }
 
-  {% block scripts %}{% endblock %}
-</body>
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+        font-weight: 800;
+        color: var(--primary-dark);
+        text-align: center;
+      }
+
+      p.lead {
+        margin: 0 0 12px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      /* ====== Botones ====== */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 12px 16px;
+        border-radius: 999px;
+        border: 1.5px solid transparent;
+        font-weight: 800;
+        font-size: 0.95rem;
+        line-height: 1.1;
+        cursor: pointer;
+        text-decoration: none;
+        transition: transform 0.06s ease, box-shadow 0.18s ease,
+          opacity 0.2s ease;
+        user-select: none;
+      }
+
+      .btn:active {
+        transform: translateY(1px) scale(0.995);
+      }
+
+      .primary-btn {
+        color: white;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        box-shadow: 0 6px 16px rgba(239, 68, 68, 0.25);
+      }
+      .form-pregunta .primary-btn {
+        display: block;
+        margin: 0 auto;
+      }
+
+      .primary-btn:hover {
+        opacity: 0.95;
+      }
+
+      .secondary-btn {
+        color: var(--text);
+        background: #fff;
+        border-color: var(--line);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .secondary-btn:hover {
+        background: #f9fafb;
+      }
+
+      .small-btn {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 12px;
+      }
+
+      /* ===== Flotantes ===== */
+      .logout-float {
+        position: fixed;
+        top: max(12px, env(safe-area-inset-top));
+        right: max(12px, env(safe-area-inset-right));
+        z-index: 1100;
+      }
+
+      .help {
+        position: fixed;
+        top: max(12px, env(safe-area-inset-top));
+        left: max(12px, env(safe-area-inset-left));
+        z-index: 1100;
+      }
+
+      .help-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--primary-dark);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        font-weight: 800;
+      }
+
+      .help-card {
+        position: absolute;
+        left: 0;
+        top: 48px;
+        width: min(92vw, 360px);
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+        padding: 12px;
+        display: none;
+      }
+
+      .help-card.is-open {
+        display: block;
+      }
+
+      .help-header {
+        font-weight: 800;
+        margin-bottom: 6px;
+        color: var(--primary-dark);
+      }
+
+      .help-content {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .help-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      main {
+        flex: 1;
+        display: flex;
+        align-items: center; /* centro vertical */
+        justify-content: center; /* centro horizontal */
+        padding: 16px;
+        min-height: 100vh; /* fuerza el alto completo de viewport */
+        box-sizing: border-box;
+      }
+
+      /* Si el contenido es más alto que la pantalla, flex deja de centrar: */
+      main > .card {
+        margin: auto; /* centra mientras cabe */
+      }
+
+      /* En móvil: el main se alinea arriba con un gap configurable */
+      @media (max-width: 640px) {
+        main {
+          align-items: flex-start;
+          justify-content: center;
+          padding-top: var(--page-top-gap, 16px);
+          /* <- hook */
+        }
+
+        .card {
+          margin-top: 0;
+        }
+
+        /* el gap lo controla el main */
+      }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+  </head>
+
+  <body class="{{ body_class|default('') }}">
+    <main>
+      <div class="card">{% block content %}{% endblock %}</div>
+    </main>
+
+    {% block floating %}{% endblock %} {% block scripts %}{% endblock %}
+  </body>
 </html>

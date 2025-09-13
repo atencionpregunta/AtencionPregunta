@@ -1,59 +1,97 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Iniciar sesión · Reto Diario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="icon" type="image/png" sizes="32x32"
-      href="{{ url_for('static', filename='img/ATPPet-32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16"
-      href="{{ url_for('static', filename='img/ATPPet-16.png') }}">
+{% extends "base.html" %}
+{% set body_class = 'app-shell tone-soft page-auth' %}
+{% block title %}Iniciar sesión · Reto Diario{% endblock %}
 
-<!-- iOS / atajo a pantalla de inicio -->
-<link rel="apple-touch-icon"
-      href="{{ url_for('static', filename='img/ATPPet-180.png') }}">
-</head>
-<body>
-    <main class="center-wrapper">
-        <div class="card fade-in">
-            <h1>🔐 Iniciar sesión</h1>
-            <form method="POST" action="/login" class="formulario">
-                <div class="form-group">
-                    <label for="usuario">Nombre de usuario:</label>
-                    <input type="text" name="usuario" id="usuario" required>
-                </div>
-                <div class="form-group">
-                    <label for="contrasena">Contraseña:</label>
-                    <input type="password" name="contrasena" id="contrasena" required>
-                </div>
-                <label style="display:flex;gap:.5rem;align-items:center;margin:.5rem 0;">
-                    <input type="checkbox" name="remember"> Recuérdame
-                </label>
+{% block extra_head %}
+<style>
+  :root{ --input-h:46px; --input-px:14px; --input-radius:999px; }
 
-                <button type="submit" class="btn primary-btn">
-                    <i class="fa-solid fa-right-to-bracket"></i> Entrar
-                </button>
-            </form>
+  .form-row{ display:grid; gap:6px; margin-top:10px; }
+  .form-row label{ font-weight:700; font-size:.95rem; }
 
-            <div style="margin: 1.5rem 0; border-top: 1px solid #ddd;"></div>
+  .input{
+    display:block; width:100%; height:var(--input-h);
+    box-sizing:border-box; padding:0 var(--input-px);
+    border:1px solid var(--line); border-radius:var(--input-radius);
+    background:#fff; font:inherit; outline:none;
+    box-shadow:0 3px 10px rgba(0,0,0,.05);
+  }
+  .input:focus{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(239,68,68,.15); }
 
-            <p>¿Prefieres usar tu cuenta de Google?</p>
-            <a href="/login/google" class="btn google-btn">
-                <i class="fa-brands fa-google"></i> Iniciar sesión con Google
-            </a>
+  .remember{
+    display:flex; align-items:center; gap:.5rem; margin:.6rem 0 .2rem;
+    font-size:.95rem;
+  }
+  .remember input[type="checkbox"]{ transform:scale(1.1); }
 
-            <a href="/" class="btn secondary-btn">
-                ⬅️ Volver al inicio
-            </a>
-        </div>
-    </main>
+  .actions{ display:grid; gap:10px; margin-top:14px; grid-template-columns:1fr; }
+  .actions .btn.primary-btn{ width:100%; justify-self:stretch; }
+  @media (min-width:780px){ .actions{ grid-template-columns:1fr auto; } }
 
-    <footer>
-        <p>&copy; 2025 · Atencion Pregunta / Iker Angel</p>
-    </footer>
-</body>
-</html>
+  .google-btn{
+    border:1px solid #e5e7eb; background:#fff; color:#111827;
+    box-shadow:0 3px 10px rgba(0,0,0,.05);
+  }
+  .google-btn:hover{ background:#f9fafb; }
+  .google-btn i{ color:#ea4335; }
 
+  .divider{ margin:16px 0 12px; border-top:1px solid var(--line); }
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="header">
+  <div class="title">
+    <a class="btn secondary-btn small-btn" href="/">
+      <i class="fa-solid fa-arrow-left"></i> Volver
+    </a>
+    <h2>🔐 Iniciar sesión</h2>
+  </div>
+</header>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<form method="POST" action="/login" novalidate>
+  <div class="form-row">
+    <label for="usuario"><strong>Nombre de usuario</strong></label>
+    <input class="input" type="text" name="usuario" id="usuario"
+           required autocomplete="username"
+           value="{{ request.form.get('usuario','') }}">
+  </div>
+
+  <div class="form-row">
+    <label for="contrasena"><strong>Contraseña</strong></label>
+    <input class="input" type="password" name="contrasena" id="contrasena"
+           required autocomplete="current-password">
+  </div>
+
+  <label class="remember">
+    <input type="checkbox" name="remember" {% if request.form.get('remember') %}checked{% endif %}>
+    Recuérdame
+  </label>
+
+  <div class="actions">
+    <button type="submit" class="btn primary-btn">
+      <i class="fa-solid fa-right-to-bracket"></i> Entrar
+    </button>
+  </div>
+</form>
+
+<div class="divider"></div>
+
+<p class="lead" style="text-align:center;margin:0 0 10px;">o bien</p>
+<div class="actions" style="grid-template-columns:1fr;">
+  <a href="/login/google" class="btn google-btn">
+    <i class="fa-brands fa-google"></i> Iniciar sesión con Google
+  </a>
+  <a href="/" class="btn secondary-btn">
+    ⬅️ Volver al inicio
+  </a>
+</div>
+{% endblock %}

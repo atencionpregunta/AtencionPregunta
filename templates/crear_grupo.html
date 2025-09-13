@@ -4,39 +4,91 @@
 
 {% block extra_head %}
 <style>
-  /* Estilos específicos de esta página */
+  :root{
+    --input-h: 46px;
+    --input-px: 14px;
+    --input-radius: 999px; /* pill */
+  }
+
+  /* —— Tips y estados —— */
   .hint{ font-size:.95rem; margin-top:6px; min-height:1.2em; }
   .hint.ok{ color:#1e8543; }
   .hint.bad{ color:#c62828; }
   .hint.neutral{ color:#6b7280; }
+
   .inline{ display:inline-flex; align-items:center; gap:8px; }
   .inline input[type="checkbox"]{ transform:scale(1.15); }
+
   .primary-btn:disabled{ opacity:.6; cursor:not-allowed; box-shadow:none; }
+
+  /* —— Inputs: perfectamente “cuadrados” (alineados) —— */
+  .page-grupos .form-row{ display:grid; gap:6px; margin-top:10px; }
+  .page-grupos .form-row label{ font-weight:700; font-size:.95rem; }
+
+  .page-grupos .form-row .input{
+    display:block;
+    width:100%;
+    height:var(--input-h);
+    box-sizing:border-box;       /* clave para que no “resbale” el ancho */
+    padding:0 var(--input-px);
+    border:1px solid var(--line);
+    border-radius:var(--input-radius);
+    background:#fff;
+    font:inherit;
+    line-height:normal;
+    outline:none;
+    box-shadow:0 3px 10px rgba(0,0,0,.05);
+  }
+  .page-grupos .form-row .input:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(239,68,68,.15);
+  }
+
+  /* Select con la misma altura y caret invisible (no descuadra) */
+  .page-grupos select.input{
+    appearance:none; -webkit-appearance:none; -moz-appearance:none;
+    background-image:none;
+    padding-right: calc(var(--input-px) + 18px); /* margen lógico del caret */
+    background-repeat:no-repeat;
+    background-position: right 10px center;
+  }
+
+  /* (Opcional) si quieres un caret visual minimal */
+  /* .page-grupos select.input{ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); } */
+
+  /* Textarea (si lo usas en esta página) */
+  .page-grupos textarea.input{
+    min-height:var(--input-h);
+    height:auto;
+    padding:10px var(--input-px);
+    resize:vertical;
+  }
+
+  /* —— Lista de grupos del usuario —— */
   .grupos-usuario{ margin-top:16px; }
   .grupos-usuario ul{ list-style:none; padding:0; margin:6px 0 0; }
   .grupos-usuario li{ margin:6px 0; display:flex; align-items:center; gap:8px; }
+
+  /* —— Acciones del formulario: coherente con el resto —— */
   .page-grupos #form-crear-grupo .form-actions{
-    display: grid;
-    grid-template-columns: 1fr;      /* móvil / estrecho: 1 columna */
-    gap: 10px;
-    margin-top: 12px;
+    display:grid;
+    grid-template-columns:1fr; /* móvil */
+    gap:10px;
+    margin-top:12px;
   }
   .page-grupos #form-crear-grupo .form-actions .primary-btn{
-    width: 100%;                     /* aquí está la clave */
-    justify-self: stretch;
+    width:100%;
+    justify-self:stretch;
   }
   .page-grupos #form-crear-grupo .form-actions .secondary-btn{
-    width: auto;                     /* que el “Volver” no se estire */
-    justify-self: start;
+    width:auto;
+    justify-self:start;
   }
-
-  /* En escritorio: botón principal ancho completo + enlace al lado */
-  @media (min-width: 769px){
+  @media (min-width:769px){
     .page-grupos #form-crear-grupo .form-actions{
-      grid-template-columns: 1fr auto; /* principal se estira, volver queda compacto */
+      grid-template-columns:1fr auto; /* botón ancho + volver compacto */
     }
   }
-</style>
 </style>
 {% endblock %}
 
@@ -101,8 +153,8 @@
       <div class="hint neutral">Entre 1 y 365 días.</div>
     </div>
 
-    <div class="form-actions" style="display:flex; gap:10px; flex-wrap:wrap;">
-      <button type="submit" class="primary-btn" id="btn-crear" disabled>
+    <div class="form-actions">
+      <button type="submit" class="btn primary-btn" id="btn-crear" disabled>
         <i class="fa-solid fa-plus"></i> Crear grupo
       </button>
     </div>
@@ -138,33 +190,27 @@
   const wrapDuracion = $('#duracion_wrap');
   const inputDuracion = $('#duracion_dias');
 
-  // Endpoint para comprobar disponibilidad (nocase)
   const CHECK_URL = "{{ url_for('grupos.check_nombre') }}";
-
-  // Regla local: 3-40 (letras, números, espacios y _-.)
   const reNombre = /^[\p{L}\p{N}\s_.-]{3,40}$/u;
 
-  // Estado interno
   let ultimoConsultado = "";
   let ultimaRespuestaPara = "";
 
   function estadoHint(tipo, texto) {
     rmv(hintNombre, 'ok'); rmv(hintNombre, 'bad'); rmv(hintNombre, 'neutral');
-    add(hintNombre, tipo);
-    hintNombre.textContent = texto;
+    add(hintNombre, tipo); hintNombre.textContent = texto;
   }
   function setSubmitEnabled(on) { btnCrear.disabled = !on; }
 
   function validarNombreLocal() {
-    const v = (nombre.value || '').trim();
-    if (!v) { setSubmitEnabled(false); estadoHint('neutral', 'Escribe un nombre de grupo.'); return { ok:false, value:v }; }
-    if (!reNombre.test(v)) {
-      setSubmitEnabled(false);
-      estadoHint('bad', 'Entre 3 y 40 caracteres. Letras/números/espacios/._-');
+    const v = (nombre.value || '').replace(/\s+/g,' ').trim();
+    nombre.value = v;
+    if (!v){ setSubmitEnabled(false); estadoHint('neutral','Escribe un nombre de grupo.'); return { ok:false, value:v }; }
+    if (!reNombre.test(v)){
+      setSubmitEnabled(false); estadoHint('bad','Entre 3 y 40 caracteres. Letras/números/espacios/._-');
       return { ok:false, value:v };
     }
-    estadoHint('neutral', 'Comprobando disponibilidad…');
-    setSubmitEnabled(false);
+    estadoHint('neutral','Comprobando disponibilidad…'); setSubmitEnabled(false);
     return { ok:true, value:v };
   }
 
@@ -179,19 +225,14 @@
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
       const data = await resp.json();
 
-      if ((nombre.value || '').trim() !== v) return; // el usuario siguió tecleando
+      if ((nombre.value || '').trim() !== v) return;
 
-      if (data && data.exists){
-        estadoHint('bad', 'Ya existe un grupo con ese nombre.');
-        setSubmitEnabled(false);
-      }else{
-        estadoHint('ok', 'Disponible.');
-        setSubmitEnabled(true);
-      }
+      if (data && data.exists){ estadoHint('bad','Ya existe un grupo con ese nombre.'); setSubmitEnabled(false); }
+      else { estadoHint('ok','Disponible.'); setSubmitEnabled(true); }
       ultimaRespuestaPara = v;
     }catch{
       if ((nombre.value || '').trim() !== v) return;
-      estadoHint('neutral', 'No se pudo comprobar ahora; se validará al enviar.');
+      estadoHint('neutral','No se pudo comprobar ahora; se validará al enviar.');
       setSubmitEnabled(true);
     }
   }, 350);
@@ -199,19 +240,16 @@
   function toggleDuracion() {
     const on = chkDuracion.checked;
     wrapDuracion.style.display = on ? 'block' : 'none';
-    if (on) inputDuracion.setAttribute('required', 'required');
+    if (on) inputDuracion.setAttribute('required','required');
     else inputDuracion.removeAttribute('required');
   }
 
-  // Eventos
   document.addEventListener('DOMContentLoaded', () => {
-    validarNombreLocal();
-    toggleDuracion();
+    validarNombreLocal(); toggleDuracion();
   });
   nombre.addEventListener('input', () => { const { ok } = validarNombreLocal(); if (ok) comprobarDisponibilidad(); });
   chkDuracion.addEventListener('change', toggleDuracion);
 
-  // Seguridad extra al enviar
   form.addEventListener('submit', async (e) => {
     const { ok, value } = validarNombreLocal();
     if (!ok){ e.preventDefault(); nombre.focus(); return; }
@@ -221,25 +259,16 @@
       try{
         const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(value)}`, { headers:{'Accept':'application/json'} });
         const data = await resp.json();
-        if (data && data.exists){
-          estadoHint('bad', 'Ya existe un grupo con ese nombre.');
-          setSubmitEnabled(false);
-          return;
-        }
-        estadoHint('ok', 'Disponible.');
-        setSubmitEnabled(true);
-        form.submit(); // re-envía tras confirmar
-      }catch{
-        form.submit(); // deja que el servidor valide
-      }
+        if (data && data.exists){ estadoHint('bad','Ya existe un grupo con ese nombre.'); setSubmitEnabled(false); return; }
+        estadoHint('ok','Disponible.'); setSubmitEnabled(true); form.submit();
+      }catch{ form.submit(); }
       return;
     }
 
     if (chkDuracion.checked){
       const val = Number(inputDuracion.value);
       if (!Number.isFinite(val) || val < 1 || val > 365){
-        e.preventDefault();
-        inputDuracion.focus();
+        e.preventDefault(); inputDuracion.focus();
         alert('La duración debe ser un número entre 1 y 365.');
       }
     }

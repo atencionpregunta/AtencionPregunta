@@ -1,210 +1,283 @@
 {% extends "base.html" %}
+{% set body_class = 'page-chat' %}
+{% block title %}Chat del grupo · Reto Diario{% endblock %}
 
 {% block content %}
-<div class="chat-page">
-  <div class="card chat-card fade-in">
-    <header class="chat-header">
-      <a class="btn-link back" href="{{ url_for('resultados.ver_resultados', id_grupo=id_grupo) }}" aria-label="Volver a resultados">
-        <i class="fa-solid fa-arrow-left"></i>
-      </a>
-      <h1>💬 Chat del grupo</h1>
-      <span class="spacer"></span>
-    </header>
+<div class="chat-shell fade-in" role="application" aria-label="Chat del grupo">
+  <header class="chat-header">
+    <a class="btn-icon" href="{{ url_for('resultados.ver_resultados', id_grupo=id_grupo) }}"
+       aria-label="Volver a resultados"><i class="fa-solid fa-arrow-left"></i></a>
+    <h1>💬 Chat del grupo</h1>
+    <span></span>
+  </header>
 
-    <div id="chat-box" class="chat-box">
-      {% set badges = badges|default({}) %}
-      {% if mensajes and mensajes|length > 0 %}
-        {% for m in mensajes %}
-          {% set b = badges.get(m['id_usuario'], {}) %}
-          {% set ac = b.get('acierto') %}
-          {% set rk = b.get('rank') %}
-          {% set nombre = (m['usuario_nombre'] or ('Usuario ' ~ m['id_usuario'])) %}
-          {% set own = (session.get('usuario_id') == m['id_usuario']) %}
-          <div class="msg {{ 'own' if own else 'other' }}" data-id="{{ m['id'] }}">
-            <div class="avatar {{ 'ok' if ac is true else ('ko' if ac is false else 'na') }}">
-              {% if m['foto_url'] %}
-                <img src="{{ m['foto_url'] }}" alt="avatar" loading="lazy">
-              {% else %}
-                <span>{{ (nombre|trim|upper)[:2] }}</span>
-              {% endif %}
-            </div>
-            <div class="bubble">
-              <div class="meta">
-                <strong class="name">
-                  {{ nombre }}
-                  {% if rk %}<span class="rank">#{{ rk }}</span>{% endif %}
-                </strong>
-              </div>
-              <div class="text">{{ m['contenido'] }}</div>
-            </div>
+  <div id="chat-box" class="chat-box" role="log" aria-live="polite" aria-relevant="additions text">
+    {% set badges = badges|default({}) %}
+    {% if mensajes and mensajes|length %}
+      {% for m in mensajes %}
+        {% set b = badges.get(m['id_usuario'], {}) %}
+        {% set ac = b.get('acierto') %}
+        {% set rk = b.get('rank') %}
+        {% set nombre = (m['usuario_nombre'] or ('Usuario ' ~ m['id_usuario'])) %}
+        {% set own = (session.get('usuario_id') == m['id_usuario']) %}
+        <div class="msg {{ 'mine' if own else 'theirs' }}" data-id="{{ m['id'] }}">
+          <div class="avatar {{ 'ok' if ac is true else ('ko' if ac is false else 'na') }}">
+            {% if m['foto_url'] %}
+              <img src="{{ m['foto_url'] }}" alt="avatar" loading="lazy">
+            {% else %}
+              <span aria-hidden="true">{{ (nombre|trim|upper)[:2] }}</span>
+              <span class="sr-only">Sin foto</span>
+            {% endif %}
           </div>
-        {% endfor %}
-      {% else %}
-        <p id="empty-hint" class="empty-hint">Aún no hay mensajes. ¡Escribe el primero!</p>
-      {% endif %}
-    </div>
-
-    <form action="{{ url_for('chat.enviar_mensaje', id_grupo=id_grupo) }}" method="POST" class="chat-form">
-      <input type="text" name="contenido" placeholder="Escribe un mensaje…" required class="chat-input" autocomplete="off" maxlength="500">
-      <button class="btn primary-btn send" type="submit">Enviar</button>
-    </form>
+          <div class="bubble" tabindex="0">
+            <div class="head">
+              <span class="name">{{ nombre }}</span>
+              {% if rk %}<span class="rankchip">#{{ rk }}</span>{% endif %}
+            </div>
+            <p class="text">{{ m['contenido'] }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p id="empty-hint" class="empty-hint">Aún no hay mensajes. ¡Escribe el primero!</p>
+    {% endif %}
   </div>
-</div>
 
+  <form action="{{ url_for('chat.enviar_mensaje', id_grupo=id_grupo) }}"
+        method="POST" class="composer" novalidate>
+    <label class="sr-only" for="contenido">Escribe un mensaje</label>
+    <textarea id="contenido" name="contenido" class="input chat-input"
+              placeholder="Escribe un mensaje…"
+              required autocomplete="off" maxlength="500"></textarea>
+    <button class="btn primary-btn send" type="submit" aria-label="Enviar mensaje">Enviar</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
 <script>
 (function(){
-  const box = document.getElementById('chat-box');
-  let lastId = (function(){
+  const box   = document.getElementById('chat-box');
+  const form  = document.querySelector('.composer');
+  const input = form.querySelector('.chat-input');
+  const send  = form.querySelector('.send');
+
+  // última id pintada
+  let lastId = (() => {
     const last = box.querySelector('.msg:last-of-type');
-    return last ? parseInt(last.dataset.id, 10) : 0;
+    return last ? Number(last.dataset.id) || 0 : 0;
   })();
 
-  function escapeHtml(s){
-    const div = document.createElement('div');
-    div.innerText = s || '';
-    return div.innerHTML;
-  }
-
-  function avatarHtml(foto_url, nombre, acierto){
+  // utilidades
+  const escapeHtml = (s) => {
+    const d = document.createElement('div'); d.innerText = s ?? '';
+    return d.innerHTML;
+  };
+  const avatarHtml = (foto_url, nombre, acierto) => {
     const cls = (acierto === true) ? "ok" : (acierto === false) ? "ko" : "na";
     if (foto_url){
       return `<div class="avatar ${cls}"><img src="${foto_url}" alt="avatar" loading="lazy"></div>`;
     } else {
-      const base = (nombre || "U").trim().toUpperCase();
-      const initials = base.slice(0,2);
-      return `<div class="avatar ${cls}"><span>${initials}</span></div>`;
+      const initials = (nombre || "U").trim().toUpperCase().slice(0,2);
+      return `<div class="avatar ${cls}"><span aria-hidden="true">${initials}</span></div>`;
     }
-  }
+  };
+  const atBottom = () => (box.scrollHeight - box.scrollTop - box.clientHeight) < 80;
+  const scrollBottom = () => { box.scrollTop = box.scrollHeight; };
 
-  function appendMessage(m){
+  const appendMessage = (m) => {
     const own = {{ session.get('usuario_id', 0) }} === m.id_usuario;
-    const wrap = document.createElement('div');
-    wrap.className = 'msg ' + (own ? 'own' : 'other');
-    wrap.dataset.id = m.id;
+    const el  = document.createElement('div');
+    el.className = 'msg ' + (own ? 'mine' : 'theirs');
+    el.dataset.id = m.id;
 
     const safeNombre = escapeHtml(m.usuario_nombre || ('Usuario ' + m.id_usuario));
-    wrap.innerHTML = `
+    el.innerHTML = `
       ${avatarHtml(m.foto_url, m.usuario_nombre, m.acierto)}
-      <div class="bubble">
-        <div class="meta">
-          <strong class="name">
-            ${safeNombre}
-            ${m.rank ? `<span class="rank">#${m.rank}</span>` : ''}
-          </strong>
+      <div class="bubble" tabindex="0">
+        <div class="head">
+          <span class="name">${safeNombre}</span>
+          ${m.rank ? `<span class="rankchip">#${m.rank}</span>` : ''}
         </div>
-        <div class="text"></div>
+        <p class="text"></p>
       </div>
     `;
-    wrap.querySelector('.text').innerText = m.contenido || '';
+    el.querySelector('.text').textContent = m.contenido || '';
 
-    const hint = document.getElementById('empty-hint');
-    if (hint) hint.remove();
-    box.appendChild(wrap);
-  }
+    document.getElementById('empty-hint')?.remove();
+    box.appendChild(el);
+  };
 
-  function scrollToBottom(){ box.scrollTop = box.scrollHeight; }
-  scrollToBottom();
+  // autoscroll inicial
+  scrollBottom();
 
+  // polling
   async function poll(){
     try{
-      const url = `{{ url_for('chat.api_mensajes', id_grupo=id_grupo) }}?after_id=${lastId}`;
-      const resp = await fetch(url, { headers: { 'Accept':'application/json' } });
-      if(!resp.ok) return;
-      const data = await resp.json();
-      if(!data.ok) return;
-      const nuevos = data.mensajes || [];
-      if(nuevos.length){
-        const nearBottom = (box.scrollHeight - box.scrollTop - box.clientHeight) < 80;
-        for(const m of nuevos){
-          appendMessage(m);
-          lastId = Math.max(lastId, Number(m.id) || 0);
+      const keep = atBottom();
+      const url = `{{ url_for('chat.api_mensajes', id_grupo=id_grupo) }}?after_id=${encodeURIComponent(lastId)}`;
+      const r = await fetch(url, { headers:{ 'Accept':'application/json' }, cache:'no-store' });
+      if(!r.ok) return;
+      const { mensajes = [] } = await r.json() || {};
+      if (!mensajes.length) return;
+
+      for (const m of mensajes){
+        appendMessage(m);
+        if (typeof m.id !== 'undefined') {
+          const idNum = Number(m.id) || 0;
+          if (idNum > lastId) lastId = idNum;
         }
-        if (nearBottom) scrollToBottom();
       }
-    }catch(e){}
+      if (keep) scrollBottom();
+    }catch(_e){ /* silencioso */ }
   }
-  setInterval(poll, 3000);
+  const POLL_MS = 3000;
+  setInterval(poll, POLL_MS);
+
+  // textarea auto-creciente + trim
+  function autoResize(){
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+  }
+  input.addEventListener('input', () => {
+    autoResize();
+    // botón activo sólo si hay texto útil
+    const hasText = input.value.trim().length > 0;
+    send.disabled = !hasText;
+  });
+  autoResize();
+  send.disabled = true;
+
+  // Enter envía, Shift+Enter = salto
+  input.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter' && !ev.shiftKey){
+      ev.preventDefault();
+      if (!send.disabled) send.click();
+    }
+  });
+
+  // evita dobles envíos y hace scroll tras enviar
+  form.addEventListener('submit', () => {
+    send.disabled = true;
+    // pequeño retraso para dejar pintar el mensaje resultado
+    setTimeout(scrollBottom, 120);
+  });
 })();
+  // --- agrupa consecutivos del mismo autor (como WhatsApp)
+  function compactThreads(){
+    const nodes = [...box.querySelectorAll('.msg')];
+    for (let i = 1; i < nodes.length; i++){
+      const prev = nodes[i-1], cur = nodes[i];
+      const sameSide = prev.classList.contains('mine') === cur.classList.contains('mine');
+      // si mismo lado, marca como continuación
+      if (sameSide) cur.classList.add('cont');
+    }
+  }
+  compactThreads();
+
+  // tras nuevos mensajes
+  const _oldAppend = appendMessage;
+  appendMessage = (m) => { _oldAppend(m); compactThreads(); };
+
 </script>
+{% endblock %}
 
+{% block extra_head %}
 <style>
-/* ===== tokens (coinciden con el resto) ===== */
-:root{
-  --line:#e8eaf0; --card:#fff; --text:#111827; --muted:#6b7280;
-  --chip:#eef6ff; --chip-b:#dbeafe;
-  --ok:#22c55e; --bad:#ef4444; --unk:#9ca3af;
-  --blue1:#2563eb; --blue2:#1d4ed8;
-}
-/* ===== layout general ===== */
-.chat-page{ padding:12px; display:flex; justify-content:center; }
-.chat-card{
-  width:100%; max-width:980px; background:var(--card);
-  border:1px solid var(--line); border-radius:18px;
-  box-shadow:0 12px 40px rgba(2,6,23,.06); padding:16px;
+/* ===== fuera “doble card” ===== */
+.page-chat main.center-wrapper > .card{background:transparent;border:0;box-shadow:none;padding:0;margin:0}
+
+/* ===== contenedor ===== */
+.chat-shell{
+  --ring: var(--line,#e5e7eb);
+  --mine: #e2ffd5;         /* verde WhatsApp suave */
+  --theirs: #ffffff;       /* gris/blanco para ajenos */
+  --text: #0f172a;
+  --muted: #6b7280;
+
+  max-width:980px;margin:12px auto;background:#fff;
+  border:1px solid var(--ring);border-radius:18px;
+  box-shadow:0 12px 32px rgba(2,6,23,.06);padding:12px 12px 8px;
+  display:grid;grid-template-rows:auto minmax(320px,1fr) auto;gap:10px;
 }
 
-/* ===== header con título centrado ===== */
-.chat-header{
-  display:grid; grid-template-columns:40px 1fr 40px; align-items:center; gap:8px; margin-bottom:8px;
-}
-.chat-header h1{ margin:0; text-align:center; font-size:1.4rem; }
-.chat-header .back{ justify-self:start; }
-.chat-header .spacer{ display:block; }
+/* header */
+.chat-header{display:grid;grid-template-columns:40px 1fr 40px;align-items:center;gap:8px}
+.chat-header h1{margin:0;text-align:center;font-size:1.12rem;font-weight:800;letter-spacing:.2px}
+.btn-icon{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:999px;border:1px solid var(--ring);background:#fff;color:#111827}
 
-/* ===== caja de mensajes ===== */
+/* caja de mensajes (fondo tipo chat) */
 .chat-box{
-  background:#fafbff; border:1px solid var(--line); border-radius:14px;
-  padding:12px; height:min(68vh, 720px); overflow:auto;
-}
-.empty-hint{ opacity:.7; padding:8px; text-align:center; }
-
-/* ===== composer ===== */
-.chat-form{ display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; margin-top:10px; }
-.chat-input{
-  height:46px; padding:12px 12px; border:1px solid var(--line);
-  border-radius:12px; background:#fff; color:var(--text);
-}
-.chat-form .btn.send{
-  height:46px; padding:0 18px; border-radius:12px; font-weight:800;
-  background:linear-gradient(135deg, var(--blue1), var(--blue2));
+  background:linear-gradient(180deg,#f8fafc, #f6f7fb);
+  border:1px solid var(--ring);border-radius:14px;
+  padding:8px;height:min(66vh,680px);overflow:auto;scroll-behavior:smooth;
 }
 
-/* ===== mensajes ===== */
-.msg{
-  display:grid; grid-template-columns:44px 1fr; gap:8px; margin:8px 0; align-items:start;
+/* mensaje base */
+.msg{display:flex;align-items:flex-end;gap:6px;margin:4px 2px;max-width:100%}
+.msg.mine{justify-content:flex-end}
+.msg .avatar{
+  width:28px;height:28px;border-radius:999px;overflow:hidden;flex:0 0 auto;
+  display:grid;place-items:center;background:#eef2ff;color:#3730a3;font-weight:800;font-size:.72rem;
+  border:2px solid #dbeafe;
 }
-.msg.own{ grid-template-columns:1fr 44px; }
-.msg.own .avatar{ order:2; }
-.msg.own .bubble{ order:1; justify-self:end; background:var(--chip); border-color:var(--chip-b); }
+.msg .avatar img{width:100%;height:100%;object-fit:cover}
+
+/* burbuja tamaño WhatsApp */
+.bubble{
+  position:relative;display:inline-block;max-width:75%;
+  padding:6px 9px;border-radius:10px;border:1px solid #e6e9f2;
+  background:var(--theirs);color:var(--text);
+  line-height:1.28;font-size:.92rem;box-shadow:0 1px 3px rgba(2,6,23,.06);
+}
+.msg.mine .bubble{background:var(--mine);border-color:#c6f2b7}
+.head{display:flex;align-items:center;gap:6px;margin:0 0 2px}
+.name{font-weight:700;font-size:.78rem;color:#111827;opacity:.85}
+.rankchip{font-size:.64rem;font-weight:800;padding:0 5px;border-radius:999px;border:1px solid #e5e7eb;background:#f1f5f9;color:#0f172a}
+.text{margin:0}
+
+/* colas (tails) tipo WhatsApp */
+.bubble:after{
+  content:"";position:absolute;bottom:0;width:10px;height:10px;background:inherit;border:inherit;
+  border-left:none;border-top:none;transform:rotate(45deg);
+}
+.msg.theirs .bubble:after{left:-4px;box-shadow:-1px 1px 0 rgba(0,0,0,.02)}
+.msg.mine   .bubble:after{right:-4px}
+
+/* agrupación: si es continuación (.cont), ocultar avatar y cabecera y reducir margen */
+.msg.cont .avatar{visibility:hidden;width:0;height:0;margin:0;overflow:hidden}
+.msg.cont .head{display:none}
+.msg.cont{margin-top:2px}
+
+/* composer pegado abajo */
+.composer{position:sticky;bottom:0;left:0;right:0;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:#fff;padding-top:4px}
+.input.chat-input{min-height:40px;max-height:140px;resize:none;overflow:auto;border-radius:12px;padding:9px 12px;font-size:.95rem}
+.send{height:40px;padding:0 16px;border-radius:12px;font-weight:800}
+
+/* tamaños aún más compactos en móvil */
+@media (max-width:520px){
+  .chat-shell{padding:10px}
+  .chat-header h1{font-size:1rem}
+  .bubble{max-width:84%;font-size:.9rem}
+}
+
+.chat-shell{
+  max-width:980px;
+  margin:12px auto;
+  padding:12px;
+  /* quita: border, box-shadow, background extra */
+}
 
 .avatar{
-  width:44px; height:44px; border-radius:999px; overflow:hidden;
-  display:grid; place-items:center; font-weight:800; background:#eef2ff; color:#3730a3;
-  border:3px solid var(--unk);
+  width:32px; height:32px; border-radius:50%;
+  overflow:hidden; display:grid; place-items:center;
+  font-weight:700; font-size:.75rem;
+  background:#eef2ff; color:#3730a3;
+  border:2px solid #d1d5db;
 }
-.avatar.ok{ border-color: var(--ok); }
-.avatar.ko{ border-color: var(--bad); }
-.avatar.na{ border-color: var(--unk); }
-.avatar img{ width:100%; height:100%; object-fit:cover; }
+.avatar.ok{ border-color:#22c55e; }  /* verde = acierto */
+.avatar.ko{ border-color:#ef4444; }  /* rojo = fallo */
+.avatar.na{ border-color:#9ca3af; }  /* gris = sin info */
 
-.bubble{
-  max-width:min(100%, 720px); padding:10px 12px; border-radius:14px;
-  background:#fff; border:1px solid var(--line);
-  box-shadow:0 1px 0 rgba(0,0,0,.04);
-}
-.meta{ font-size:.9rem; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-.name{ font-weight:800; }
-.rank{ font-weight:800; font-size:.78rem; padding:2px 6px; border-radius:999px; border:1px solid var(--line); background:#f8fafc; }
-.text{ margin-top:6px; white-space:pre-wrap; line-height:1.35; }
-
-/* compacta separaciones (como el resto) */
-.msg + .msg{ margin-top:6px; }
-
-/* responsive */
-@media (max-width:520px){
-  .chat-card{ padding:12px; }
-  .chat-header h1{ font-size:1.2rem; }
-  .chat-box{ height:60vh; }
-}
 </style>
 {% endblock %}

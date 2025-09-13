@@ -4,58 +4,87 @@
 
 {% block extra_head %}
 <style>
-  /* Contenedor centrado dentro de la card */
-  .list-shell{ max-width:640px; margin:0 auto; }
+  .list-shell{ max-width:720px; margin:0 auto; }
 
-  /* Título */
-  .page-gestionar .title h2{ margin:0; font-weight:800; font-size:1.6rem; }
+  .page-gestionar .title h2{
+    margin:0; font-weight:800;
+    font-size:clamp(1.25rem,2.2vw,1.45rem);
+  }
 
-  /* Lista de grupos */
+  /* ===== Lista compacta ===== */
   .group-list{
     margin:10px 0 0; padding:0; list-style:none;
-    border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px; overflow:hidden; background:#fff;
   }
   .group-item{
-    display:flex; align-items:center; justify-content:space-between; gap:12px;
-    padding:12px; border-top:1px solid #eef2f7;
+    display:grid;
+    grid-template-columns: 1fr auto;
+    align-items:center;
+    gap:10px;
+    padding:8px 12px;
+    border-top:1px solid #eef2f7;
   }
   .group-item:first-child{ border-top:0; }
-  .group-name{ display:flex; align-items:center; gap:8px; font-weight:700; }
-  .group-name i{ color:#475569; }
+  .group-item:hover{ background:#fafafa; }
 
-  /* Botón borrar (salir) */
-  .trash-btn{
-    background:#fff; border:1px solid #fee2e2; color:#b91c1c;
-    padding:8px 10px; border-radius:10px; cursor:pointer; font-weight:700;
+  .group-name{
+    min-width:0;
+    display:inline-flex; align-items:center; gap:8px;
+    font-weight:700; font-size:.95rem;
   }
-  .trash-btn:hover{ background:#fef2f2; }
+  .group-name i{ color:#64748b; font-size:.95rem; }
+  .group-name span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
-  /* Acciones finales */
-  .actions-row{ margin-top:16px; display:flex; gap:10px; flex-wrap:wrap; }
-  .actions-row .secondary-btn{ padding:10px 14px; border-radius:12px; }
+  /* ===== MODS de botón (respetan tus .btn globales) ===== */
+  :root{ --btn-icon-sz: 36px; }
 
-  /* Ayuda flotante (reutilizable) */
-  .help{ position:fixed; left:max(12px, env(safe-area-inset-left)); top:max(12px, env(safe-area-inset-top)); z-index:1000; }
-  .help-btn{ display:inline-grid; place-items:center; width:36px; height:36px; border-radius:999px;
-             border:1px solid var(--line); background:#fff; color:#111827; font-weight:800;
-             box-shadow:0 6px 20px rgba(2,6,23,.08); cursor:pointer; }
-  .help-card{ position:absolute; left:0; top:44px; width:min(92vw,360px); background:var(--card);
-              border:1px solid var(--line); border-radius:14px; box-shadow:0 16px 40px rgba(2,6,23,.15);
-              padding:10px 12px 12px; display:none; }
-  .help-card.is-open{ display:block; }
-  .help-header{ font-size:.95rem; margin-bottom:6px; }
-  .help-content{ font-size:.9rem; }
-  .help-content ul{ margin:.25rem 0 .5rem 1.1rem; padding:0; }
-  .help-note{ margin:.5rem 0 0; color:var(--muted); font-size:.85rem; }
-  .help-footer{ margin-top:8px; display:flex; justify-content:flex-end; }
-  .help-close{ border:1px solid var(--line); background:#fff; color:#111827; padding:6px 10px; border-radius:10px; cursor:pointer; font-weight:700; }
+  /* asegura que .btn calcule bien con ancho/alto fijo */
+  .page-gestionar .btn{ box-sizing: border-box; }
+
+  /* pequeño, como los links “volver” del index */
+  .btn--sm{
+    padding:8px 12px;
+    font-size:.9rem;
+    line-height:1.1;
+    border-radius:12px;
+  }
+
+  /* icon-only fijo: sin padding, tamaño exacto, centrado */
+  .btn--icon{
+    width:var(--btn-icon-sz);
+    height:var(--btn-icon-sz);
+    padding:0;
+    border-radius:999px;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .btn--icon i{ font-size:14px; line-height:1; }
+
+  /* variante “danger outline” sobre secondary */
+  .btn--danger{
+    color:#b91c1c;
+    border-color:#fecaca !important;   /* mantiene el borde del secondary */
+  }
+  .btn--danger:hover{ background:#fef2f2; }
+
+  /* ===== Acciones inferiores (mismo comportamiento que index) ===== */
+  .actions-row{
+    margin-top:12px; display:grid; gap:10px;
+    grid-template-columns:1fr;       /* móvil: 100% ancho */
+  }
+  .actions-row .btn{ width:100%; }
+  @media (min-width:720px){
+    .actions-row{ grid-template-columns:auto auto; }
+    .actions-row .btn{ width:auto; }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
 <header class="header">
   <div class="title">
-    <a class="btn-link" href="{{ url_for('index') }}" title="Volver al inicio">
+    <!-- Volver: secondary pequeño, igual interacción que el index -->
+    <a class="btn secondary-btn btn--sm" href="{{ url_for('index') }}">
       <i class="fa-solid fa-arrow-left"></i>
     </a>
     <h2><i class="fa-solid fa-gear"></i> Gestionar grupos</h2>
@@ -77,12 +106,15 @@
       <li class="group-item">
         <div class="group-name">
           <i class="fa-solid fa-users"></i>
-          <strong>{{ grupo.codigo }}</strong>
+          <span>{{ grupo.codigo }}</span>
         </div>
-        <form method="POST" action="{{ url_for('grupos.salir_grupo') }}"
+
+        <form method="POST"
+              action="{{ url_for('grupos.salir_grupo') }}"
               onsubmit="return confirm('¿Seguro que quieres salirte del grupo &quot;{{ grupo.codigo }}&quot;?');">
           <input type="hidden" name="id_grupo" value="{{ grupo.id }}">
-          <button type="submit" class="trash-btn" title="Salir del grupo">
+          <!-- Papelera: secondary + icon-only + danger outline -->
+          <button type="submit" class="btn secondary-btn btn--icon btn--danger" title="Salir del grupo">
             <i class="fa-solid fa-trash"></i>
           </button>
         </form>
@@ -94,62 +126,15 @@
   {% endif %}
 
   <div class="actions-row">
-    <a href="{{ url_for('grupos.crear_grupo') }}" class="secondary-btn">
+    <a href="{{ url_for('grupos.crear_grupo') }}" class="btn secondary-btn">
       <i class="fa-solid fa-plus"></i> Crear grupo
     </a>
-    <a href="{{ url_for('grupos.unirse_grupo') }}" class="secondary-btn">
+    <a href="{{ url_for('grupos.unirse_grupo') }}" class="btn secondary-btn">
       <i class="fa-solid fa-right-to-bracket"></i> Unirse a grupo
     </a>
   </div>
 </div>
 {% endblock %}
 
-{% block floating %}
-<!-- Ayuda: ¿Cómo funcionan los grupos? -->
-<div class="help" id="helpGroupsRoot">
-  <button class="help-btn" id="helpGroupsBtn" aria-haspopup="dialog" aria-controls="helpGroupsCard"
-          aria-expanded="false" title="Ayuda sobre grupos"><span>?</span></button>
-
-  <div class="help-card" id="helpGroupsCard" role="dialog" aria-label="Ayuda: ¿Cómo funcionan los grupos?">
-    <header class="help-header"><strong>Grupos · ¿Cómo funcionan?</strong></header>
-    <div class="help-content">
-      <ul>
-        <li><b>Varios grupos:</b> puedes pertenecer a varios a la vez.</li>
-        <li><b>Crear:</b> genera un <b>código</b> para invitar y serás admin.</li>
-        <li><b>Unirse:</b> usa el <b>código</b> o la lista de <b>públicos</b>.</li>
-        <li><b>Ranking por grupo:</b> independiente en cada grupo.</li>
-        <li><b>1 respuesta/día:</b> se refleja en todos tus grupos.</li>
-        <li><b>Cambiar grupo:</b> en Resultados con <b>sidebar</b> (PC) o <b>selector</b> (móvil).</li>
-        <li><b>Chat:</b> botón “Abrir chat” en Resultados.</li>
-        <li><b>Salir:</b> tu histórico queda en el ranking pasado.</li>
-        <li><b>Privacidad:</b> sólo miembros ven nombres y puntuaciones.</li>
-      </ul>
-      <p class="help-note">
-        Accesos: <a href="{{ url_for('grupos.crear_grupo') }}">Crear</a> ·
-        <a href="{{ url_for('grupos.unirse_grupo') }}">Unirse</a>
-      </p>
-    </div>
-    <footer class="help-footer"><button class="help-close" id="helpGroupsClose">Entendido</button></footer>
-  </div>
-</div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-(function(){
-  const root  = document.getElementById('helpGroupsRoot');
-  const btn   = document.getElementById('helpGroupsBtn');
-  const card  = document.getElementById('helpGroupsCard');
-  const close = document.getElementById('helpGroupsClose');
-
-  function open(){ card.classList.add('is-open'); btn.setAttribute('aria-expanded','true'); }
-  function closeH(){ card.classList.remove('is-open'); btn.setAttribute('aria-expanded','false'); }
-  function toggle(){ card.classList.contains('is-open') ? closeH() : open(); }
-
-  btn.addEventListener('click', toggle);
-  close.addEventListener('click', closeH);
-  document.addEventListener('click', e => { if(!root.contains(e.target)) closeH(); });
-  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeH(); });
-})();
-</script>
-{% endblock %}
+{% block floating %}{% endblock %}
+{% block scripts %}{% endblock %}

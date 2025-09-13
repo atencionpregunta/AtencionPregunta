@@ -1,49 +1,157 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="card fade-in">
-  <h1>👑 Panel de Administración — SQL</h1>
-  <p>Modo lectura por defecto: permite <code>SELECT/WITH/EXPLAIN</code> en una sola sentencia. Marca “Escritura” para ejecutar scripts con <code>INSERT/UPDATE/DELETE/...</code>.</p>
+{% set body_class = 'app-shell tone-soft page-admin' %}
+{% block title %}Panel de Administración · SQL · Reto Diario{% endblock %}
 
-  <form method="post" action="{{ url_for('admin.panel_admin') }}" class="card" style="padding:12px;">
-    <div style="margin-bottom:8px;">
+{% block extra_head %}
+<style>
+  :root{ --input-h:46px; --input-px:14px; --input-radius:14px; }
+
+  .admin-shell{ max-width:1000px; margin:0 auto; }
+  .lead{ color:var(--muted); margin:6px 0 10px; }
+
+  /* Campos */
+  .form-row{ display:grid; gap:8px; margin-top:10px; }
+  .form-row label{ font-weight:700; font-size:.95rem; }
+
+  .input, .textarea{
+    width:100%;
+    box-sizing:border-box;
+    border:1px solid var(--line);
+    border-radius:var(--input-radius);
+    background:#fff;
+    font:inherit;
+    outline:none;
+    box-shadow:0 3px 10px rgba(0,0,0,.05);
+  }
+  .input{ height:var(--input-h); padding:0 var(--input-px); }
+  .textarea{
+    padding:10px var(--input-px);
+    min-height:220px; resize:vertical;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    line-height:1.35;
+    tab-size: 2;
+  }
+  .input:focus, .textarea:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(239,68,68,.15);
+  }
+
+  /* Controles */
+  .controls{
+    display:grid; gap:10px; margin-top:12px;
+    grid-template-columns: 1fr auto;
+    align-items:center;
+  }
+  .controls .row{
+    display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+  }
+  .checkbox{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:.95rem;
+  }
+  .checkbox input{ transform: scale(1.05); }
+
+  /* Tabla resultados */
+  .table-wrap{ overflow:auto; margin-top:12px; }
+  table.adm { width:100%; border-collapse:collapse; }
+  table.adm th, table.adm td{ text-align:left; padding:8px 10px; }
+  table.adm thead th{
+    border-bottom:1px solid var(--line);
+    font-weight:800; font-size:.92rem; white-space:nowrap;
+    background:#fafafa;
+  }
+  table.adm tbody td{ border-bottom:1px solid #f1f1f1; font-size:.92rem; }
+  table.adm tbody tr:hover{ background:#fafafa; }
+
+  /* Alertas */
+  .alert{
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px;
+    margin-top:12px;
+  }
+  .alert.error{ background:#ffe5e5; border-color:#f5a3a3; }
+  .alert.ok{ background:#e8fff0; border-color:#9be2b0; }
+
+  /* Botones coherentes con el sistema */
+  .actions .btn{ border-radius:12px; }
+  .btn.danger-outline{ color:#b91c1c; border-color:#fecaca; }
+  .btn.danger-outline:hover{ background:#fef2f2; }
+
+  @media (max-width:720px){
+    .controls{ grid-template-columns: 1fr; }
+    .actions .btn{ width:100%; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-shell">
+  <h1>👑 Panel de Administración — SQL</h1>
+  <p class="lead">
+    Modo lectura por defecto: permite <code>SELECT</code>, <code>WITH</code>, <code>EXPLAIN</code> en una sola sentencia.
+    Activa <strong>Permitir escritura</strong> para ejecutar <code>INSERT/UPDATE/DELETE/...</code>.
+  </p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="post" action="{{ url_for('admin.panel_admin') }}">
+    <div class="form-row">
       <label for="sql">SQL</label>
-      <textarea id="sql" name="sql" rows="10"
-        style="width:100%;font-family:ui-monospace,Consolas,monospace;" spellcheck="false">{{ sql }}</textarea>
+      <textarea id="sql" name="sql" class="textarea" spellcheck="false">{{ sql }}</textarea>
     </div>
 
-    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-      <label>Filas máx. a mostrar:
-        <input type="number" min="1" max="5000" name="limit" value="{{ limit }}" style="width:100px;">
-      </label>
-      <label style="display:flex;align-items:center;gap:6px;">
-        <input type="checkbox" name="allow_write" {% if allow_write %}checked{% endif %}>
-        Permitir escritura (¡peligroso!)
-      </label>
-      <button type="submit" class="btn">Ejecutar</button>
-      <a class="btn secondary-btn" href="{{ url_for('admin.panel_admin') }}">Reset</a>
-      <a class="btn secondary-btn" href="{{ url_for('admin.logout_admin') }}">Cerrar sesión</a>
+    <div class="controls">
+      <div class="row">
+        <label class="checkbox">
+          Filas máx. a mostrar:
+          <input class="input" type="number" min="1" max="5000" name="limit" value="{{ limit }}" style="width:110px;">
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" name="allow_write" {% if allow_write %}checked{% endif %}>
+          Permitir escritura (¡peligroso!)
+        </label>
+      </div>
+
+      <div class="row actions">
+        <button type="submit" class="btn primary-btn">
+          <i class="fa-solid fa-play"></i> Ejecutar
+        </button>
+        <a class="btn secondary-btn" href="{{ url_for('admin.panel_admin') }}">
+          <i class="fa-solid fa-rotate-left"></i> Reset
+        </a>
+        <a class="btn secondary-btn danger-outline" href="{{ url_for('admin.logout_admin') }}">
+          <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+        </a>
+      </div>
     </div>
   </form>
 
   {% if error %}
-    <div class="card" style="background:#ffe5e5;border:1px solid #f5a3a3;margin-top:12px;padding:12px;">
+    <div class="alert error">
       <strong>Error:</strong> {{ error }}
     </div>
   {% endif %}
 
   {% if message %}
-    <div class="card" style="background:#e8fff0;border:1px solid #9be2b0;margin-top:12px;padding:12px;">
+    <div class="alert ok">
       {{ message }}{% if elapsed_ms is not none %} — {{ elapsed_ms }} ms{% endif %}
     </div>
   {% endif %}
 
   {% if rows and columns %}
-    <div style="overflow:auto;margin-top:12px;">
-      <table class="table" style="width:100%;border-collapse:collapse;">
+    <div class="table-wrap">
+      <table class="adm">
         <thead>
           <tr>
             {% for c in columns %}
-              <th style="text-align:left;border-bottom:1px solid #ddd;padding:6px 8px;">{{ c }}</th>
+              <th>{{ c }}</th>
             {% endfor %}
           </tr>
         </thead>
@@ -51,7 +159,7 @@
           {% for r in rows %}
             <tr>
               {% for c in columns %}
-                <td style="border-bottom:1px solid #f1f1f1;padding:6px 8px;">
+                <td>
                   {{ r[c] if r is mapping else r[loop.index0] }}
                 </td>
               {% endfor %}
