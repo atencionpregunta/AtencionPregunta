@@ -268,4 +268,13 @@
 
     {% block floating %}{% endblock %} {% block scripts %}{% endblock %}
   </body>
+
+  <footer class="site-footer">
+  <p>
+    © {{ current_year }} Atencion Pregunta · 
+    <a href="{{ url_for('static', filename='legal/aviso-legal.html') }}">Aviso Legal</a> ·
+    <a href="{{ url_for('static', filename='legal/privacidad.html') }}">Política de Privacidad</a> ·
+    <a href="{{ url_for('static', filename='legal/cookies.html') }}">Política de Cookies</a>
+  </p>
+</footer>
 </html>

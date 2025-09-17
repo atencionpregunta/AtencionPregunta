@@ -145,13 +145,25 @@
       /* botón ancho + volver compacto */
     }
   }
+  .btn--sm{
+    padding:12px 12px;
+    gap:10px;
+    font-size:.9rem;
+    line-height:1.1;
+    border-radius:12px;
+    margin-top: -6px;   /* sube */
+    margin-left: -6px;  /* pega a la izquierda */
+    margin-bottom: 6px;
+  }
+  #pw_row[hidden]{ display:none !important; }
+
 </style>
 {% endblock %}
 
 {% block content %}
 <header class="header">
   <div class="title">
-    <a class="btn-link" href="{{ url_for('index') }}" title="Volver al inicio">
+     <a class="btn secondary-btn btn--sm" href="{{ url_for('index') }}">
       <i class="fa-solid fa-arrow-left"></i>
     </a>
     <h2><i class="fa-solid fa-users-gear"></i> Crear grupo</h2>
@@ -174,7 +186,7 @@
       <div id="nombre_hint" class="hint neutral">Escribe un nombre de grupo.</div>
     </div>
 
-    <div class="form-row" id="pw_row" style="display:none">
+    <div class="form-row" id="pw_row" hidden>
       <label for="contrasena_grupo"><strong>Contraseña</strong></label>
       <input class="input" type="password" name="contrasena_grupo" id="contrasena_grupo" autocomplete="new-password"
         minlength="3" />
@@ -224,141 +236,113 @@
   {% endblock %}
 
   {% block scripts %}
-  <script>
-    // ---------- Utilidades ----------
-    const $ = (sel) => document.querySelector(sel);
-    const add = (el, cls) => el.classList.add(cls);
-    const rmv = (el, cls) => el.classList.remove(cls);
-    const debounce = (fn, ms = 350) => { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; };
+<script>
+  // ---------- Utils ----------
+  const $ = (sel) => document.querySelector(sel);
 
-    // ---------- Elementos ----------
-    const form = $('#form-crear-grupo');
-    const nombre = $('#nombre_grupo');
-    const hintNombre = $('#nombre_hint');
-    const btnCrear = $('#btn-crear');
+  // ---------- DOM refs ----------
+  const form = $('#form-crear-grupo');
+  const nombre = $('#nombre_grupo');
+  const hintNombre = $('#nombre_hint');
+  const btnCrear = $('#btn-crear');
 
-    const chkDuracion = $('#duracion_enabled');
-    const wrapDuracion = $('#duracion_wrap');
-    const inputDuracion = $('#duracion_dias');
+  const selTipo = $('#tipo_grupo');
+  const pwRow = $('#pw_row');
+  const pwInput = $('#contrasena_grupo');
 
-    const CHECK_URL = "{{ url_for('grupos.check_nombre') }}";
-    const reNombre = /^[\p{L}\p{N}\s_.-]{3,40}$/u;
+  const inputDuracion = $('#duracion_dias');
 
-    let ultimoConsultado = "";
-    let ultimaRespuestaPara = "";
+  const CHECK_URL = "{{ url_for('grupos.check_nombre') }}";
+  const reNombre = /^[\p{L}\p{N}\s_.-]{3,40}$/u;
 
-    function estadoHint(tipo, texto) {
-      rmv(hintNombre, 'ok'); rmv(hintNombre, 'bad'); rmv(hintNombre, 'neutral');
-      add(hintNombre, tipo); hintNombre.textContent = texto;
-    }
-    function setSubmitEnabled(on) { btnCrear.disabled = !on; }
+  // ---------- Helpers ----------
+  function estadoHint(tipo, texto){
+    hintNombre.classList.remove('ok','bad','neutral');
+    hintNombre.classList.add(tipo);
+    hintNombre.textContent = texto;
+  }
+  function setSubmitEnabled(on){ btnCrear.disabled = !on; }
 
-    function validarNombreLocal() {
-      const v = (nombre.value || '').replace(/\s+/g, ' ').trim();
-      nombre.value = v;
-      if (!v) { setSubmitEnabled(false); estadoHint('neutral', 'Escribe un nombre de grupo.'); return { ok: false, value: v }; }
-      if (!reNombre.test(v)) {
-        setSubmitEnabled(false); estadoHint('bad', 'Entre 3 y 40 caracteres. Letras/números/espacios/._-');
-        return { ok: false, value: v };
-      }
-      estadoHint('neutral', 'Comprobando disponibilidad…'); setSubmitEnabled(false);
-      return { ok: true, value: v };
-    }
+  function validarNombreLocal(){
+    const v = (nombre.value || '').replace(/\s+/g,' ').trim();
+    nombre.value = v;
+    if(!v){ setSubmitEnabled(false); estadoHint('neutral','Escribe un nombre de grupo.'); return {ok:false, value:v}; }
+    if(!reNombre.test(v)){ setSubmitEnabled(false); estadoHint('bad','Entre 3 y 40 caracteres. Letras/números/espacios/._-'); return {ok:false, value:v}; }
+    estadoHint('neutral','Comprobando disponibilidad…'); setSubmitEnabled(false);
+    return {ok:true, value:v};
+  }
 
-    const comprobarDisponibilidad = debounce(async () => {
+  // Debounce simple
+  let tDeb = null, ultimoConsultado = "", ultimaRespPara = "";
+  function comprobarDisponibilidad(){
+    clearTimeout(tDeb);
+    tDeb = setTimeout(async () => {
       const v = (nombre.value || '').trim();
       const { ok } = validarNombreLocal();
-      if (!ok || v === ultimoConsultado) return;
-
+      if(!ok || v === ultimoConsultado) return;
       ultimoConsultado = v;
-      try {
-        const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(v)}`, { headers: { 'Accept': 'application/json' }, cache: 'no-store' });
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      try{
+        const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(v)}`, { headers:{Accept:'application/json'}, cache:'no-store' });
+        if(!resp.ok) throw new Error('HTTP '+resp.status);
         const data = await resp.json();
-
-        if ((nombre.value || '').trim() !== v) return;
-
-        if (data && data.exists) { estadoHint('bad', 'Ya existe un grupo con ese nombre.'); setSubmitEnabled(false); }
-        else { estadoHint('ok', 'Disponible.'); setSubmitEnabled(true); }
-        ultimaRespuestaPara = v;
-      } catch {
-        if ((nombre.value || '').trim() !== v) return;
-        estadoHint('neutral', 'No se pudo comprobar ahora; se validará al enviar.');
+        if((nombre.value || '').trim() !== v) return; // cambió mientras tanto
+        if(data && data.exists){ estadoHint('bad','Ya existe un grupo con ese nombre.'); setSubmitEnabled(false); }
+        else{ estadoHint('ok','Disponible.'); setSubmitEnabled(true); }
+        ultimaRespPara = v;
+      }catch{
+        if((nombre.value || '').trim() !== v) return;
+        estadoHint('neutral','No se pudo comprobar ahora; se validará al enviar.');
         setSubmitEnabled(true);
       }
     }, 350);
-
-
-    form.addEventListener('submit', (e) => {
-  const val = Number(inputDuracion.value);
-  if (!Number.isFinite(val) || val < 1 || val > 365){
-    e.preventDefault(); inputDuracion.focus();
-    alert('La duración debe ser un número entre 1 y 365.');
   }
-});
+
+  // Mostrar/ocultar contraseña por tipo
+ function togglePrivacidad(){
+  const isPrivado = selTipo.value === 'privado';
+  pwRow.hidden = !isPrivado;            // mostrar/ocultar
+  pwInput.disabled = !isPrivado;        // no enviar si público
+  pwInput.required =  isPrivado;
+  if(!isPrivado){ pwInput.value = ''; }
+}
 
 
-    document.addEventListener('DOMContentLoaded', () => {
-      validarNombreLocal();
-      toggleDuracion();  // ← aplica estado desde el inicio
-      togglePrivacidad();
+  // ---------- Init & events ----------
+  document.addEventListener('DOMContentLoaded', () => {
+    // Estado inicial
+    togglePrivacidad();
+    const initName = validarNombreLocal();
+    if(initName.ok) comprobarDisponibilidad();
+  });
 
-    });
-    nombre.addEventListener('input', () => { const { ok } = validarNombreLocal(); if (ok) comprobarDisponibilidad(); });
-    chkDuracion.addEventListener('change', toggleDuracion);
+  selTipo.addEventListener('change', togglePrivacidad);
+  nombre.addEventListener('input', () => { const {ok} = validarNombreLocal(); if(ok) comprobarDisponibilidad(); });
 
-    form.addEventListener('submit', async (e) => {
-      const { ok, value } = validarNombreLocal();
-      if (!ok) { e.preventDefault(); nombre.focus(); return; }
+  form.addEventListener('submit', async (e) => {
+    // Validaciones mínimas
+    const { ok, value } = validarNombreLocal();
+    if(!ok){ e.preventDefault(); nombre.focus(); return; }
 
-      if (value !== ultimaRespuestaPara) {
-        e.preventDefault();
-        try {
-          const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(value)}`, { headers: { 'Accept': 'application/json' } });
-          const data = await resp.json();
-          if (data && data.exists) { estadoHint('bad', 'Ya existe un grupo con ese nombre.'); setSubmitEnabled(false); return; }
-          estadoHint('ok', 'Disponible.'); setSubmitEnabled(true); form.submit();
-        } catch { form.submit(); }
-        return;
-      }
-
-      if (chkDuracion.checked) {
-        const val = Number(inputDuracion.value);
-        if (!Number.isFinite(val) || val < 1 || val > 365) {
-          e.preventDefault(); inputDuracion.focus();
-          alert('La duración debe ser un número entre 1 y 365.');
-        }
-      }
-    });
-
-    // ... (tu JS actual)
-
-    const selTipo = $('#tipo_grupo');
-    const pwRow = $('#pw_row');
-    const pwInput = $('#contrasena_grupo');
-
-    function togglePrivacidad() {
-      const isPrivado = selTipo.value === 'privado';
-      pwRow.style.display = isPrivado ? 'block' : 'none';
-      if (isPrivado) {
-        pwInput.disabled = false;
-        pwInput.setAttribute('required', 'required');
-      } else {
-        pwInput.removeAttribute('required');
-        pwInput.value = '';
-        pwInput.disabled = true; // evita enviarla al servidor
-      }
+    // Duración 1..365
+    const val = Number(inputDuracion.value);
+    if(!Number.isFinite(val) || val < 1 || val > 365){
+      e.preventDefault(); inputDuracion.focus();
+      alert('La duración debe ser un número entre 1 y 365.');
+      return;
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      validarNombreLocal();
-      toggleDuracion();
-      togglePrivacidad(); // establece estado inicial según el select
-    });
-
-    selTipo.addEventListener('change', togglePrivacidad);
-
-    // ... (resto de tu JS)
-
-  </script>
-  {% endblock %}
+    // Comprobación final de disponibilidad si no coincide con la última respuesta
+    if(value !== ultimaRespPara){
+      e.preventDefault();
+      try{
+        const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(value)}`, { headers:{Accept:'application/json'} });
+        const data = await resp.json();
+        if(data && data.exists){ estadoHint('bad','Ya existe un grupo con ese nombre.'); setSubmitEnabled(false); return; }
+        estadoHint('ok','Disponible.'); setSubmitEnabled(true); form.submit();
+      }catch{
+        form.submit(); // en servidor se vuelve a validar
+      }
+    }
+  });
+</script>
+{% endblock %}

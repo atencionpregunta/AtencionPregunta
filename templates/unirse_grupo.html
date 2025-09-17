@@ -260,11 +260,46 @@
     flex-wrap: wrap;
   }
 
-  .filters {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 12px;
+/* --- Layout de la filterbar --- */
+.filterbar .filters {
+  display: grid;
+  gap: 12px;
+  grid-template-areas:
+    "f1 f2"
+    "search search";
+  grid-template-columns: 1fr 1fr; /* dos columnas iguales */
+}
+
+/* Asignamos cada field a su área */
+.filterbar .filters .field:nth-child(1) { grid-area: f1; }
+.filterbar .filters .field:nth-child(2) { grid-area: f2; }
+.filterbar .filters .field.search       { grid-area: search; }
+
+.filterbar .filters .field .input { width: 100%; }
+
+/* --- Responsive: en móvil, todo en vertical --- */
+@media (max-width: 680px) {
+  .filterbar .filters {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "f1"
+      "f2"
+      "search";
   }
+}
+
+
+/* --- Responsive (móvil): todo en una columna --- */
+@media (max-width: 680px){
+  .filterbar .filters{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "f1"
+      "f2"
+      "search";
+  }
+}
+
 
   .field {
     display: grid;
@@ -587,8 +622,31 @@
 }
 }
 
+  .btn--sm{
+    padding:12px 12px;
+    gap:10px;
+    font-size:.9rem;
+    line-height:1.1;
+    border-radius:12px;
+    margin-top: -6px;   /* sube */
+    margin-left: -6px;  /* pega a la izquierda */
+    margin-bottom: 6px;
+  }
 
+/* Asegura que todos los inputs tengan la misma altura */
+.filterbar .filters .input {
+  width: 100%;
+  height: 46px;           /* igual que tus selects */
+  padding: 0 14px;
+  box-sizing: border-box; /* evita que el borde/padding lo hagan crecer */
+  border-radius: 999px;   /* mismo estilo pill */
+}
 
+/* Ajuste específico para el input de búsqueda */
+.filterbar .filters .field.search .input {
+  height: 46px;           /* más fino (no textarea) */
+  resize: none;           /* evita que el navegador lo trate como textarea */
+}
 
 </style>
 {% endblock %}
@@ -596,7 +654,7 @@
 {% block content %}
 <header class="header">
   <div class="title">
-    <a class="btn-link" href="{{ url_for('index') }}" title="Volver al inicio">
+    <a class="btn secondary-btn btn--sm" href="{{ url_for('index') }}">
       <i class="fa-solid fa-arrow-left"></i>
     </a>
     <h2><i class="fa-solid fa-users"></i> Unirse a grupo</h2>
