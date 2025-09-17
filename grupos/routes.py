@@ -40,14 +40,13 @@ def crear_grupo():
         nombre = (request.form.get("nombre_grupo") or "").strip()
         contrasena = (request.form.get("contrasena_grupo") or "").strip()
         tipo = (request.form.get("tipo_grupo") or "publico").strip().lower()
-        if request.form.get("duracion_dias"):
-            dur_temp = request.form.get("duracion_dias") or None
-        else:
-            dur_temp = None
+        raw_dur = (request.form.get("duracion_dias") or "").strip()  # ← ahora sí definido
 
+        # Normaliza tipo
         if tipo not in ("publico", "privado"):
             tipo = "publico"
 
+        # Validaciones básicas
         if not nombre:
             flash("Falta el nombre del grupo.", "error")
             return render_template("crear_grupo.html", grupos_usuario=get_grupos_usuario(usuario_id))
@@ -56,31 +55,57 @@ def crear_grupo():
             flash("Ya existe un grupo con ese nombre ❌", "error")
             return render_template("crear_grupo.html", grupos_usuario=get_grupos_usuario(usuario_id))
 
+        # Duración OBLIGATORIA (1..365)
         try:
-            with db_lock:
-                with get_conn() as conn:
-                    cur = conn.cursor()
-                    cur.execute(
-                        "INSERT INTO Grupos (fec_ini, duracion_temp, codigo, tipo, contrasena) VALUES (?, ?, ?, ?, ?)",
-                        (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), dur_temp, nombre, tipo, contrasena or None)
+            dur_temp = int(raw_dur)
+            if not (1 <= dur_temp <= 365):
+                raise ValueError()
+        except ValueError:
+            flash("La duración debe ser un número entre 1 y 365 días.", "error")
+            return render_template("crear_grupo.html", grupos_usuario=get_grupos_usuario(usuario_id))
+
+        # (Opcional) si el grupo es privado, exige contraseña
+        if tipo == "privado" and not contrasena:
+            flash("Para grupos privados debes indicar una contraseña.", "error")
+            return render_template("crear_grupo.html", grupos_usuario=get_grupos_usuario(usuario_id))
+
+        # Inserción en BD
+        try:
+            with db_lock, get_conn() as conn:
+                cur = conn.cursor()
+                cur.execute(
+                    """
+                    INSERT INTO Grupos (fec_ini, duracion_temp, codigo, tipo, contrasena)
+                    VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (
+                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        dur_temp,                    # entero validado
+                        nombre,
+                        tipo,
+                        contrasena or None
                     )
-                    grupo_id = cur.lastrowid
-                    cur.execute(
-                        "INSERT OR IGNORE INTO Grupo_Usuario (id_grupo, id_usuario) VALUES (?, ?)",
-                        (grupo_id, usuario_id)
-                    )
-                    conn.commit()
+                )
+                grupo_id = cur.lastrowid
+
+                cur.execute(
+                    "INSERT OR IGNORE INTO Grupo_Usuario (id_grupo, id_usuario) VALUES (?, ?)",
+                    (grupo_id, usuario_id)
+                )
+                conn.commit()
 
             session["grupo_actual"] = nombre
             flash(f"Grupo '{nombre}' creado correctamente ✅", "success")
             return redirect(url_for("grupos.gestionar_grupos"))
 
         except sqlite3.IntegrityError:
+            # Doble defensa ante condiciones de carrera o índice único
             flash("Ya existe un grupo con ese nombre ❌", "error")
             return render_template("crear_grupo.html", grupos_usuario=get_grupos_usuario(usuario_id))
 
     # GET
     return render_template("crear_grupo.html", grupos_usuario=get_grupos_usuario(usuario_id))
+
 
 # =========================
 # Unirse a grupo (form)

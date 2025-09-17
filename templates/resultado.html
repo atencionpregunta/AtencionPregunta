@@ -5,171 +5,631 @@
 {% block extra_head %}
 <style>
   :root {
-    --bg:#f7f8fb; --card:#fff; --text:#171717; --muted:#6b7280; --line:#e8eaf0;
-    --chip:#eef2ff; --chip-ink:#3730a3; --ok:#16a34a; --bad:#dc2626;
-    --ok-hsl:142 55% 46%; --bad-hsl:0 70% 50%; --unk-hsl:215 12% 60%;
+    --bg: #f7f8fb;
+    --card: #fff;
+    --text: #171717;
+    --muted: #6b7280;
+    --line: #e8eaf0;
+    --chip: #eef2ff;
+    --chip-ink: #3730a3;
+    --ok: #16a34a;
+    --bad: #dc2626;
+    --ok-hsl: 142 55% 46%;
+    --bad-hsl: 0 70% 50%;
+    --unk-hsl: 215 12% 60%;
   }
-  .tone-soft  { --ok-hsl:142 45% 68%; --bad-hsl:0 55% 72%; --unk-hsl:215 10% 72%; }
-  .tone-strong{ --ok-hsl:142 75% 42%; --bad-hsl:0 78% 46%; --unk-hsl:215 16% 56%; }
+
+  .tone-soft {
+    --ok-hsl: 142 45% 68%;
+    --bad-hsl: 0 55% 72%;
+    --unk-hsl: 215 10% 72%;
+  }
+
+  .tone-strong {
+    --ok-hsl: 142 75% 42%;
+    --bad-hsl: 0 78% 46%;
+    --unk-hsl: 215 16% 56%;
+  }
 
   /* Usa la card del base; ajusta ancho ahí */
-  .page-resultados .card{ max-width:1000px; }
+  .page-resultados .card {
+    max-width: 1000px;
+  }
 
   /* Layout con sidebar */
-  .layout { display:grid; grid-template-columns:220px 1fr; gap:16px; }
-  .side{
-    border:1px solid var(--line); border-radius:14px; padding:12px;
-    position:sticky; top:20px; align-self:start; background:#fff;
+  .layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 16px;
   }
-  .side h3{ margin:0 0 8px; font-size:1rem; }
-  .glist{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px; }
-  .gitem a{
-    display:flex; align-items:center; gap:.5rem; padding:8px 10px; border-radius:10px;
-    color:#111827; text-decoration:none; border:1px solid transparent;
-  }
-  .gitem a:hover{ background:#f8fafc; border-color:#eef2f7; }
-  .gitem .dot{ width:8px; height:8px; border-radius:999px; background:#cbd5e1; }
-  .gitem.active a{ background:#eef6ff; border-color:#dbeafe; }
-  .gitem.active .dot{ background:#0b57d0; }
 
-  .side .mini-actions{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
-  .side .mini-actions a{
-    border:1px solid var(--line); border-radius:10px; padding:6px 8px;
-    font-size:.85rem; text-decoration:none; color:#111827; background:#fff;
+  .side {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px;
+    position: sticky;
+    top: 20px;
+    align-self: start;
+    background: #fff;
+  }
+
+  .side h3 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+  }
+
+  .glist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .gitem a {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: 8px 10px;
+    border-radius: 10px;
+    color: #111827;
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+
+  .gitem a:hover {
+    background: #f8fafc;
+    border-color: #eef2f7;
+  }
+
+  .gitem .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #cbd5e1;
+  }
+
+  .gitem.active a {
+    background: #eef6ff;
+    border-color: #dbeafe;
+  }
+
+  .gitem.active .dot {
+    background: #0b57d0;
+  }
+
+  .side .mini-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .side .mini-actions a {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 6px 8px;
+    font-size: .85rem;
+    text-decoration: none;
+    color: #111827;
+    background: #fff;
   }
 
   /* Contenido principal */
-  .main{ padding:6px 4px; }
-  .header{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-  .title{ display:flex; align-items:center; gap:.6rem; }
-  .title h2{ margin:0; font-size:1.55rem; }
+  .main {
+    padding: 6px 4px;
+  }
 
-  .btn-link{
-    text-decoration:none; padding:9px 12px; border:1px solid var(--line);
-    border-radius:10px; color:#111827; background:#fff; font-weight:700;
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
   }
-  .btn-link:hover{ border-color:#d6dae3; box-shadow:0 2px 10px rgba(2,6,23,.06); }
 
-  .chips{ display:flex; gap:8px; flex-wrap:wrap; }
-  .chip{
-    display:inline-flex; align-items:center; gap:.4rem; padding:.35rem .6rem;
-    border-radius:999px; background:var(--chip); color:var(--chip-ink);
-    font-weight:700; font-size:.8rem; border:1px solid #e5e7eb;
+  .title {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
   }
-  .meta{ color:var(--muted); margin:8px 0 16px; font-size:.95rem; }
 
-  .toolbar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:6px 0 16px; }
-  .tone-toggle{
-    display:flex; align-items:center; gap:8px; border:1px solid var(--line);
-    border-radius:999px; padding:6px; background:#fff;
+  .title h2 {
+    margin: 0;
+    font-size: 1.55rem;
   }
-  .tone-toggle button{
-    border:none; background:transparent; padding:6px 10px; border-radius:999px;
-    cursor:pointer; font-weight:700; color:#334155;
+
+  .btn-link {
+    text-decoration: none;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: #111827;
+    background: #fff;
+    font-weight: 700;
   }
-  .tone-toggle button.active{ background:#eef2ff; color:#1d4ed8; }
+
+  .btn-link:hover {
+    border-color: #d6dae3;
+    box-shadow: 0 2px 10px rgba(2, 6, 23, .06);
+  }
+
+  .chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .35rem .6rem;
+    border-radius: 999px;
+    background: var(--chip);
+    color: var(--chip-ink);
+    font-weight: 700;
+    font-size: .8rem;
+    border: 1px solid #e5e7eb;
+  }
+
+  .meta {
+    color: var(--muted);
+    margin: 8px 0 16px;
+    font-size: .95rem;
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 6px 0 16px;
+  }
+
+  .tone-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px;
+    background: #fff;
+  }
+
+  .tone-toggle button {
+    border: none;
+    background: transparent;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 700;
+    color: #334155;
+  }
+
+  .tone-toggle button.active {
+    background: #eef2ff;
+    color: #1d4ed8;
+  }
 
   /* Tabla */
-  table{ width:100%; border-collapse:collapse; }
-  thead th{
-    text-align:left; font-weight:800; font-size:.8rem; color:#475569;
-    padding:10px; border-bottom:1px solid var(--line); letter-spacing:.3px; text-transform:uppercase;
+  table {
+    width: 100%;
+    border-collapse: collapse;
   }
-  tbody td{ padding:12px 10px; border-bottom:1px solid var(--line); vertical-align:middle; }
-  tbody tr{ opacity:0; animation:rowIn .45s ease forwards; }
-  @keyframes rowIn{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
 
-  .pos{ width:72px; font-weight:800; }
-  .user{ display:flex; align-items:center; gap:.12rem; }
-  .avatar-wrap{ position:relative; display:inline-grid; width:34px; height:34px; margin-right:.1rem; }
-  .avatar{
-    width:34px; height:34px; border-radius:999px; display:grid; place-items:center; font-weight:800;
-    background:#eef2ff; color:#3730a3; border:1px solid #e5e7eb; text-transform:uppercase; font-size:.85rem;
-    box-shadow: inset 0 1px 0 #fff, 0 2px 8px rgba(2,6,23,.05);
+  thead th {
+    text-align: left;
+    font-weight: 800;
+    font-size: .8rem;
+    color: #475569;
+    padding: 10px;
+    border-bottom: 1px solid var(--line);
+    letter-spacing: .3px;
+    text-transform: uppercase;
   }
-  .avatar.ok{ box-shadow: inset 0 0 0 2px hsl(var(--ok-hsl)/.40), 0 0 0 4px hsl(var(--ok-hsl)/.18); }
-  .avatar.bad{ box-shadow: inset 0 0 0 2px hsl(var(--bad-hsl)/.40), 0 0 0 4px hsl(var(--bad-hsl)/.18); }
-  .avatar.unk{ box-shadow: inset 0 0 0 2px hsl(var(--unk-hsl)/.45); }
-  .badge{
-    position:absolute; right:-3px; bottom:-3px; width:16px; height:16px; border-radius:999px; display:grid; place-items:center;
-    font-size:.65rem; line-height:1; background:#fff; border:1px solid #e5e7eb; color:#fff;
-  }
-  .badge.ok { background:hsl(var(--ok-hsl)/.90); border-color:hsl(var(--ok-hsl)); }
-  .badge.bad{ background:hsl(var(--bad-hsl)/.90); border-color:hsl(var(--bad-hsl)); }
-  .badge.unk{ background:hsl(var(--unk-hsl)/.90); border-color:hsl(var(--unk-hsl)); }
-  .you{ padding:.22rem .55rem; border-radius:999px; background:#eef6ff; color:#0b57d0; font-size:.50rem; font-weight:800; }
 
-  .scorebar{
-    position:relative; width:100%; height:24px; background:#f3f4f6; border-radius:12px; overflow:hidden; border:1px solid #eceff3;
+  tbody td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
   }
-  .fill{ height:100%; color:#064e3b; font-weight:800; font-size:.60rem; line-height:24px; text-align:center; transition:width .6s ease; letter-spacing:.2px; }
-  .score-label{
-    position:absolute; inset:0; display:grid; place-items:center; font-weight:800; color:#111827; font-size:.85rem; pointer-events:none;
+
+  tbody tr {
+    opacity: 0;
+    animation: rowIn .45s ease forwards;
   }
-  .fill-ok{ background: linear-gradient(90deg, hsl(var(--ok-hsl)/.85), hsl(var(--ok-hsl)/.65)); }
-  .fill-bad{ background: linear-gradient(90deg, hsl(var(--bad-hsl)/.85), hsl(var(--bad-hsl)/.65)); }
-  .me-ok{ background:#e8f7ee !important; outline:2px solid var(--ok); }
-  .me-bad{ background:#fde8e8 !important; outline:2px solid var(--bad); }
+
+  @keyframes rowIn {
+    from {
+      opacity: 0;
+      transform: translateY(6px)
+    }
+
+    to {
+      opacity: 1;
+      transform: none
+    }
+  }
+
+  .pos {
+    width: 72px;
+    font-weight: 800;
+  }
+
+  .user {
+    display: flex;
+    align-items: center;
+    gap: .12rem;
+  }
+
+  .avatar-wrap {
+    position: relative;
+    display: inline-grid;
+    width: 34px;
+    height: 34px;
+    margin-right: .1rem;
+  }
+
+  .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    background: #eef2ff;
+    color: #3730a3;
+    border: 1px solid #e5e7eb;
+    text-transform: uppercase;
+    font-size: .85rem;
+    box-shadow: inset 0 1px 0 #fff, 0 2px 8px rgba(2, 6, 23, .05);
+  }
+
+  .avatar.ok {
+    box-shadow: inset 0 0 0 2px hsl(var(--ok-hsl)/.40), 0 0 0 4px hsl(var(--ok-hsl)/.18);
+  }
+
+  .avatar.bad {
+    box-shadow: inset 0 0 0 2px hsl(var(--bad-hsl)/.40), 0 0 0 4px hsl(var(--bad-hsl)/.18);
+  }
+
+  .avatar.unk {
+    box-shadow: inset 0 0 0 2px hsl(var(--unk-hsl)/.45);
+  }
+
+  .badge {
+    position: absolute;
+    right: -3px;
+    bottom: -3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    font-size: .65rem;
+    line-height: 1;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    color: #fff;
+  }
+
+  .badge.ok {
+    background: hsl(var(--ok-hsl)/.90);
+    border-color: hsl(var(--ok-hsl));
+  }
+
+  .badge.bad {
+    background: hsl(var(--bad-hsl)/.90);
+    border-color: hsl(var(--bad-hsl));
+  }
+
+  .badge.unk {
+    background: hsl(var(--unk-hsl)/.90);
+    border-color: hsl(var(--unk-hsl));
+  }
+
+  .you {
+    padding: .22rem .55rem;
+    border-radius: 999px;
+    background: #eef6ff;
+    color: #0b57d0;
+    font-size: .50rem;
+    font-weight: 800;
+  }
+
+  .scorebar {
+    position: relative;
+    width: 100%;
+    height: 24px;
+    background: #f3f4f6;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #eceff3;
+  }
+
+  .fill {
+    height: 100%;
+    color: #064e3b;
+    font-weight: 800;
+    font-size: .60rem;
+    line-height: 24px;
+    text-align: center;
+    transition: width .6s ease;
+    letter-spacing: .2px;
+  }
+
+  .score-label {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    color: #111827;
+    font-size: .85rem;
+    pointer-events: none;
+  }
+
+  .fill-ok {
+    background: linear-gradient(90deg, hsl(var(--ok-hsl)/.85), hsl(var(--ok-hsl)/.65));
+  }
+
+  .fill-bad {
+    background: linear-gradient(90deg, hsl(var(--bad-hsl)/.85), hsl(var(--bad-hsl)/.65));
+  }
+
+  .me-ok {
+    background: #e8f7ee !important;
+    outline: 2px solid var(--ok);
+  }
+
+  .me-bad {
+    background: #fde8e8 !important;
+    outline: 2px solid var(--bad);
+  }
+  /* ---- por defecto (escritorio) ---- */
+.chips--mobile { display: none; }   /* 👈 oculta los chips móviles en desktop */
 
   /* Selector móvil oculto por defecto */
-  .mobile-picker{ display:none; }
+  .mobile-picker {
+    display: none;
+  }
 
   /* Botón chat */
-  .chat-btn{
-    --chat1:#2563eb; --chat2:#1d4ed8; --ring:rgba(29,78,216,.25);
-    display:inline-flex; align-items:center; gap:10px; text-decoration:none; border:0;
-    padding:12px 18px; border-radius:14px; background:linear-gradient(135deg, var(--chat1), var(--chat2));
-    color:#fff; font-weight:800; letter-spacing:.2px; box-shadow:0 10px 24px var(--ring);
+  .chat-btn {
+    --chat1: #2563eb;
+    --chat2: #1d4ed8;
+    --ring: rgba(29, 78, 216, .25);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    border: 0;
+    padding: 12px 18px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--chat1), var(--chat2));
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: .2px;
+    box-shadow: 0 10px 24px var(--ring);
     transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
   }
-  .chat-btn:hover{ transform:translateY(-2px); box-shadow:0 14px 28px rgba(29,78,216,.35); filter:brightness(1.02); }
-  .chat-btn:active{ transform:translateY(0); box-shadow:0 8px 18px rgba(29,78,216,.3); }
-  .chat-btn .icon{ font-size:1.15rem; line-height:1; }
-  .chat-btn.outline{ background:#fff; color:var(--chat2); border:1px solid #dbeafe; box-shadow:0 8px 22px rgba(2,6,23,.06); }
-  .chat-btn.outline:hover{ box-shadow:0 10px 26px rgba(2,6,23,.08); }
-  .desktop-chat{ margin-left:auto; }
-  .mobile-chat{ display:none; }
+
+  .chat-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(29, 78, 216, .35);
+    filter: brightness(1.02);
+  }
+
+  .chat-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 8px 18px rgba(29, 78, 216, .3);
+  }
+
+  .chat-btn .icon {
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+
+  .chat-btn.outline {
+    background: #fff;
+    color: var(--chat2);
+    border: 1px solid #dbeafe;
+    box-shadow: 0 8px 22px rgba(2, 6, 23, .06);
+  }
+
+  .chat-btn.outline:hover {
+    box-shadow: 0 10px 26px rgba(2, 6, 23, .08);
+  }
+
+  .desktop-chat {
+    margin-left: auto;
+  }
+
+  .mobile-chat {
+    display: none;
+  }
 
   /* ====== MÓVIL ====== */
-  @media (max-width:768px){
-    .layout{ grid-template-columns:1fr !important; }
-    .side{ display:none !important; }
-    .mobile-picker{ display:flex !important; align-items:center; gap:8px; margin:6px 0 10px; }
-    .mobile-picker select{ padding:8px 10px; border:1px solid #e8eaf0; border-radius:10px; background:#fff; font-size:.95rem; }
-    .chips, .tone-toggle{ display:none !important; }
-
-    thead{ display:table-header-group !important; }
-    table{ display:table !important; width:100% !important; table-layout:fixed; }
-    tbody{ display:table-row-group !important; }
-    tr{ display:table-row !important; }
-    td, th{ display:table-cell !important; }
-
-    thead th{ font-size:.68rem !important; letter-spacing:.08em !important; color:#64748b !important; padding:6px 6px !important; text-transform:uppercase; }
-    tbody td{ padding:8px 6px !important; vertical-align:middle !important; }
-
-    .pos{ width:32px !important; font-size:.70rem !important; font-weight:700 !important; }
-    .user{ gap:.45rem !important; }
-    .avatar-wrap{ width:22px !important; height:22px !important; margin-right:.1rem !important; }
-    .avatar{ width:22px !important; height:22px !important; font-size:.65rem !important; }
-    .badge{ width:12px !important; height:12px !important; font-size:.1rem !important; right:-3px !important; bottom:-3px !important; }
-    .you{ font-size:.65rem !important; padding:.12rem .4rem !important; }
-
-    .scorebar{ height:12px !important; border-radius:999px !important; }
-    .fill{ line-height:12px !important; font-size:.82rem !important; display:flex !important; align-items:center !important; justify-content:center !important; color:#000 !important; }
-    .score-label{ display:grid !important; font-size:.60rem !important; color:#111827 !important; }
-    .fill-ok, .fill-bad{ color:#000 !important; }
-
-    .desktop-chat{ display:none !important; }
-    .mobile-chat{
-      display:inline-flex;
-      position:fixed;
-      right:16px;
-      bottom:max(16px, env(safe-area-inset-bottom));
-      z-index: 100;
-      padding:14px 18px;
-      border-radius:999px;
-      box-shadow:0 14px 36px rgba(29,78,216,.35);
+  @media (max-width:768px) {
+    .layout {
+      grid-template-columns: 1fr !important;
     }
+
+    .side {
+      display: none !important;
+    }
+
+    .mobile-picker {
+      display: flex !important;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 0 10px;
+    }
+
+    .mobile-picker select {
+      padding: 8px 10px;
+      border: 1px solid #e8eaf0;
+      border-radius: 10px;
+      background: #fff;
+      font-size: .95rem;
+    }
+
+    .chips,
+    .tone-toggle {
+      display: none !important;
+    }
+
+    thead {
+      display: table-header-group !important;
+    }
+
+    table {
+      display: table !important;
+      width: 100% !important;
+      table-layout: fixed;
+    }
+
+    tbody {
+      display: table-row-group !important;
+    }
+
+    tr {
+      display: table-row !important;
+    }
+
+    td,
+    th {
+      display: table-cell !important;
+    }
+
+    thead th {
+      font-size: .68rem !important;
+      letter-spacing: .08em !important;
+      color: #64748b !important;
+      padding: 6px 6px !important;
+      text-transform: uppercase;
+    }
+
+    tbody td {
+      padding: 8px 6px !important;
+      vertical-align: middle !important;
+    }
+
+    .pos {
+      width: 32px !important;
+      font-size: .70rem !important;
+      font-weight: 700 !important;
+    }
+
+    .user {
+      gap: .45rem !important;
+    }
+
+    .avatar-wrap {
+      width: 22px !important;
+      height: 22px !important;
+      margin-right: .1rem !important;
+    }
+
+    .avatar {
+      width: 22px !important;
+      height: 22px !important;
+      font-size: .65rem !important;
+    }
+
+    .badge {
+      width: 12px !important;
+      height: 12px !important;
+      font-size: .1rem !important;
+      right: -3px !important;
+      bottom: -3px !important;
+    }
+
+    .you {
+      font-size: .65rem !important;
+      padding: .12rem .4rem !important;
+    }
+
+    .scorebar {
+      height: 12px !important;
+      border-radius: 999px !important;
+    }
+
+    .fill {
+      line-height: 12px !important;
+      font-size: .82rem !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      color: #000 !important;
+    }
+
+    .score-label {
+      display: grid !important;
+      font-size: .60rem !important;
+      color: #111827 !important;
+    }
+
+    .fill-ok,
+    .fill-bad {
+      color: #000 !important;
+    }
+
+    .desktop-chat {
+      display: none !important;
+    }
+
+    .mobile-chat {
+      display: inline-flex;
+      position: fixed;
+      right: 16px;
+      bottom: max(16px, env(safe-area-inset-bottom));
+      z-index: 100;
+      padding: 14px 18px;
+      border-radius: 999px;
+      box-shadow: 0 14px 36px rgba(29, 78, 216, .35);
+    }
+
+    @media (max-width:768px) {
+
+      /* Oculta chips de escritorio en móvil */
+      .chips {
+        display: none !important;
+      }
+
+      /* Barra de chips móvil */
+      .chips--mobile {
+        display: flex !important;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin: 8px 0 10px;
+      }
+
+      .chips--mobile .chip {
+        font-size: .74rem;
+        padding: .28rem .5rem;
+        border-radius: 999px;
+        border: 1px solid #e5e7eb;
+        background: #f8fafc;
+        color: #334155;
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        font-weight: 800;
+      }
+
+      .chips--mobile .chip .i {
+        width: 14px;
+        height: 14px;
+        display: inline-grid;
+        place-items: center;
+        font-size: .76rem;
+        line-height: 1;
+      }
+    }
+
   }
 </style>
 {% endblock %}
@@ -177,119 +637,146 @@
 {% block content %}
 {# NOTA: NO usamos un <div class="card"> aquí; base.html ya envuelve este bloque con .card #}
 
-{% set grupo_sel  = (grupos_usuario | selectattr('id','equalto', id_grupo) | list | first) %}
-{% set max_p      = (resultados | map(attribute='puntuacion') | max) if resultados else 1 %}
-{% set total_part = resultados|length if resultados else 0 %}
-{% set tu_fila    = (resultados | selectattr('id_usuario','equalto', session['usuario_id']) | list | first) %}
-{% set tu_ok      = (tu_fila.correcta == 1) if tu_fila is defined and tu_fila else none %}
+  {% set grupo_sel = (grupos_usuario | selectattr('id','equalto', id_grupo) | list | first) %}
+  {% set max_p = (resultados | map(attribute='puntuacion') | max) if resultados else 1 %}
+  {% set total_part = resultados|length if resultados else 0 %}
+  {% set tu_fila = (resultados | selectattr('id_usuario','equalto', session['usuario_id']) | list | first) %}
+  {% set tu_ok = (tu_fila.correcta == 1) if tu_fila is defined and tu_fila else none %}
 
-{# gid que soporta 0 (general) #}
-{% if id_grupo is not none %}
+  {# gid que soporta 0 (general) #}
+  {% if id_grupo is not none %}
   {% set gid = id_grupo %}
-{% elif grupo_sel %}
+  {% elif grupo_sel %}
   {% set gid = grupo_sel.id %}
-{% elif grupos_usuario and grupos_usuario|length %}
+  {% elif grupos_usuario and grupos_usuario|length %}
   {% set gid = grupos_usuario[0].id %}
-{% else %}
+  {% else %}
   {% set gid = none %}
-{% endif %}
+  {% endif %}
 
-<div class="layout">
-  <!-- Sidebar -->
-  <aside class="side">
-    <h3><i class="fa-solid fa-layer-group"></i> Tus grupos</h3>
-    {% if grupos_usuario and grupos_usuario|length %}
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="side">
+      <h3><i class="fa-solid fa-layer-group"></i> Tus grupos</h3>
+      {% if grupos_usuario and grupos_usuario|length %}
       <ul class="glist">
         {% for g in grupos_usuario %}
-          <li class="gitem {% if g.id == gid %}active{% endif %}">
-            <a href="{{ url_for('resultados.ver_resultados', id_grupo=g.id) }}">
-              <span class="dot"></span>
-              <span style="font-weight:700">{{ g.codigo }}</span>
-            </a>
-          </li>
+        <li class="gitem {% if g.id == gid %}active{% endif %}">
+          <a href="{{ url_for('resultados.ver_resultados', id_grupo=g.id) }}">
+            <span class="dot"></span>
+            <span style="font-weight:700">{{ g.codigo }}</span>
+          </a>
+        </li>
         {% endfor %}
       </ul>
-    {% else %}
+      {% else %}
       <p class="meta">No perteneces a ningún grupo.</p>
       <div class="mini-actions">
         <a href="{{ url_for('grupos.crear_grupo') }}">Crear</a>
         <a href="{{ url_for('grupos.unirse_grupo') }}">Unirse</a>
       </div>
-    {% endif %}
-  </aside>
+      {% endif %}
+    </aside>
 
-  <!-- Main -->
-  <section class="main">
-    <!-- Selector móvil -->
-    <form class="mobile-picker" method="GET" action="{{ url_for('resultados.ver_resultados') }}">
-      <label for="id_grupo"><strong>Grupo:</strong></label>
-      <select name="id_grupo" id="id_grupo" onchange="this.form.submit()">
-        {% for g in grupos_usuario %}
+    <!-- Main -->
+    <section class="main">
+      <!-- Selector móvil -->
+      <form class="mobile-picker" method="GET" action="{{ url_for('resultados.ver_resultados') }}">
+        <label for="id_grupo"><strong>Grupo:</strong></label>
+        <select name="id_grupo" id="id_grupo" onchange="this.form.submit()">
+          {% for g in grupos_usuario %}
           <option value="{{ g.id }}" {% if g.id==gid %}selected{% endif %}>{{ g.codigo }}</option>
-        {% endfor %}
-      </select>
-      <noscript><button type="submit">Ver</button></noscript>
-    </form>
+          {% endfor %}
+        </select>
+        <noscript><button type="submit">Ver</button></noscript>
+      </form>
 
-    <div class="header">
-      <div class="title">
-        <a class="btn-link" href="{{ url_for('index') }}">
-          <i class="fa-solid fa-arrow-left"></i>
+      <div class="header">
+        <div class="title">
+          <a class="btn-link" href="{{ url_for('index') }}">
+            <i class="fa-solid fa-arrow-left"></i>
+          </a>
+          <h2>📊 Clasificación</h2>
+        </div>
+
+        <!-- Chat escritorio -->
+        <a href="{{ url_for('chat.ver_chat', id_grupo=gid) if gid is not none else '#' }}" class="chat-btn desktop-chat"
+          id="chatBtnDesktop" aria-label="Abrir chat del grupo">
+          <span class="icon">💬</span> Abrir chat
         </a>
-        <h2>📊 Clasificación</h2>
       </div>
+      <!-- Chips móviles: miembros + días restantes -->
+      <div class="chips chips--mobile" aria-hidden="false">
+        <span class="chip">
+          <span class="i"><i class="fa-solid fa-user-group"></i></span>
+          {{ total_part }} miembro{{ 's' if total_part != 1 else '' }}
+        </span>
 
-      <!-- Chat escritorio -->
-      <a href="{{ url_for('chat.ver_chat', id_grupo=gid) if gid is not none else '#' }}"
-         class="chat-btn desktop-chat"
-         id="chatBtnDesktop"
-         aria-label="Abrir chat del grupo">
-        <span class="icon">💬</span> Abrir chat
-      </a>
-    </div>
-
-    <div class="chips">
-      {% if grupo_sel %}
-        <span class="chip"><i class="fa-solid fa-users"></i> Grupo: <strong>{{ grupo_sel.codigo }}</strong></span>
-      {% endif %}
-      <span class="chip"><i class="fa-solid fa-user-group"></i> {{ total_part }} participantes</span>
-      <span class="chip"><i class="fa-solid fa-trophy"></i> Máx: {{ max_p }}</span>
-
-      {% if dias_restantes is not none %}
+        {% if dias_restantes is not none %}
         {% if dias_restantes > 0 %}
-          <span class="chip"><i class="fa-solid fa-hourglass-half"></i> {{ dias_restantes }} día{{ 's' if dias_restantes != 1 else '' }} restantes</span>
+        <span class="chip">
+          <span class="i"><i class="fa-solid fa-hourglass-half"></i></span>
+          {{ dias_restantes }} día{{ 's' if dias_restantes != 1 else '' }} restantes
+        </span>
         {% else %}
-          <span class="chip" style="background:#fde8e8;color:#7f1d1d;border-color:#f5c2c2"><i class="fa-solid fa-hourglass-end"></i> Termina hoy</span>
+        <span class="chip" style="background:#fde8e8;color:#7f1d1d;border-color:#f5c2c2">
+          <span class="i"><i class="fa-solid fa-hourglass-end"></i></span>
+          Termina hoy
+        </span>
         {% endif %}
-      {% else %}
-        <span class="chip"><i class="fa-solid fa-infinity"></i> Temporada sin límite</span>
-      {% endif %}
-    </div>
-
-    <div class="toolbar">
-      <div class="tone-toggle" aria-label="Ajuste de color">
-        <button type="button" id="btnSoft"   class="active">Suave</button>
-        <button type="button" id="btnStrong">Vivo</button>
+        {% else %}
+        {# Si por legado no hay duración (NULL), puedes mostrar “—” o nada. #}
+        <span class="chip">
+          <span class="i"><i class="fa-solid fa-hourglass"></i></span>
+          Sin datos de temporada
+        </span>
+        {% endif %}
       </div>
-    </div>
 
-    <table>
-      <colgroup>
-        <col style="width:56px"><!-- Pos -->
-        <col style="width:auto"><!-- Nombre -->
-        <col style="width:38%"><!-- Puntuación -->
-      </colgroup>
+      <div class="chips">
+        {% if grupo_sel %}
+        <span class="chip"><i class="fa-solid fa-users"></i> Grupo: <strong>{{ grupo_sel.codigo }}</strong></span>
+        {% endif %}
+        <span class="chip"><i class="fa-solid fa-user-group"></i> {{ total_part }} participantes</span>
+        <span class="chip"><i class="fa-solid fa-trophy"></i> Máx: {{ max_p }}</span>
 
-      <thead>
-        <tr>
-          <th style="width:72px;">POS</th>
-          <th>NOMBRE</th>
-          <th>PUNTUACIÓN</th>
-        </tr>
-      </thead>
+        {% if dias_restantes is not none %}
+        {% if dias_restantes > 0 %}
+        <span class="chip"><i class="fa-solid fa-hourglass-half"></i> {{ dias_restantes }} día{{ 's' if dias_restantes
+          != 1 else '' }} restantes</span>
+        {% else %}
+        <span class="chip" style="background:#fde8e8;color:#7f1d1d;border-color:#f5c2c2"><i
+            class="fa-solid fa-hourglass-end"></i> Termina hoy</span>
+        {% endif %}
+        {% else %}
+        <span class="chip"><i class="fa-solid fa-infinity"></i> Temporada sin límite</span>
+        {% endif %}
+      </div>
 
-      <tbody>
-        {% for r in resultados %}
+      <div class="toolbar">
+        <div class="tone-toggle" aria-label="Ajuste de color">
+          <button type="button" id="btnSoft" class="active">Suave</button>
+          <button type="button" id="btnStrong">Vivo</button>
+        </div>
+      </div>
+
+      <table>
+        <colgroup>
+          <col style="width:56px"><!-- Pos -->
+          <col style="width:auto"><!-- Nombre -->
+          <col style="width:38%"><!-- Puntuación -->
+        </colgroup>
+
+        <thead>
+          <tr>
+            <th style="width:72px;">POS</th>
+            <th>NOMBRE</th>
+            <th>PUNTUACIÓN</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for r in resultados %}
           {% set pos = loop.index %}
           {% set is_you = (r.id_usuario == session['usuario_id']) %}
           {% set row_class = 'me-ok' if is_you and r.correcta==1 else ('me-bad' if is_you and r.correcta==0 else '') %}
@@ -301,11 +788,11 @@
                   {{ (r.usuario[:1] if r.usuario else '?')|upper }}
                 </span>
                 {% if r.correcta==1 %}
-                  <span class="badge ok"  title="Correcto"><i class="fa-solid fa-check"></i></span>
+                <span class="badge ok" title="Correcto"><i class="fa-solid fa-check"></i></span>
                 {% elif r.correcta==0 %}
-                  <span class="badge bad" title="Incorrecto"><i class="fa-solid fa-xmark"></i></span>
+                <span class="badge bad" title="Incorrecto"><i class="fa-solid fa-xmark"></i></span>
                 {% else %}
-                  <span class="badge unk" title="Sin responder">—</span>
+                <span class="badge unk" title="Sin responder">—</span>
                 {% endif %}
               </span>
               <span style="font-weight:350; font-size:.88rem">{{ r.usuario }}</span>
@@ -314,66 +801,65 @@
             <td>
               {% set pct = (r.puntuacion / (max_p if max_p else 1) * 100) | round(0) %}
               <div class="scorebar">
-                <div class="fill {% if r.correcta==1 %}fill-ok{% elif r.correcta==0 %}fill-bad{% endif %}" style="width: {{ pct }}%"></div>
+                <div class="fill {% if r.correcta==1 %}fill-ok{% elif r.correcta==0 %}fill-bad{% endif %}"
+                  style="width: {{ pct }}%"></div>
                 <div class="score-label">{{ r.puntuacion }}</div>
               </div>
             </td>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+          {% endfor %}
+        </tbody>
+      </table>
 
-    {% if not resultados %}
+      {% if not resultados %}
       <p class="meta" style="margin-top:14px">Aún no hay resultados para este grupo.</p>
-    {% endif %}
+      {% endif %}
 
-    <!-- Chat móvil flotante -->
-    <a href="{{ url_for('chat.ver_chat', id_grupo=gid) if gid is not none else '#' }}"
-       class="chat-btn mobile-chat"
-       id="chatBtnMobile"
-       aria-label="Abrir chat del grupo">
-      <span class="icon">💬</span> Chat del grupo
-    </a>
-  </section>
-</div>
-{% endblock %}
+      <!-- Chat móvil flotante -->
+      <a href="{{ url_for('chat.ver_chat', id_grupo=gid) if gid is not none else '#' }}" class="chat-btn mobile-chat"
+        id="chatBtnMobile" aria-label="Abrir chat del grupo">
+        <span class="icon">💬</span> Chat del grupo
+      </a>
+    </section>
+  </div>
+  {% endblock %}
 
-{% block scripts %}
-<script>
-  // Toggle de tono con persistencia
-  (function () {
-    const body = document.body;
-    const btnSoft = document.getElementById('btnSoft');
-    const btnStrong = document.getElementById('btnStrong');
+  {% block scripts %}
+  <script>
+    // Toggle de tono con persistencia
+    (function () {
+      const body = document.body;
+      const btnSoft = document.getElementById('btnSoft');
+      const btnStrong = document.getElementById('btnStrong');
 
-    function setTone(mode) {
-      body.classList.remove('tone-soft', 'tone-strong');
-      body.classList.add(mode);
-      localStorage.setItem('toneMode', mode);
-      btnSoft?.classList.toggle('active', mode === 'tone-soft');
-      btnStrong?.classList.toggle('active', mode === 'tone-strong');
-    }
+      function setTone(mode) {
+        body.classList.remove('tone-soft', 'tone-strong');
+        body.classList.add(mode);
+        localStorage.setItem('toneMode', mode);
+        btnSoft?.classList.toggle('active', mode === 'tone-soft');
+        btnStrong?.classList.toggle('active', mode === 'tone-strong');
+      }
 
-    const saved = localStorage.getItem('toneMode');
-    if (saved === 'tone-strong') setTone('tone-strong');
+      const saved = localStorage.getItem('toneMode');
+      if (saved === 'tone-strong') setTone('tone-strong');
 
-    btnSoft?.addEventListener('click', () => setTone('tone-soft'));
-    btnStrong?.addEventListener('click', () => setTone('tone-strong'));
-  })();
+      btnSoft?.addEventListener('click', () => setTone('tone-soft'));
+      btnStrong?.addEventListener('click', () => setTone('tone-strong'));
+    })();
 
-  // Fallback: fuerza navegación del chat por si algún script hace preventDefault
-  (function () {
-    function hook(id) {
-      const a = document.getElementById(id);
-      if (!a) return;
-      a.addEventListener('click', function () {
-        const href = a.getAttribute('href') || '#';
-        if (!href || href === '#') return;
-        window.location.href = href;
-      }, { capture: true });
-    }
-    hook('chatBtnDesktop');
-    hook('chatBtnMobile');
-  })();
-</script>
-{% endblock %}
+    // Fallback: fuerza navegación del chat por si algún script hace preventDefault
+    (function () {
+      function hook(id) {
+        const a = document.getElementById(id);
+        if (!a) return;
+        a.addEventListener('click', function () {
+          const href = a.getAttribute('href') || '#';
+          if (!href || href === '#') return;
+          window.location.href = href;
+        }, { capture: true });
+      }
+      hook('chatBtnDesktop');
+      hook('chatBtnMobile');
+    })();
+  </script>
+  {% endblock %}

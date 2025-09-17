@@ -1,0 +1,172 @@
+id;id_pregunta;respuesta;correcta
+1;1;Lunes;False
+2;1;Martes;False
+3;1;Miercoles;False
+4;1;Jueves;False
+5;1;Viernes;False
+6;1;Sabado;False
+7;1;Domingo;True
+8;2;Violín;False
+9;2;Lira;True
+10;2;Contrabajo;False
+11;2;Piano;False
+12;2;Clavecín;False
+13;2;Clavicordio;False
+14;2;Violonchelo;False
+15;3;Chatarra;False
+16;3;Chusma;True
+17;4;Blanquear;True
+18;4;Pochar;False
+19;5;Del viento;True
+20;5;De la lluvia;False
+21;6;Si el nudo es ancho;False
+22;6;En ningún caso;True
+23;7;Leonardo - Catanas;False
+24;7;Michelangelo - Nunchakus;False
+25;7;Rafael - Sais;False
+26;7;Donnatello - Yumi;True
+27;8;45°;False
+28;8;90°;True
+29;8;180°;False
+30;8;360°;False
+31;8;720°;False
+32;9;Pancréas;False
+33;9;Colon;False
+34;9;Boca;False
+35;9;Esófago;False
+36;9;Faringe;False
+37;9;Bazo;True
+38;9;Sigma;False
+39;10;Hierro;True
+40;10;Silicio;False
+41;10;Magnesio;False
+42;10;Aluminio;False
+43;10;Cobre;False
+44;10;Calcio;False
+45;10;Titanio;False
+46;11;Rojo;True
+47;11;Amarillo;False
+48;11;Blanco;False
+49;11;Azul;False
+50;11;Verde;False
+51;11;Naranja;False
+52;11;Negro;False
+53;11;Morado;False
+54;11;Marrón;False
+55;11;Rosa;False
+56;12;3 Años;False
+57;12;4 Años;True
+58;12;5 Años;False
+59;12;6 Años;False
+60;12;7 Años;False
+61;12;8 Años;False
+62;13;Austria;False
+63;13;EEUU;False
+64;13;Grecia;False
+65;13;Francia;True
+66;13;Italia;False
+67;13;Japón;False
+68;13;Argentina;False
+69;14;Verbos copulativos;False
+70;14;Verbos transitivos;False
+71;14;Verbos reflexivos;False
+72;14;Verbos sucesivos;True
+73;14;Verbos defectivos;False
+74;14;Verbos recíprocos;False
+75;14;Verbos auxiliares;False
+76;14;Verbos intransitivos;False
+77;14;Verbos predicativos;False
+78;15;Aún no ha nacido;False
+79;15;6 Años;False
+80;15;10 Años;False
+81;15;16 Años;True
+82;15;26 Años;False
+83;15;36 Años;False
+84;16;Una patata;False
+85;16;Una cebolla;False
+86;17;De un hongo;False
+87;17;De un fruto seco;False
+88;18;Daddy Yankee;False
+89;18;Enrique Iglesias;False
+90;19;No se puede jugar al domino;False
+91;19;No se puede fumar pipa;False
+92;19;No se puede leer propaganda;False
+93;20;1;False
+94;20;101;False
+95;21;0000AAA;False
+96;21;0001AAA;False
+97;21;0000AAB;False
+98;21;0000BBB;False
+99;21;0001BBB;False
+100;21;0000BBC;False
+101;21;0000ZZZ;False
+102;21;0001ZZZ;False
+103;21;0000ZZA;False
+104;22;5 Años;False
+105;22;15 Años;False
+106;22;25 Años;False
+107;22;50 Años;False
+108;22;75 Años;False
+109;22;150 Años;False
+110;22;250 Años;False
+111;23;Dua Lipa;False
+112;23;Luar La L;False
+113;23;Selana Gómez;False
+114;23;Feid;False
+115;23;Nicki Minaj;False
+116;23;Jennifer López;False
+117;23;Quavo;False
+118;23;Residente;False
+119;23;Myke Towers;False
+120;23;Lenny Tavarez;False
+121;24;Play Station 1;False
+122;24;Play Station 2;False
+123;24;Play Station 3;False
+124;24;Xbox 360;False
+125;24;Gameboy;False
+126;24;Nintendo Switch;False
+127;24;Nintendo DS;False
+128;24;Wii;False
+129;25;8.2 metros por segundo;False
+130;25;8.9 metros por segundo;False
+131;25;9.2 metros por segundo;False
+132;25;9.5 metros por segundo;False
+133;25;9.8 metros por segundo;False
+134;25;No podemos saberlo;False
+135;25;No aumenta;False
+136;26;Celo/Celofán;False
+137;26;Microscopio Electrónico;False
+138;26;Bolígrafo;False
+139;26;Fregona;False
+140;26;Radar;False
+141;26;Televisión;False
+142;27;Celo/Celofán;False
+143;27;Microscopio Electrónico;False
+144;27;Bolígrafo;False
+145;27;Fregona;False
+146;27;Televisión;False
+147;27;Radar;False
+148;28;65 millones de años aprox;False
+149;28;105 millones de años aprox;False
+150;28;175 millones de años aprox;False
+151;28;215 millones de años aprox;False
+152;28;325 millones de años aprox;False
+153;28;475 millones de años aprox;False
+154;28;500 millones de años aprox;False
+155;29;Ibiza;False
+156;29;Fuerteventura;False
+157;30;5 años;False
+158;30;10 años;False
+159;31;Viento solar ???;False
+160;31;Ciclo lunar ??;False
+161;32;Dos;False
+162;32;Cuatro;False
+163;33;Do' dia' y tre' noche;False
+164;33;Tre' dia y do' noche;False
+165;34;8;False
+166;34;9;False
+167;34;10;False
+168;34;11;False
+169;34;12;False
+170;34;13;False
+171;34;14;False

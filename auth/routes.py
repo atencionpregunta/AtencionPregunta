@@ -132,8 +132,6 @@ def crear_usuario():
     usuario   = (request.form.get("usuario") or "").strip()
     mail      = (request.form.get("mail") or "").strip()
     contrasena= (request.form.get("contrasena") or "")
-    pais      = (request.form.get("pais") or "").strip()
-    edad_raw  = (request.form.get("edad") or "").strip()
     edad      = int(edad_raw) if edad_raw.isdigit() else None
     hashed = generate_password_hash(contrasena, method="pbkdf2:sha256", salt_length=16)
 
@@ -162,12 +160,11 @@ def crear_usuario():
             with get_conn() as conn:
                 cur = conn.cursor()
                 cur.execute("""
-                    INSERT INTO Usuarios (usuario, mail, contrasena, fec_ini, pais, edad)
-                    VALUES (?, ?, ?, ?, ?, ?)
+                    INSERT INTO Usuarios (usuario, mail, contrasena, fec_ini)
+                    VALUES (?, ?, ?, ?)
                 """, (
                     usuario, mail, hashed,
-                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    pais or None, edad
+                    datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 ))
                 user_id = cur.lastrowid
 
@@ -295,15 +292,13 @@ def google_callback():
             if not user:
                 # Crear usuario nuevo
                 cursor.execute("""
-                    INSERT INTO Usuarios (mail, usuario, contrasena, fec_ini, pais, edad, foto_url)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO Usuarios (mail, usuario, contrasena, fec_ini, foto_url)
+                    VALUES (?, ?, ?, ?, ?)
                 """, (
                     email,
                     nombre,
-                    None,
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "Google",
-                    None,
                     foto_url  # opcional si tienes la columna
                 ))
                 user_id = cursor.lastrowid

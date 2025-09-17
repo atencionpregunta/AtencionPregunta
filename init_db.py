@@ -46,8 +46,6 @@ def create_schema(conn: sqlite3.Connection):
             usuario TEXT,
             contrasena TEXT,
             fec_ini DATETIME,
-            pais TEXT,
-            edad INTEGER,
             foto_url TEXT,
             remember_token TEXT,          
             remember_expira TEXT           
@@ -66,7 +64,7 @@ def create_schema(conn: sqlite3.Connection):
 
     cur.execute("""
         INSERT OR IGNORE INTO Grupos (id, fec_ini, duracion_temp, codigo, tipo, contrasena)
-        VALUES (0, NULL, NULL, 'General', 'General', NULL);
+        VALUES (0, NULL, 30, 'General', 'General', NULL);
     """) 
 
     cur.execute("""CREATE UNIQUE INDEX IF NOT EXISTS ux_grupos_codigo ON Grupos(codigo COLLATE NOCASE);""")
@@ -94,6 +92,14 @@ def create_schema(conn: sqlite3.Connection):
             ruta_imagen TEXT
         );
     """)
+    
+    cur.execute("""
+        CREATE UNIQUE INDEX IF NOT EXISTS ux_preg_no_rel_jornada
+        ON Preguntas (DATE(fecha_mostrada, '-9 hours'))
+        WHERE COALESCE(tipo,'') <> 'Relampago'
+    """)
+
+
     cur.execute("""
         CREATE TABLE IF NOT EXISTS Respuestas (
             id INTEGER PRIMARY KEY,

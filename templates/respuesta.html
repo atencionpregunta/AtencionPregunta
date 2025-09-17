@@ -6,44 +6,38 @@
 <style>
   :root{ --line:#e5e7eb; --muted:#6b7280; --ink:#111827; }
 
-  /* Contenedor propio dentro de la card del base */
-  .result-shell{
-    max-width: 760px;
-    margin: 0 auto;
-  }
-
-  /* Cabecera / mensaje */
+  .result-shell{ max-width:760px; margin:0 auto; }
   .result-shell h1{ margin:0 0 8px; }
 
-  /* Bloque “reveal” (mascota + bocadillo) */
-  .reveal{
-    display:flex; align-items:flex-start; gap:clamp(10px,2.5vw,20px);
-    margin:8px 0 16px;
-  }
-  .mascota{
-    width:clamp(72px,16vw,120px); height:auto;
-    filter:drop-shadow(0 4px 10px rgba(0,0,0,.12));
-    flex-shrink:0;
-  }
+  /* --- Bloque principal (mascota + bocadillo) --- */
+  .reveal{ display:flex; align-items:flex-start; gap:clamp(10px,2.5vw,20px); margin:8px 0 16px; }
+  .mascota{ width:clamp(72px,16vw,120px); height:auto; filter:drop-shadow(0 4px 10px rgba(0,0,0,.12)); flex-shrink:0; }
   .bocadillo{
     flex:1; background:#fff; border:1px solid var(--line); border-radius:16px;
     padding:clamp(10px,2.2vh,16px) clamp(12px,2.6vw,18px);
-    box-shadow:0 6px 24px rgba(2,6,23,.06);
-    position:relative;
+    box-shadow:0 6px 24px rgba(2,6,23,.06); position:relative;
   }
   .bocadillo::before{
-    content:""; position:absolute; left:-10px; top:18px; width:0; height:0;
-    border-style:solid; border-width:10px 10px 10px 0; border-color:transparent var(--line) transparent transparent;
+    content:""; position:absolute; left:-10px; top:18px;
+    border:10px solid transparent; border-right-color:var(--line);
   }
   .bocadillo::after{
-    content:""; position:absolute; left:-8px; top:20px; width:0; height:0;
-    border-style:solid; border-width:8px 8px 8px 0; border-color:transparent #fff transparent transparent;
+    content:""; position:absolute; left:-8px; top:20px;
+    border:8px solid transparent; border-right-color:#fff;
   }
+
   .big{ font-weight:800; margin:0 0 6px; }
+  .subtitle{ margin:0 0 6px; color:#334155; font-weight:700; }
   .correctas{ margin:.25rem 0 .25rem 1rem; padding:0; }
   .correctas li{ list-style:none; margin:2px 0; color:#065f46; font-weight:700; }
 
-  /* Fun fact */
+  .elegidas{
+    display:flex; gap:12px; align-items:flex-start;
+    background:#fff7ed; border:1px solid #fed7aa; color:#9a3412;
+    border-radius:14px; padding:10px 12px; margin-top:8px;
+  }
+  .elegidas .ff-title{ font-weight:800; margin-bottom:2px; }
+
   .funfact{
     display:flex; gap:12px; align-items:flex-start;
     background:#f8fafc; border:1px solid var(--line);
@@ -53,17 +47,24 @@
   .ff-title{ font-weight:800; margin-bottom:2px; }
   .ff-text{ color:#334155; }
 
-  /* Acciones: usa tus .btn; grid responsivo */
-  .actions{
-    display:grid; gap:10px; margin-top:16px;
-    grid-template-columns: 1fr;
+  /* --- Relámpago: pila de 3 bloques --- */
+  .relampago-stack{ display:grid; gap:14px; margin:8px 0 16px; }
+  .relampago-item .header-row{ display:flex; align-items:center; gap:10px; margin:0 0 4px; }
+  .tag{
+    display:inline-flex; align-items:center; gap:.4rem;
+    border:1px solid var(--line); border-radius:999px;
+    padding:.18rem .6rem; font-weight:800; font-size:.75rem; color:#334155; background:#f8fafc;
   }
-  .actions .btn{ border-radius:12px; }
-  @media (min-width:720px){
-    .actions{ grid-template-columns: 1fr 1fr 1fr; }
+  .ok { color:#065f46; }
+  .bad{ color:#b91c1c; }
+
+  /* --- CTA / acciones --- */
+  .actions{ display:grid; grid-template-columns:1fr; gap:10px; margin-top:16px; }
+  .actions .btn{
+    width:100%; box-sizing:border-box; display:flex; align-items:center; justify-content:center; gap:8px;
+    min-height:48px; font-weight:800; font-size:.95rem; border-radius:12px;
   }
 
-  /* Responsive */
   @media (max-width:560px){
     .reveal{ flex-direction:column; align-items:center; }
     .bocadillo::before, .bocadillo::after{ display:none; }
@@ -73,41 +74,122 @@
 
 {% block content %}
 <div class="result-shell">
-  <h1>{% if correcto %}✅ ¡Correcto!{% else %}❌ No era esa…{% endif %}</h1>
 
-  <div class="reveal">
-    <img class="mascota" src="{{ url_for('static', filename='img/ATPPet-nerd-180.png') }}" alt="Mascota">
-    <div class="bocadillo">
-      {% if correcto %}
-        <p class="big">¡Bien hecho! 👏</p>
-      {% else %}
-        <p class="big">La respuesta correcta es:</p>
-      {% endif %}
-      <ul class="correctas">
-        {% for t in correctas %}
-          <li>✔ {{ t }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-  </div>
+  {# ================= MODO RELÁMPAGO ================= #}
+  {% if bloques_relampago %}
+    <h1>⚡ Ronda relámpago</h1>
 
-  {% if fun_fact %}
-  <div class="funfact">
-    <div class="ff-icon">💡</div>
-    <div>
-      <div class="ff-title">Dato curioso</div>
-      <div class="ff-text">{{ fun_fact }}</div>
+    <div class="relampago-stack" aria-label="Resumen de tus resultados por pregunta">
+      {% for b in bloques_relampago %}
+        <section class="relampago-item">
+          <div class="header-row">
+            <span class="tag">{{ b.titulo }}</span>
+            {% if b.correcto is not none %}
+              <span class="{{ 'ok' if b.correcto else 'bad' }}">
+                {% if b.correcto %}✅ ¡Correcto!{% else %}❌ No era esa…{% endif %}
+              </span>
+            {% endif %}
+          </div>
+
+          <div class="reveal">
+            <img class="mascota" src="{{ ruta_mascota or url_for('static', filename='img/ATPPet-nerd-180.png') }}" alt="Mascota">
+            <div class="bocadillo">
+              {% if b.correcto %}
+                <p class="big">¡Bien hecho! 👏</p>
+              {% else %}
+                <p class="big">La respuesta correcta es:</p>
+              {% endif %}
+
+              {% if b.correctas %}
+                <ul class="correctas">
+                  {% for t in b.correctas %}
+                    <li>✔ {{ t }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+
+              {% if b.elegidas and not b.correcto %}
+              <div class="elegidas">
+                <div class="ff-icon">📝</div>
+                <div>
+                  <div class="ff-title">Tus elecciones</div>
+                  <div class="ff-text">{{ b.elegidas | join(', ') }}</div>
+                </div>
+              </div>
+              {% endif %}
+
+              {% if b.fun_fact %}
+              <div class="funfact">
+                <div class="ff-icon">💡</div>
+                <div>
+                  <div class="ff-title">Dato curioso</div>
+                  <div class="ff-text">{{ b.fun_fact }}</div>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </section>
+      {% endfor %}
     </div>
-  </div>
+
+    {% if mostrar_cta %}
+    <div class="actions">
+      <a class="btn primary-btn" href="{{ url_for('resultados.ver_resultados') }}">
+        <i class="fa-solid fa-ranking-star"></i> Ver clasificación
+      </a>
+    </div>
+    {% endif %}
+
+  {# ================= MODO NORMAL ================= #}
+  {% else %}
+    <h1>{% if correcto %}✅ ¡Correcto!{% else %}❌ No era esa…{% endif %}</h1>
+
+    <div class="reveal">
+      <img class="mascota" src="{{ ruta_mascota or url_for('static', filename='img/ATPPet-nerd-180.png') }}" alt="Mascota">
+      <div class="bocadillo">
+        {% if correcto %}
+          <p class="big">¡Bien hecho! 👏</p>
+        {% else %}
+          <p class="big">La respuesta correcta es:</p>
+        {% endif %}
+
+        {% if correctas %}
+        <ul class="correctas">
+          {% for t in correctas %}
+            <li>✔ {{ t }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if elegidas and not correcto %}
+        <div class="elegidas">
+          <div class="ff-icon">📝</div>
+          <div>
+            <div class="ff-title">Tu elección</div>
+            <div class="ff-text">{{ elegidas | join(', ') }}</div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if fun_fact %}
+        <div class="funfact">
+          <div class="ff-icon">💡</div>
+          <div>
+            <div class="ff-title">Dato curioso</div>
+            <div class="ff-text">{{ fun_fact }}</div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="actions">
+      <a class="btn primary-btn" href="{{ url_for('resultados.ver_resultados') }}">
+        <i class="fa-solid fa-ranking-star"></i> Ver clasificación
+      </a>
+    </div>
   {% endif %}
 
-  <div class="actions">
-    <a class="btn primary-btn" href="{{ url_for('resultados.ver_resultados') }}">
-      <i class="fa-solid fa-ranking-star"></i> Ver clasificación
-    </a>
-    <a class="btn secondary-btn" href="{{ url_for('index') }}">
-      <i class="fa-solid fa-house"></i> Inicio
-    </a>
-  </div>
 </div>
 {% endblock %}

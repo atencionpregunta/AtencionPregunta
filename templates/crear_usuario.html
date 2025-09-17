@@ -54,6 +54,57 @@
   }
 
   .btn[disabled]{ opacity:.5; cursor:not-allowed; box-shadow:none; }
+
+  /* Botones apilados, limpios y consistentes */
+.actions{
+  display:grid; grid-template-columns:1fr; gap:10px; margin-top:16px;
+}
+
+.actions .btn{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  width:100%; min-height:48px;
+  border-radius:12px;
+  font-weight:800;
+  box-shadow:0 6px 16px rgba(2,6,23,.06);
+  transition:background .18s ease, color .18s ease, border-color .18s ease, transform .08s ease;
+}
+
+/* Primario estilo outline (menos “bloque rojo”) */
+.actions .primary-btn{
+  background:#fff;
+  color:#b91c1c;                 /* rojo texto */
+  border:1px solid #f3b4b4;      /* borde suave */
+}
+.actions .primary-btn:hover{
+  background:#fee2e2;            /* se “rellena” suave al hover */
+  border-color:#fca5a5;
+}
+.actions .primary-btn:active{ transform: translateY(1px); }
+
+/* Secundario neutro */
+.actions .secondary-btn{
+  background:#fff;
+  color:#111827;
+  border:1px solid var(--line);
+}
+.actions .secondary-btn:hover{
+  background:#f8fafc;
+  border-color:#d6dae3;
+}
+.actions .secondary-btn:active{ transform: translateY(1px); }
+
+/* Asegura que los iconos no agranden el botón */
+.actions .btn i{ font-size:1rem; line-height:1; }
+
+/* ===== Botones de acciones en resultados ===== */
+.actions{
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+/* Contenedor de acciones igual al bloque "funfact" */
+
 </style>
 {% endblock %}
 
@@ -102,18 +153,6 @@
     <div id="pass_hint" class="hint neutral">Mínimo 4 caracteres.</div>
   </div>
 
-  <div class="form-row">
-    <label for="pais"><strong>País</strong></label>
-    <input class="input" type="text" name="pais" id="pais"
-           value="{{ request.form.get('pais','') }}">
-  </div>
-
-  <div class="form-row">
-    <label for="edad"><strong>Edad</strong></label>
-    <input class="input" type="number" name="edad" id="edad" min="1"
-           value="{{ request.form.get('edad','') }}">
-  </div>
-
   <div class="form-actions">
     <button type="submit" class="btn primary-btn" id="btn-crear" disabled>
       <i class="fa-solid fa-check"></i> Crear usuario
@@ -145,7 +184,8 @@
     node.textContent = msg;
   };
 
-  const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 
   const refreshSubmit = ()=>{ el.submit.disabled = !(usuarioOK && mailOK && passOK); };
 

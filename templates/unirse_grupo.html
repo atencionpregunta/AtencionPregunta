@@ -411,6 +411,185 @@
     }
 
   }
+  /* --- FIX: cierra correctamente slider-track y saca reglas sueltas --- */
+.slider-track {
+  position: absolute;
+  top: 16px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 4px;
+  background: #d1d5db;
+}
+
+/* Estas reglas NO deben ir dentro de .slider-track */
+.field.range {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Pill de progreso compacta */
+.temp-pill {
+  display: inline-grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+}
+
+.temp-bar {
+  position: relative;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+  min-width: 90px;
+}
+
+.temp-fill {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 0%;
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+  border-radius: 999px;
+  transition: width .4s ease;
+}
+
+.temp-label {
+  font-weight: 800;
+  font-size: .9rem;
+  color: #111827;
+}
+
+/* estados */
+.temp--ongoing .temp-fill { background: linear-gradient(90deg, #2563eb, #1d4ed8); }
+.temp--done    .temp-fill { background: linear-gradient(90deg, #dc2626, #ef4444); }
+
+/* ===========================
+   📱 Ajustes móviles (<640px)
+   =========================== */
+@media (max-width: 640px) {
+  /* Tabla más compacta */
+  .gtable { table-layout: fixed; }
+  .gtable thead th { font-size: .72rem; padding: 8px; }
+  .gtable tbody td { padding: 10px 8px; }
+  .gtable .meta { font-size: .9rem; }
+
+  /* Limita el ancho del nombre y evita desbordes */
+  .gname { gap: .5rem; }
+  .gname span {
+    display: inline-block;
+    max-width: 56vw;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Oculta badge Público/Privado para ganar espacio */
+  .badge-type { display: none; }
+
+  /* Botón sólo con icono (oculta texto) y hazlo más estrecho */
+  .join-btn.btn {
+    padding: 10px;
+    min-width: 40px;
+    width: 40px; /* evita que crezca si hay traducciones largas */
+    display: inline-grid;
+    place-items: center;
+  }
+  .join-btn .txt { display: none; }
+  .join-btn i { margin: 0; }
+
+  /* Cols más proporcionadas en móvil */
+  .gtable colgroup col:nth-child(1) { width: 60% !important; }
+  .gtable colgroup col:nth-child(2) { width: 18% !important; }
+  .gtable colgroup col:nth-child(3) { width: 14% !important; }
+  .gtable colgroup col:nth-child(4) { width: 8%  !important; }
+
+  /* Temporizador más compacto */
+  .temp-label { font-size: .82rem; }
+  .temp-bar { min-width: 72px; height: 6px; }
+
+/* ======= Progreso: sin barra, sólo punto + texto (en TODAS las vistas) ======= */
+.temp-bar { display: none !important; }
+.temp-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0; /* deja que se adapte */
+}
+.temp-pill::before{
+  content: "";
+  width: 8px; height: 8px;
+  border-radius: 999px;
+  background: #10b981; /* verde neutro */
+  display: inline-block;
+}
+.temp--done::before    { background: #ef4444; } /* rojo si terminó */
+.temp--ongoing::before { background: #2563eb; } /* azul si en curso */
+.temp-label{ font-weight: 800; font-size: .9rem; color: #111827; }
+
+/* ===================== MÓVIL ===================== */
+@media (max-width: 640px){
+  /* Tabla estable y compacta */
+  .gtable{ table-layout: fixed; }
+  .gtable thead th{ font-size:.72rem; padding:8px; }
+  .gtable tbody td{ padding:10px 8px; }
+  .badge-type {
+  display: none !important;
+  
+}
+
+  /* Oculta el chip Público/Privado para ganar espacio */
+  .badge-type{ display:none; }
+
+  /* Quita COMPLETAMENTE el botón y su columna */
+  .actions-cell,
+  .gtable thead th:last-child { display: none; }
+
+  /* Nombre del grupo sin desbordes */
+  .gname{ gap:.5rem; }
+  .gname span{
+    display:inline-block;
+    max-width: 62vw;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Haz que toda la fila “invite” al clic */
+  #g_list tr[data-code] { cursor: pointer; }
+
+  /* Rebalancea columnas (ya sin la de acciones) */
+  .gtable colgroup col:nth-child(1){ width: 50% !important; }
+  .gtable colgroup col:nth-child(2){ width: 25% !important; }
+  .gtable colgroup col:nth-child(3){ width: 25% !important; }
+
+  /* Progreso compacto en móvil */
+  .temp-label{ font-size:.82rem; }
+    .gtable thead th {
+    font-size: 0.7rem;
+    letter-spacing: .05em;
+  }
+
+  .gtable tbody td {
+    font-size: 0.7rem;
+  }
+
+  .gname span {
+    font-size: 0.7rem;
+  }
+
+  .temp-label {
+    font-size: 0.7rem;
+  }
+}
+}
+
+
+
+
 </style>
 {% endblock %}
 
@@ -565,6 +744,7 @@
         const hint = (g.duracion_dias == null)
           ? 'Temporada sin límite'
           : (g.dias_restantes === 0 ? 'Finalizada' : `${g.dias_restantes}`);
+
 
         const tempHtml = `
       <div class="temp-pill temp--${estado}" title="${hint}">

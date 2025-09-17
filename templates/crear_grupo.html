@@ -4,52 +4,90 @@
 
 {% block extra_head %}
 <style>
-  :root{
+  :root {
     --input-h: 46px;
     --input-px: 14px;
-    --input-radius: 999px; /* pill */
+    --input-radius: 999px;
+    /* pill */
   }
 
   /* —— Tips y estados —— */
-  .hint{ font-size:.95rem; margin-top:6px; min-height:1.2em; }
-  .hint.ok{ color:#1e8543; }
-  .hint.bad{ color:#c62828; }
-  .hint.neutral{ color:#6b7280; }
+  .hint {
+    font-size: .95rem;
+    margin-top: 6px;
+    min-height: 1.2em;
+  }
 
-  .inline{ display:inline-flex; align-items:center; gap:8px; }
-  .inline input[type="checkbox"]{ transform:scale(1.15); }
+  .hint.ok {
+    color: #1e8543;
+  }
 
-  .primary-btn:disabled{ opacity:.6; cursor:not-allowed; box-shadow:none; }
+  .hint.bad {
+    color: #c62828;
+  }
+
+  .hint.neutral {
+    color: #6b7280;
+  }
+
+  .inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .inline input[type="checkbox"] {
+    transform: scale(1.15);
+  }
+
+  .primary-btn:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
 
   /* —— Inputs: perfectamente “cuadrados” (alineados) —— */
-  .page-grupos .form-row{ display:grid; gap:6px; margin-top:10px; }
-  .page-grupos .form-row label{ font-weight:700; font-size:.95rem; }
-
-  .page-grupos .form-row .input{
-    display:block;
-    width:100%;
-    height:var(--input-h);
-    box-sizing:border-box;       /* clave para que no “resbale” el ancho */
-    padding:0 var(--input-px);
-    border:1px solid var(--line);
-    border-radius:var(--input-radius);
-    background:#fff;
-    font:inherit;
-    line-height:normal;
-    outline:none;
-    box-shadow:0 3px 10px rgba(0,0,0,.05);
+  .page-grupos .form-row {
+    display: grid;
+    gap: 6px;
+    margin-top: 10px;
   }
-  .page-grupos .form-row .input:focus{
-    border-color:var(--primary);
-    box-shadow:0 0 0 3px rgba(239,68,68,.15);
+
+  .page-grupos .form-row label {
+    font-weight: 700;
+    font-size: .95rem;
+  }
+
+  .page-grupos .form-row .input {
+    display: block;
+    width: 100%;
+    height: var(--input-h);
+    box-sizing: border-box;
+    /* clave para que no “resbale” el ancho */
+    padding: 0 var(--input-px);
+    border: 1px solid var(--line);
+    border-radius: var(--input-radius);
+    background: #fff;
+    font: inherit;
+    line-height: normal;
+    outline: none;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .05);
+  }
+
+  .page-grupos .form-row .input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, .15);
   }
 
   /* Select con la misma altura y caret invisible (no descuadra) */
-  .page-grupos select.input{
-    appearance:none; -webkit-appearance:none; -moz-appearance:none;
-    background-image:none;
-    padding-right: calc(var(--input-px) + 18px); /* margen lógico del caret */
-    background-repeat:no-repeat;
+  .page-grupos select.input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none;
+    padding-right: calc(var(--input-px) + 18px);
+    /* margen lógico del caret */
+    background-repeat: no-repeat;
     background-position: right 10px center;
   }
 
@@ -57,101 +95,114 @@
   /* .page-grupos select.input{ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); } */
 
   /* Textarea (si lo usas en esta página) */
-  .page-grupos textarea.input{
-    min-height:var(--input-h);
-    height:auto;
-    padding:10px var(--input-px);
-    resize:vertical;
+  .page-grupos textarea.input {
+    min-height: var(--input-h);
+    height: auto;
+    padding: 10px var(--input-px);
+    resize: vertical;
   }
 
   /* —— Lista de grupos del usuario —— */
-  .grupos-usuario{ margin-top:16px; }
-  .grupos-usuario ul{ list-style:none; padding:0; margin:6px 0 0; }
-  .grupos-usuario li{ margin:6px 0; display:flex; align-items:center; gap:8px; }
+  .grupos-usuario {
+    margin-top: 16px;
+  }
+
+  .grupos-usuario ul {
+    list-style: none;
+    padding: 0;
+    margin: 6px 0 0;
+  }
+
+  .grupos-usuario li {
+    margin: 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
   /* —— Acciones del formulario: coherente con el resto —— */
-  .page-grupos #form-crear-grupo .form-actions{
-    display:grid;
-    grid-template-columns:1fr; /* móvil */
-    gap:10px;
-    margin-top:12px;
+  .page-grupos #form-crear-grupo .form-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    /* móvil */
+    gap: 10px;
+    margin-top: 12px;
   }
-  .page-grupos #form-crear-grupo .form-actions .primary-btn{
-    width:100%;
-    justify-self:stretch;
+
+  .page-grupos #form-crear-grupo .form-actions .primary-btn {
+    width: 100%;
+    justify-self: stretch;
   }
-  .page-grupos #form-crear-grupo .form-actions .secondary-btn{
-    width:auto;
-    justify-self:start;
+
+  .page-grupos #form-crear-grupo .form-actions .secondary-btn {
+    width: auto;
+    justify-self: start;
   }
-  @media (min-width:769px){
-    .page-grupos #form-crear-grupo .form-actions{
-      grid-template-columns:1fr auto; /* botón ancho + volver compacto */
+
+  @media (min-width:769px) {
+    .page-grupos #form-crear-grupo .form-actions {
+      grid-template-columns: 1fr auto;
+      /* botón ancho + volver compacto */
     }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-  <header class="header">
-    <div class="title">
-      <a class="btn-link" href="{{ url_for('index') }}" title="Volver al inicio">
-        <i class="fa-solid fa-arrow-left"></i>
-      </a>
-      <h2><i class="fa-solid fa-users-gear"></i> Crear grupo</h2>
-    </div>
-    <div class="chips">
-      <span class="chip"><i class="fa-solid fa-lock"></i> Contraseña opcional</span>
-    </div>
-  </header>
+<header class="header">
+  <div class="title">
+    <a class="btn-link" href="{{ url_for('index') }}" title="Volver al inicio">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <h2><i class="fa-solid fa-users-gear"></i> Crear grupo</h2>
+  </div>
+  <!-- CONTRASEÑA: solo visible si el grupo es privado -->
 
   {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="flash {{ category }}">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <div class="flash {{ category }}">{{ message }}</div>
+  {% endfor %}
+  {% endif %}
   {% endwith %}
 
   <form method="POST" action="{{ url_for('grupos.crear_grupo') }}" id="form-crear-grupo" novalidate>
     <div class="form-row">
       <label for="nombre_grupo"><strong>Nombre del grupo</strong></label>
-      <input class="input" type="text" name="nombre_grupo" id="nombre_grupo"
-             required autocomplete="off" value="{{ request.form.get('nombre_grupo','') }}" />
+      <input class="input" type="text" name="nombre_grupo" id="nombre_grupo" required autocomplete="off"
+        value="{{ request.form.get('nombre_grupo','') }}" />
       <div id="nombre_hint" class="hint neutral">Escribe un nombre de grupo.</div>
     </div>
 
-    <div class="form-row">
-      <label for="contrasena_grupo"><strong>Contraseña (opcional)</strong></label>
-      <input class="input" type="password" name="contrasena_grupo" id="contrasena_grupo" />
+    <div class="form-row" id="pw_row" style="display:none">
+      <label for="contrasena_grupo"><strong>Contraseña</strong></label>
+      <input class="input" type="password" name="contrasena_grupo" id="contrasena_grupo" autocomplete="new-password"
+        minlength="3" />
+      <div class="hint neutral">Requerida si el grupo es privado.</div>
     </div>
+
 
     <div class="form-row">
       <label for="tipo_grupo"><strong>Tipo de grupo</strong></label>
       <select class="input" name="tipo_grupo" id="tipo_grupo" required>
-        <option value="publico" {% if request.form.get('tipo_grupo','publico')=='publico' %}selected{% endif %}>Público</option>
+        <option value="publico" {% if request.form.get('tipo_grupo','publico')=='publico' %}selected{% endif %}>Público
+        </option>
         <option value="privado" {% if request.form.get('tipo_grupo')=='privado' %}selected{% endif %}>Privado</option>
       </select>
     </div>
 
-    <!-- SWITCH: limitar temporada por duración -->
-    <div class="form-row">
-      <label class="inline" for="duracion_enabled">
-        <input type="checkbox" id="duracion_enabled" name="duracion_enabled"
-               {% if request.form.get('duracion_enabled') %}checked{% endif %} />
-        ¿Limitar temporada por duración?
-      </label>
-      <div class="hint neutral">Actívalo para fijar una duración en días (p. ej., 30).</div>
-    </div>
 
-    <!-- INPUT: duración (días). Solo visible si el switch está activo -->
-    <div class="form-row" id="duracion_wrap" style="display:none">
-      <label for="duracion_dias"><strong>Duración (días)</strong></label>
-      <input class="input" type="number" name="duracion_dias" id="duracion_dias"
-             min="1" max="365" step="1" inputmode="numeric"
-             value="{{ request.form.get('duracion_dias', '30') }}" />
-      <div class="hint neutral">Entre 1 y 365 días.</div>
-    </div>
+
+
+<!-- INPUT: duración (días) SIEMPRE visible y requerida -->
+<div class="form-row" id="duracion_wrap">
+  <label for="duracion_dias"><strong>Duración (días)</strong></label>
+  <input class="input" type="number" name="duracion_dias" id="duracion_dias"
+         min="1" max="365" step="1" inputmode="numeric"
+         placeholder="p. ej., 30"
+         value="{{ request.form.get('duracion_dias', '') }}" required />
+  <div class="hint neutral">Entre 1 y 365 días. Será la duración de cada temporada.</div>
+</div>
 
     <div class="form-actions">
       <button type="submit" class="btn primary-btn" id="btn-crear" disabled>
@@ -161,117 +212,153 @@
   </form>
 
   {% if grupos_usuario %}
-    <div class="grupos-usuario">
-      <h3>Tus grupos actuales</h3>
-      <ul>
-        {% for grupo in grupos_usuario %}
-          <li><i class="fa-solid fa-users"></i> {{ grupo.codigo }}</li>
-        {% endfor %}
-      </ul>
-    </div>
+  <div class="grupos-usuario">
+    <h3>Tus grupos actuales</h3>
+    <ul>
+      {% for grupo in grupos_usuario %}
+      <li><i class="fa-solid fa-users"></i> {{ grupo.codigo }}</li>
+      {% endfor %}
+    </ul>
+  </div>
   {% endif %}
-{% endblock %}
+  {% endblock %}
 
-{% block scripts %}
-<script>
-  // ---------- Utilidades ----------
-  const $ = (sel) => document.querySelector(sel);
-  const add = (el, cls) => el.classList.add(cls);
-  const rmv = (el, cls) => el.classList.remove(cls);
-  const debounce = (fn, ms = 350) => { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; };
+  {% block scripts %}
+  <script>
+    // ---------- Utilidades ----------
+    const $ = (sel) => document.querySelector(sel);
+    const add = (el, cls) => el.classList.add(cls);
+    const rmv = (el, cls) => el.classList.remove(cls);
+    const debounce = (fn, ms = 350) => { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; };
 
-  // ---------- Elementos ----------
-  const form = $('#form-crear-grupo');
-  const nombre = $('#nombre_grupo');
-  const hintNombre = $('#nombre_hint');
-  const btnCrear = $('#btn-crear');
+    // ---------- Elementos ----------
+    const form = $('#form-crear-grupo');
+    const nombre = $('#nombre_grupo');
+    const hintNombre = $('#nombre_hint');
+    const btnCrear = $('#btn-crear');
 
-  const chkDuracion = $('#duracion_enabled');
-  const wrapDuracion = $('#duracion_wrap');
-  const inputDuracion = $('#duracion_dias');
+    const chkDuracion = $('#duracion_enabled');
+    const wrapDuracion = $('#duracion_wrap');
+    const inputDuracion = $('#duracion_dias');
 
-  const CHECK_URL = "{{ url_for('grupos.check_nombre') }}";
-  const reNombre = /^[\p{L}\p{N}\s_.-]{3,40}$/u;
+    const CHECK_URL = "{{ url_for('grupos.check_nombre') }}";
+    const reNombre = /^[\p{L}\p{N}\s_.-]{3,40}$/u;
 
-  let ultimoConsultado = "";
-  let ultimaRespuestaPara = "";
+    let ultimoConsultado = "";
+    let ultimaRespuestaPara = "";
 
-  function estadoHint(tipo, texto) {
-    rmv(hintNombre, 'ok'); rmv(hintNombre, 'bad'); rmv(hintNombre, 'neutral');
-    add(hintNombre, tipo); hintNombre.textContent = texto;
-  }
-  function setSubmitEnabled(on) { btnCrear.disabled = !on; }
-
-  function validarNombreLocal() {
-    const v = (nombre.value || '').replace(/\s+/g,' ').trim();
-    nombre.value = v;
-    if (!v){ setSubmitEnabled(false); estadoHint('neutral','Escribe un nombre de grupo.'); return { ok:false, value:v }; }
-    if (!reNombre.test(v)){
-      setSubmitEnabled(false); estadoHint('bad','Entre 3 y 40 caracteres. Letras/números/espacios/._-');
-      return { ok:false, value:v };
+    function estadoHint(tipo, texto) {
+      rmv(hintNombre, 'ok'); rmv(hintNombre, 'bad'); rmv(hintNombre, 'neutral');
+      add(hintNombre, tipo); hintNombre.textContent = texto;
     }
-    estadoHint('neutral','Comprobando disponibilidad…'); setSubmitEnabled(false);
-    return { ok:true, value:v };
-  }
+    function setSubmitEnabled(on) { btnCrear.disabled = !on; }
 
-  const comprobarDisponibilidad = debounce(async () => {
-    const v = (nombre.value || '').trim();
-    const { ok } = validarNombreLocal();
-    if (!ok || v === ultimoConsultado) return;
-
-    ultimoConsultado = v;
-    try{
-      const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(v)}`, { headers:{'Accept':'application/json'}, cache:'no-store' });
-      if (!resp.ok) throw new Error('HTTP ' + resp.status);
-      const data = await resp.json();
-
-      if ((nombre.value || '').trim() !== v) return;
-
-      if (data && data.exists){ estadoHint('bad','Ya existe un grupo con ese nombre.'); setSubmitEnabled(false); }
-      else { estadoHint('ok','Disponible.'); setSubmitEnabled(true); }
-      ultimaRespuestaPara = v;
-    }catch{
-      if ((nombre.value || '').trim() !== v) return;
-      estadoHint('neutral','No se pudo comprobar ahora; se validará al enviar.');
-      setSubmitEnabled(true);
+    function validarNombreLocal() {
+      const v = (nombre.value || '').replace(/\s+/g, ' ').trim();
+      nombre.value = v;
+      if (!v) { setSubmitEnabled(false); estadoHint('neutral', 'Escribe un nombre de grupo.'); return { ok: false, value: v }; }
+      if (!reNombre.test(v)) {
+        setSubmitEnabled(false); estadoHint('bad', 'Entre 3 y 40 caracteres. Letras/números/espacios/._-');
+        return { ok: false, value: v };
+      }
+      estadoHint('neutral', 'Comprobando disponibilidad…'); setSubmitEnabled(false);
+      return { ok: true, value: v };
     }
-  }, 350);
 
-  function toggleDuracion() {
-    const on = chkDuracion.checked;
-    wrapDuracion.style.display = on ? 'block' : 'none';
-    if (on) inputDuracion.setAttribute('required','required');
-    else inputDuracion.removeAttribute('required');
-  }
+    const comprobarDisponibilidad = debounce(async () => {
+      const v = (nombre.value || '').trim();
+      const { ok } = validarNombreLocal();
+      if (!ok || v === ultimoConsultado) return;
 
-  document.addEventListener('DOMContentLoaded', () => {
-    validarNombreLocal(); toggleDuracion();
-  });
-  nombre.addEventListener('input', () => { const { ok } = validarNombreLocal(); if (ok) comprobarDisponibilidad(); });
-  chkDuracion.addEventListener('change', toggleDuracion);
-
-  form.addEventListener('submit', async (e) => {
-    const { ok, value } = validarNombreLocal();
-    if (!ok){ e.preventDefault(); nombre.focus(); return; }
-
-    if (value !== ultimaRespuestaPara){
-      e.preventDefault();
-      try{
-        const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(value)}`, { headers:{'Accept':'application/json'} });
+      ultimoConsultado = v;
+      try {
+        const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(v)}`, { headers: { 'Accept': 'application/json' }, cache: 'no-store' });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
         const data = await resp.json();
-        if (data && data.exists){ estadoHint('bad','Ya existe un grupo con ese nombre.'); setSubmitEnabled(false); return; }
-        estadoHint('ok','Disponible.'); setSubmitEnabled(true); form.submit();
-      }catch{ form.submit(); }
-      return;
-    }
 
-    if (chkDuracion.checked){
-      const val = Number(inputDuracion.value);
-      if (!Number.isFinite(val) || val < 1 || val > 365){
-        e.preventDefault(); inputDuracion.focus();
-        alert('La duración debe ser un número entre 1 y 365.');
+        if ((nombre.value || '').trim() !== v) return;
+
+        if (data && data.exists) { estadoHint('bad', 'Ya existe un grupo con ese nombre.'); setSubmitEnabled(false); }
+        else { estadoHint('ok', 'Disponible.'); setSubmitEnabled(true); }
+        ultimaRespuestaPara = v;
+      } catch {
+        if ((nombre.value || '').trim() !== v) return;
+        estadoHint('neutral', 'No se pudo comprobar ahora; se validará al enviar.');
+        setSubmitEnabled(true);
+      }
+    }, 350);
+
+
+    form.addEventListener('submit', (e) => {
+  const val = Number(inputDuracion.value);
+  if (!Number.isFinite(val) || val < 1 || val > 365){
+    e.preventDefault(); inputDuracion.focus();
+    alert('La duración debe ser un número entre 1 y 365.');
+  }
+});
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+      validarNombreLocal();
+      toggleDuracion();  // ← aplica estado desde el inicio
+      togglePrivacidad();
+
+    });
+    nombre.addEventListener('input', () => { const { ok } = validarNombreLocal(); if (ok) comprobarDisponibilidad(); });
+    chkDuracion.addEventListener('change', toggleDuracion);
+
+    form.addEventListener('submit', async (e) => {
+      const { ok, value } = validarNombreLocal();
+      if (!ok) { e.preventDefault(); nombre.focus(); return; }
+
+      if (value !== ultimaRespuestaPara) {
+        e.preventDefault();
+        try {
+          const resp = await fetch(`${CHECK_URL}?q=${encodeURIComponent(value)}`, { headers: { 'Accept': 'application/json' } });
+          const data = await resp.json();
+          if (data && data.exists) { estadoHint('bad', 'Ya existe un grupo con ese nombre.'); setSubmitEnabled(false); return; }
+          estadoHint('ok', 'Disponible.'); setSubmitEnabled(true); form.submit();
+        } catch { form.submit(); }
+        return;
+      }
+
+      if (chkDuracion.checked) {
+        const val = Number(inputDuracion.value);
+        if (!Number.isFinite(val) || val < 1 || val > 365) {
+          e.preventDefault(); inputDuracion.focus();
+          alert('La duración debe ser un número entre 1 y 365.');
+        }
+      }
+    });
+
+    // ... (tu JS actual)
+
+    const selTipo = $('#tipo_grupo');
+    const pwRow = $('#pw_row');
+    const pwInput = $('#contrasena_grupo');
+
+    function togglePrivacidad() {
+      const isPrivado = selTipo.value === 'privado';
+      pwRow.style.display = isPrivado ? 'block' : 'none';
+      if (isPrivado) {
+        pwInput.disabled = false;
+        pwInput.setAttribute('required', 'required');
+      } else {
+        pwInput.removeAttribute('required');
+        pwInput.value = '';
+        pwInput.disabled = true; // evita enviarla al servidor
       }
     }
-  });
-</script>
-{% endblock %}
+
+    document.addEventListener('DOMContentLoaded', () => {
+      validarNombreLocal();
+      toggleDuracion();
+      togglePrivacidad(); // establece estado inicial según el select
+    });
+
+    selTipo.addEventListener('change', togglePrivacidad);
+
+    // ... (resto de tu JS)
+
+  </script>
+  {% endblock %}
