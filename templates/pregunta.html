@@ -1,232 +1,269 @@
 {% extends "base.html" %}
-
-{% block extra_head %}
-<style>
-  :root{
-    --line:#e8eaf0; --muted:#6b7280; --text:#171717;
-    --ok-hsl:142 75% 42%; --warn-hsl:38 92% 50%; --bad-hsl:0 78% 46%;
-  }
-
-  /* NO tocamos .card global. Usamos un contenedor local */
-  .quiz-shell{ max-width:760px; margin:24px auto 0; }
-  @media (max-width:640px){ .quiz-shell{ margin-top:max(16px, env(safe-area-inset-top)); } }
-
-  .header-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
-  .header-row h1{ margin:0; font-size:1.6rem; letter-spacing:.2px }
-
-  .chips{ display:flex; gap:8px; flex-wrap:wrap; }
-  .chip{
-    display:inline-flex; align-items:center; gap:.4rem;
-    padding:.35rem .6rem; border-radius:999px;
-    background:#eef2ff; color:#3730a3; border:1px solid #e5e7eb;
-    font-weight:700; font-size:.8rem;
-  }
-
-  .question-title{ margin:.4rem 0 1rem; font-size:1.2rem; line-height:1.35; color:var(--text); }
-  .audio-container{ display:flex; align-items:center; gap:.6rem; margin:.25rem 0 .5rem; }
-  .image-container img{ max-width:100%; border-radius:12px; margin-top:.5rem; box-shadow:0 6px 18px rgba(2,6,23,.06) }
-
-  .answers-container{ display:flex; flex-direction:column; gap:.5rem; margin-top:.25rem; }
-  .hint{ color:var(--muted); font-size:.9rem; margin:.2rem 0 .4rem; }
-
-  .option{
-    display:flex; align-items:flex-start; gap:.65rem;
-    padding:.7rem .9rem; border:1px solid var(--line); border-radius:12px;
-    background:#fff; cursor:pointer;
-    transition:border-color .15s, box-shadow .15s, transform .03s;
-  }
-  .option:hover{ border-color:#d6dae3; box-shadow:0 4px 14px rgba(2,6,23,.06) }
-  .option:active{ transform:scale(.998) }
-  .option input{ margin-top:.2rem; transform:translateY(1px); accent-color:hsl(var(--ok-hsl)); }
-  .option .txt{ line-height:1.35; }
-
-  .btn.primary-btn{ font-weight:800; border-radius:12px; display:inline-flex; align-items:center; gap:.5rem; }
-
-  .timer-section{ display:flex; flex-direction:column; align-items:center; gap:.25rem; margin-top:1rem; }
-  .timer{
-    --angle:360deg; --ring:hsl(var(--ok-hsl));
-    width:76px; height:76px; border-radius:999px;
-    background:conic-gradient(var(--ring) var(--angle), #e5e7eb 0);
-    position:relative; box-shadow:inset 0 4px 16px rgba(0,0,0,.08);
-  }
-  .timer::after{ content:""; position:absolute; inset:6px; border-radius:999px; background:#fff; z-index:0; }
-  .timer span{ position:absolute; inset:0; display:grid; place-items:center; font-weight:800; z-index:1; color:#111827; }
-
-  .timer-warn{ --ring:hsl(var(--warn-hsl)); }
-  .timer-danger{ --ring:hsl(var(--bad-hsl)); }
-  .timer-label{ font-size:.85rem; color:var(--muted); }
-
-  @media (max-width:520px){
-    .header-row h1{ font-size:1.35rem }
-    .timer{ width:68px; height:68px }
-  }
-  /* Botón de enviar a ancho completo del contenedor */
-.quiz-shell .btn.primary-btn{
-  display:block;          /* deja de ser inline-* */
-  width:100%;             /* ocupa todo el ancho disponible */
-  height:48px;
-  border-radius:12px;
-  font-weight:800;
-  margin-top:1rem;        /* movemos aquí el margen que quitamos del inline */
-  text-align:center;      /* centra texto si se queda como block */
-  justify-content:center; /* si tu .btn usa flex, esto lo centra */
-  align-items:center;
-  gap:.5rem;
-}
-
-/* (Opcional) si no quieres “full-width” en escritorio grande */
-@media (min-width: 760px){
-  .quiz-shell .btn.primary-btn{
-    max-width: 420px;     /* céntralo y limita ancho en desktop */
-    margin-inline:auto;
-  }
-}
-
-</style>
-{% endblock %}
+{% set body_class = 'app-shell tone-soft page-pregunta' %}
+{% block title %}Pregunta del día · Reto Diario{% endblock %}
 
 {% block content %}
-  <div class="quiz-shell">
-    <div class="header-row">
-      <h1>❓ Pregunta del día</h1>
-      <div class="chips">
+<div
+  class="max-w-3xl mx-auto"
+  x-data="quiz({
+    total: {{ tiempo_segundos|default(30) }},
+    timeoutUrl: '{{ url_for('preguntas.timeout', pregunta_id=pregunta['id']) }}',
+    multiple: {{ 'true' if es_multiple else 'false' }}
+  })"
+  x-init="start()"
+>
+
+  <!-- Header + chips -->
+  <div class="flex items-center justify-between flex-wrap gap-3 mb-3">
+    <h1 class="text-xl sm:text-2xl font-extrabold text-brand">❓ Pregunta del día</h1>
+    <div class="flex items-center gap-2 flex-wrap">
+      <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rose-100 bg-white text-sm font-extrabold">
         {% if es_multiple %}
-          <span class="chip"><i class="fa-solid fa-layer-group"></i> Respuesta múltiple</span>
+          <i class="fa-solid fa-layer-group"></i> Respuesta múltiple
         {% else %}
-          <span class="chip"><i class="fa-solid fa-dot-circle"></i> Respuesta única</span>
+          <i class="fa-solid fa-dot-circle"></i> Respuesta única
         {% endif %}
-        <span class="chip"><i class="fa-solid fa-clock"></i> 30s</span>
-        {% if is_pack_domingo|default(false) %}
-          <span class="chip" title="Pack relámpago">
-            <i class="fa-solid fa-bolt"></i> Relámpago {{ (pack_idx|default(0)) + 1 }}/{{ pack_total|default(3) }}
-          </span>
-        {% endif %}
-      </div>
+      </span>
+      <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rose-100 bg-white text-sm font-extrabold">
+        <i class="fa-solid fa-clock"></i>
+        <span x-text="seconds"></span>s
+      </span>
+      {% if is_pack_domingo|default(false) %}
+      <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rose-100 bg-white text-sm font-extrabold" title="Pack relámpago">
+        <i class="fa-solid fa-bolt"></i>
+        Relámpago {{ (pack_idx|default(0)) + 1 }}/{{ pack_total|default(3) }}
+      </span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Audio opcional -->
+  {% if ruta_audio %}
+  <div class="flex items-center gap-2 mb-3">
+    <button id="play-audio" type="button"
+            class="inline-flex items-center gap-2 px-3 h-10 rounded-full border border-rose-100 bg-white hover:bg-neutral-50 text-sm">
+      ▶ Escuchar audio
+    </button>
+    <audio id="player" preload="auto" hidden>
+      <source src="{{ url_for('static', filename=ruta_audio) }}" type="audio/mpeg">
+      Tu navegador no soporta el audio.
+    </audio>
+  </div>
+  {% endif %}
+
+  <!-- Imagen opcional -->
+  {% if ruta_imagen %}
+  <div class="mb-3">
+    <img class="rounded-2xl shadow-lg w-full" src="{{ url_for('static', filename=ruta_imagen) }}" alt="Imagen de la pregunta">
+  </div>
+  {% endif %}
+
+  <!-- Enunciado -->
+  <h2 class="text-lg sm:text-xl font-semibold text-neutral-900 mb-2">{{ pregunta["pregunta"] }}</h2>
+
+  <!-- Formulario -->
+  <form id="form-pregunta"
+        method="POST"
+        action="{{ url_for('preguntas.ver_pregunta') }}"
+        @submit.prevent="validateBeforeSend($event) && $el.submit()">
+
+    <input type="hidden" name="pregunta_id" value="{{ pregunta['id'] }}">
+
+    <!-- Opciones -->
+    <div role="group" aria-label="Respuestas" class="space-y-2">
+      {% if es_multiple %}
+        <p class="text-sm text-neutral-600">Marca todas las correctas (pueden ser varias).</p>
+        {% for r in respuestas %}
+        <label class="flex items-start gap-3 p-3 rounded-xl border border-rose-100 bg-white hover:bg-neutral-50">
+          <input type="checkbox"
+                 class="mt-1"
+                 name="respuestas_seleccionadas[]"
+                 value="{{ r['id'] }}"
+                 :disabled="submitted || seconds<=0"
+                 aria-label="{{ r['respuesta'] }}">
+          <div class="leading-snug">{{ r['respuesta'] }}</div>
+        </label>
+        {% endfor %}
+      {% else %}
+        <p class="text-sm text-neutral-600">Elige una única respuesta.</p>
+        {% for r in respuestas %}
+        <label class="flex items-start gap-3 p-3 rounded-xl border border-rose-100 bg-white hover:bg-neutral-50">
+          <input type="radio"
+                 class="mt-1"
+                 name="respuesta"
+                 value="{{ r['id'] }}"
+                 required
+                 :disabled="submitted || seconds<=0"
+                 aria-label="{{ r['respuesta'] }}">
+          <div class="leading-snug">{{ r['respuesta'] }}</div>
+        </label>
+        {% endfor %}
+      {% endif %}
     </div>
 
-    {% if ruta_audio %}
-      <div class="audio-container">
-        <button id="play-audio" class="btn secondary-btn small-btn" type="button">▶ Escuchar audio</button>
-        <audio id="player" preload="auto" hidden>
-          <source src="{{ url_for('static', filename=ruta_audio) }}" type="audio/mpeg">
-          Tu navegador no soporta el audio.
-        </audio>
-      </div>
-    {% endif %}
-
-    {% if ruta_imagen %}
-      <div class="image-container">
-        <img src="{{ url_for('static', filename=ruta_imagen) }}" alt="Imagen de la pregunta">
-      </div>
-    {% endif %}
-
-    <h2 class="question-title">{{ pregunta["pregunta"] }}</h2>
-
-    {# Deja este endpoint si procesas el POST aquí #}
-    <form id="form-pregunta" method="POST" action="{{ url_for('preguntas.ver_pregunta') }}">
-      <input type="hidden" name="pregunta_id" value="{{ pregunta['id'] }}">
-
-      <div class="answers-container" role="group" aria-label="Respuestas">
-        {% if es_multiple %}
-          <p class="hint">Marca todas las correctas (pueden ser varias).</p>
-          {% for r in respuestas %}
-            <label class="option">
-              <input type="checkbox" name="respuestas_seleccionadas[]" value="{{ r['id'] }}" aria-label="{{ r['respuesta'] }}">
-              <div class="txt">{{ r['respuesta'] }}</div>
-            </label>
-          {% endfor %}
-        {% else %}
-          <p class="hint">Elige una única respuesta.</p>
-          {% for r in respuestas %}
-            <label class="option">
-              <input type="radio" name="respuesta" value="{{ r['id'] }}" required aria-label="{{ r['respuesta'] }}">
-              <div class="txt">{{ r['respuesta'] }}</div>
-            </label>
-          {% endfor %}
-        {% endif %}
-      </div>
-
-      <button type="submit" class="btn primary-btn">
+    <!-- Botón enviar (separado de la última opción) -->
+    <div class="mt-6">
+      <button type="submit"
+              :disabled="submitted || seconds<=0"
+              class="w-full inline-flex items-center justify-center gap-2 px-5 h-12 rounded-xl text-white
+                     bg-gradient-to-tr from-brand to-brand-dark shadow-md hover:shadow-lg transition
+                     disabled:opacity-50 disabled:cursor-not-allowed">
         {% if is_pack_domingo|default(false) %}
           <i class="fa-solid fa-bolt"></i> {{ btn_label|default('Enviar y terminar') }}
         {% else %}
           <i class="fa-solid fa-paper-plane"></i> {{ btn_label|default('Enviar respuesta') }}
         {% endif %}
       </button>
+    </div>
 
-      <div class="timer-section" aria-hidden="true">
-        <div class="timer" id="timer-circle">
-          <span id="timer-number">30</span>
-        </div>
-        <div class="timer-label">Tiempo restante</div>
-      </div>
-    </form>
-  </div>
+    <!-- TIMER DELUXE -->
+    <div class="mt-4 flex flex-col items-center select-none">
+      <svg viewBox="0 0 120 120" width="96" height="96" class="block">
+        <defs>
+          <linearGradient id="timerGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop :offset="0" :stop-color="gradFrom"></stop>
+            <stop :offset="1" :stop-color="gradTo"></stop>
+          </linearGradient>
+          <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <g id="tick">
+            <line x1="60" y1="8" x2="60" y2="14" stroke="#e5e7eb" stroke-width="2" stroke-linecap="round"/>
+          </g>
+        </defs>
 
-  <script>
-    // Audio preview (si existe)
-    (function () {
-      const player = document.getElementById('player');
-      const btn = document.getElementById('play-audio');
-      if (!player || !btn) return;
-      const LIMIT = 5;
-      btn.addEventListener('click', () => {
-        try { player.currentTime = 0; player.play(); } catch(_) {}
-        btn.disabled = true;
-      });
-      player.addEventListener('timeupdate', () => {
-        if (player.currentTime >= LIMIT) {
-          player.pause(); player.currentTime = 0; btn.disabled = false;
+        <!-- pista -->
+        <circle cx="60" cy="60" r="48" fill="none" stroke="#f1f5f9" stroke-width="10"/>
+
+        <!-- ticks -->
+        <g>
+          <template x-for="i in tickCount" :key="i">
+            <use href="#tick" :transform="`rotate(${(360/tickCount)*i} 60 60)`"></use>
+          </template>
+        </g>
+
+        <!-- progreso -->
+        <circle cx="60" cy="60" r="48" fill="none"
+                :stroke="`url(#timerGrad)`"
+                stroke-width="10"
+                stroke-linecap="round"
+                :stroke-dasharray="circumference"
+                :stroke-dashoffset="dash"
+                style="transform: rotate(-90deg); transform-origin: 60px 60px; transition: stroke-dashoffset .15s linear;"
+                filter="url(#softGlow)">
+        </circle>
+
+        <!-- “punta” -->
+        <circle r="6" :cx="capX" :cy="capY" :fill="gradTo" filter="url(#softGlow)"></circle>
+
+        <!-- número -->
+        <text x="60" y="65" text-anchor="middle" font-size="24" font-weight="800" fill="#111"
+              aria-live="polite" x-text="seconds"></text>
+      </svg>
+      <div class="text-xs text-neutral-600 mt-1">Tiempo restante</div>
+    </div>
+
+    <!-- Resultado (si lo inyectas luego) -->
+    <div id="resultado" class="text-center text-sm font-semibold"></div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* ======= Timer deluxe + estado (Alpine v3) ======= */
+function quiz({ total=30, timeoutUrl, multiple=false }) {
+  return {
+    // ---- estado base ----
+    total,
+    seconds: total,
+    submitted: false,
+
+    // ---- dibujo deluxe ----
+    r: 48,
+    get circumference(){ return 2 * Math.PI * this.r; },
+    dash: 0,
+    gradFrom: '#16a34a', // verde
+    gradTo:   '#22c55e',
+    tickCount: Math.max(6, Math.round(this.total / 5)), // ~marca cada 5s
+    get progress(){ return Math.max(0, Math.min(1, this.seconds / this.total)); },
+    get capAngle(){ return (1 - this.progress) * 2 * Math.PI - Math.PI/2; }, // -90°
+    get capX(){ return 60 + this.r * Math.cos(this.capAngle); },
+    get capY(){ return 60 + this.r * Math.sin(this.capAngle); },
+
+    // ---- inicio ----
+    start(){
+      const deadline = Date.now() + this.total * 1000;
+      const loop = () => {
+        const msLeft = Math.max(0, deadline - Date.now());
+        this.seconds = Math.ceil(msLeft / 1000);
+        this.updateVisuals(msLeft);
+
+        // vibración a 10/5/3 s si se puede
+        if ([10,5,3].includes(this.seconds)) {
+          try { navigator.vibrate?.(100); } catch(_) {}
         }
-      });
-      player.addEventListener('ended', () => { btn.disabled = false; });
-    })();
 
-    // Timer
-    (function () {
-      const TOTAL = 30;
-      let segundos = TOTAL;
+        if (msLeft <= 0) {
+          // timeout → redirige (o auto-submit si prefieres)
+          window.location.replace(timeoutUrl);
+          return;
+        }
+        requestAnimationFrame(loop);
+      };
+      requestAnimationFrame(loop);
+    },
 
-      const circle = document.getElementById("timer-circle");
-      const number = document.getElementById("timer-number");
-      const TIMEOUT_URL = "{{ url_for('preguntas.timeout', pregunta_id=pregunta['id']) }}";
+    updateVisuals(msLeft){
+      // color (verde → ámbar → rojo)
+      if(this.seconds <= 5)      { this.gradFrom = '#ef4444'; this.gradTo = '#dc2626'; }
+      else if(this.seconds <=10) { this.gradFrom = '#f59e0b'; this.gradTo = '#d97706'; }
+      else                       { this.gradFrom = '#16a34a'; this.gradTo = '#22c55e'; }
 
-      function pintar() {
-        if (!circle || !number) return;
-        const angle = 360 * (segundos / TOTAL);
-        circle.style.setProperty('--angle', `${angle}deg`);
-        number.textContent = segundos;
+      // dashoffset: cuánto “comido” del perímetro
+      this.dash = this.circumference * (1 - this.progress);
+    },
 
-        if (segundos <= 5) { circle.classList.add('timer-danger'); circle.classList.remove('timer-warn'); }
-        else if (segundos <= 10) { circle.classList.add('timer-warn'); circle.classList.remove('timer-danger'); }
-        else { circle.classList.remove('timer-warn', 'timer-danger'); }
+    // ---- envío ----
+    validateBeforeSend(e){
+      if(this.submitted) return false;
+
+      if (multiple) {
+        const any = e.target.querySelector('input[name="respuestas_seleccionadas[]"]:checked');
+        if(!any){
+          window.toast?.('Selecciona al menos una respuesta','bad');
+          return false;
+        }
       }
+      const btn = e.target.querySelector('button[type="submit"]');
+      if(btn && !btn.querySelector('.spin')){
+        btn.insertAdjacentHTML('beforeend','<span class="spin ml-2 inline-block w-4 h-4 border-2 border-white border-r-transparent rounded-full animate-spin"></span>');
+      }
+      this.submitted = true;
+      return true;
+    }
+  }
+}
 
-      pintar();
-      const intervalo = setInterval(() => {
-        segundos--;
-        pintar();
-        if (segundos <= 0) {
-          clearInterval(intervalo);
-          window.location.replace(TIMEOUT_URL);
-        }
-      }, 1000);
-    })();
-
-    // Validación cliente para múltiple: al menos 1 seleccionada
-    (function () {
-      const form = document.getElementById('form-pregunta');
-      if (!form) return;
-      const esMultiple = {{ es_multiple | tojson }};
-      form.addEventListener('submit', function (e) {
-        if (esMultiple) {
-          const alguno = form.querySelector('input[name="respuestas_seleccionadas[]"]:checked');
-          if (!alguno) {
-            e.preventDefault();
-            alert('Selecciona al menos una respuesta.');
-          }
-        }
-      });
-    })();
-  </script>
+/* ======= Audio preview corto (si existe) ======= */
+(function(){
+  const player = document.getElementById('player');
+  const btn = document.getElementById('play-audio');
+  if(!player || !btn) return;
+  const LIMIT = 5; // s
+  btn.addEventListener('click', () => {
+    try { player.currentTime = 0; player.play(); } catch(_) {}
+    btn.disabled = true;
+  });
+  player.addEventListener('timeupdate', () => {
+    if (player.currentTime >= LIMIT) {
+      player.pause(); player.currentTime = 0; btn.disabled = false;
+    }
+  });
+  player.addEventListener('ended', () => { btn.disabled = false; });
+})();
+</script>
+{# Asegúrate de cargar Alpine v3 en base.html:
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script> #}
 {% endblock %}

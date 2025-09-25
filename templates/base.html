@@ -1,280 +1,196 @@
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <title>{% block title %}Reto Diario{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<!doctype html>
+<html lang="es" class="h-full">
 
-    <!-- Fuente e iconos -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    />
+<head>
+  <meta charset="utf-8" />
+  <title>{% block title %}Reto Diario{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- en base.html, antes de </head> o justo antes de </body> -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    [x-cloak] {
+      display: none !important
+    }
+  </style>
 
-    <!-- Favicon -->
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="{{ url_for('static', filename='img/ATPPet-32.png') }}"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="{{ url_for('static', filename='img/ATPPet-16.png') }}"
-    />
-    <link
-      rel="apple-touch-icon"
-      href="{{ url_for('static', filename='img/ATPPet-180.png') }}"
-    />
 
+
+  <!-- Fuente e iconos -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/ATPPet-32.png') }}" />
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/ATPPet-16.png') }}" />
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/ATPPet-180.png') }}" />
+
+  <!-- Tailwind por CDN (rápido para empezar) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
+          colors: {
+            brand: { DEFAULT: '#ef4444', dark: '#dc2626' }
+          },
+          borderRadius: { '2xl': '1.25rem' }
+        }
+      }
+    }
+  </script>
+
+  <!-- Alpine (estado ligero) -->
+  <script defer src="https://unpkg.com/alpinejs"></script>
+  <!-- HTMX (interacciones sin recarga) -->
+  <script defer src="https://unpkg.com/htmx.org@1.9.12"></script>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body class="{{ body_class|default('') }} h-full bg-gradient-to-b from-rose-300 via-rose-200 to-white text-neutral-900">
+  <div class="min-h-screen flex flex-col">
+
+    <!-- NAV superior -->
+    <!-- Añade en <head> si no lo tienes -->
     <style>
-      :root {
-        --bg: #ffffff;
-        --text: #111111;
-        --muted: #6b7280;
-        --line: #e5e7eb;
-
-        --primary: #ef4444;
-        /* rojo principal */
-        --primary-dark: #dc2626;
-        /* rojo oscuro */
-        --radius: 18px;
-      }
-
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        min-height: 100%;
-        background: linear-gradient(
-          160deg,
-          #fda4af 0%,
-          #fecdd3 50%,
-          #ffffff 100%
-        );
-        color: var(--text);
-        font-family: "Inter", sans-serif;
-        -webkit-font-smoothing: antialiased;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
-
-      main {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        /* centrado vertical */
-        justify-content: center;
-        /* centrado horizontal */
-        padding: 16px;
-      }
-
-      .card {
-        width: 100%;
-        max-width: 760px;
-        border-radius: var(--radius);
-        border: 1px solid var(--line);
-        background: #fff;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-        padding: clamp(18px, 2.5vw, 28px);
-      }
-
-      h1 {
-        margin: 0 0 12px;
-        font-size: clamp(1.6rem, 2.5vw, 2.2rem);
-        font-weight: 800;
-        color: var(--primary-dark);
-        text-align: center;
-      }
-
-      p.lead {
-        margin: 0 0 12px;
-        color: var(--muted);
-        text-align: center;
-      }
-
-      /* ====== Botones ====== */
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 12px 16px;
-        border-radius: 999px;
-        border: 1.5px solid transparent;
-        font-weight: 800;
-        font-size: 0.95rem;
-        line-height: 1.1;
-        cursor: pointer;
-        text-decoration: none;
-        transition: transform 0.06s ease, box-shadow 0.18s ease,
-          opacity 0.2s ease;
-        user-select: none;
-      }
-
-      .btn:active {
-        transform: translateY(1px) scale(0.995);
-      }
-
-      .primary-btn {
-        color: white;
-        background: linear-gradient(
-          135deg,
-          var(--primary),
-          var(--primary-dark)
-        );
-        box-shadow: 0 6px 16px rgba(239, 68, 68, 0.25);
-      }
-      .form-pregunta .primary-btn {
-        display: block;
-        margin: 0 auto;
-      }
-
-      .primary-btn:hover {
-        opacity: 0.95;
-      }
-
-      .secondary-btn {
-        color: var(--text);
-        background: #fff;
-        border-color: var(--line);
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-      }
-
-      .secondary-btn:hover {
-        background: #f9fafb;
-      }
-
-      .small-btn {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-        font-weight: 700;
-      }
-
-      .actions {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin-top: 12px;
-      }
-
-      /* ===== Flotantes ===== */
-      .logout-float {
-        position: fixed;
-        top: max(12px, env(safe-area-inset-top));
-        right: max(12px, env(safe-area-inset-right));
-        z-index: 1100;
-      }
-
-      .help {
-        position: fixed;
-        top: max(12px, env(safe-area-inset-top));
-        left: max(12px, env(safe-area-inset-left));
-        z-index: 1100;
-      }
-
-      .help-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: #fff;
-        color: var(--primary-dark);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-        font-weight: 800;
-      }
-
-      .help-card {
-        position: absolute;
-        left: 0;
-        top: 48px;
-        width: min(92vw, 360px);
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-        padding: 12px;
-        display: none;
-      }
-
-      .help-card.is-open {
-        display: block;
-      }
-
-      .help-header {
-        font-weight: 800;
-        margin-bottom: 6px;
-        color: var(--primary-dark);
-      }
-
-      .help-content {
-        color: var(--muted);
-        font-size: 0.92rem;
-      }
-
-      .help-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-        margin-top: 8px;
-      }
-
-      main {
-        flex: 1;
-        display: flex;
-        align-items: center; /* centro vertical */
-        justify-content: center; /* centro horizontal */
-        padding: 16px;
-        min-height: 100vh; /* fuerza el alto completo de viewport */
-        box-sizing: border-box;
-      }
-
-      /* Si el contenido es más alto que la pantalla, flex deja de centrar: */
-      main > .card {
-        margin: auto; /* centra mientras cabe */
-      }
-
-      /* En móvil: el main se alinea arriba con un gap configurable */
-      @media (max-width: 640px) {
-        main {
-          align-items: flex-start;
-          justify-content: center;
-          padding-top: var(--page-top-gap, 16px);
-          /* <- hook */
-        }
-
-        .card {
-          margin-top: 0;
-        }
-
-        /* el gap lo controla el main */
+      [x-cloak] {
+        display: none !important;
       }
     </style>
 
-    {% block extra_head %}{% endblock %}
-  </head>
+    <!-- NAV superior -->
+    <header class="sticky top-0 z-40 backdrop-blur bg-white/40 border-b border-white/50">
+      <nav class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between">
+        <!-- Marca -->
+        <a href="{{ url_for('index') }}" class="flex items-center gap-2 font-extrabold tracking-wide text-brand">
+          <img src="{{ url_for('static', filename='img/ATPPet-32.png') }}" class="w-6 h-6" alt="Logo">
+          <span>Atención Pregunta</span>
+        </a>
 
-  <body class="{{ body_class|default('') }}">
-    <main>
-      <div class="card">{% block content %}{% endblock %}</div>
+        <!-- Lado derecho -->
+        <div class="flex items-center">
+          {% if session.get('usuario_id') %}
+          <!-- Menú de usuario (Alpine) -->
+          <div x-data="{ open:false }" class="relative">
+            <button @click="open=!open" @keydown.escape.window="open=false" :aria-expanded="open" aria-haspopup="true"
+              aria-controls="userMenu"
+              class="inline-flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full hover:bg-white/70 focus:outline-none focus:ring-2 focus:ring-rose-300"
+              title="Menú">
+              <!-- Avatar con inicial -->
+              <span
+                class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-rose-500 text-white font-bold">
+                {{ ((session.get('usuario_nombre') or 'U')|string)[0]|upper }}
+              </span>
+              <svg class="w-4 h-4 opacity-80" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 10l5 5 5-5H7z"></path>
+              </svg>
+              <span class="sr-only">Abrir menú de usuario</span>
+            </button>
+
+            <!-- Dropdown -->
+            <div x-cloak x-show="open" x-transition.origin.top.right @click.outside="open=false" id="userMenu"
+              role="menu" aria-label="Menú de usuario"
+              class="absolute right-0 mt-2 w-48 rounded-2xl border border-rose-100 bg-white shadow-xl overflow-hidden">
+              <a role="menuitem" href="{{ url_for('grupos.gestionar_grupos') }}"
+                class="block px-4 py-2.5 text-sm hover:bg-rose-50">Grupos</a>
+              <a role="menuitem" href="{{ url_for('resultados.ver_resultados') }}"
+                class="block px-4 py-2.5 text-sm hover:bg-rose-50">Resultados</a>
+
+              <!-- Divider -->
+              <div class="my-1 border-t border-rose-100"></div>
+
+              <!-- Salir (GET o POST según tu backend) -->
+              {# Opción A: enlace GET #}
+              <a role="menuitem" href="{{ url_for('auth.logout') }}"
+                class="block px-4 py-2.5 text-sm text-red-600 hover:bg-rose-50">Salir</a>
+
+              {# Opción B: formulario POST (recomendado si tienes CSRF) #
+              <form role="none" action="{{ url_for('auth.logout') }}" method="post">
+                <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-rose-50">
+                  Salir
+                </button>
+              </form>
+              #}
+            </div>
+          </div>
+          {% else %}
+          <!-- Si no está logueado: botón Entrar -->
+          <a href="{{ url_for('auth.login') }}"
+            class="px-3 py-1.5 rounded-full bg-brand text-white hover:bg-brand-dark text-sm">Entrar</a>
+          {% endif %}
+        </div>
+      </nav>
+    </header>
+
+
+    <!-- CONTENIDO centrado -->
+    <main class="flex-1 px-3 sm:px-4">
+      <div class="max-w-3xl mx-auto py-6 sm:py-10">
+        <!-- Card contenedora por defecto -->
+        <div
+          class="bg-white/90 backdrop-blur border border-rose-100 shadow-xl shadow-rose-100/50 rounded-2xl p-5 sm:p-7">
+          {% block content %}{% endblock %}
+        </div>
+      </div>
     </main>
 
-    {% block floating %}{% endblock %} {% block scripts %}{% endblock %}
-  </body>
+    <!-- FOOTER simple -->
+    <footer class="py-6 text-center text-sm text-neutral-600">
+      © {{ now().year }} Atención Pregunta · Hecho con Flask · HTMX · Alpin
+    </footer>
+  </div>
 
-  <footer class="site-footer">
-  <p>
-    © {{ current_year }} Atencion Pregunta · 
-    <a href="{{ url_for('static', filename='legal/aviso-legal.html') }}">Aviso Legal</a> ·
-    <a href="{{ url_for('static', filename='legal/privacidad.html') }}">Política de Privacidad</a> ·
-    <a href="{{ url_for('static', filename='legal/cookies.html') }}">Política de Cookies</a>
-  </p>
-</footer>
+  <!-- BOTÓN DE AYUDA flotante (Alpine) -->
+  <div x-data="{open:false}" class="fixed left-3 bottom-3 z-50">
+    <button @click="open=!open"
+      class="w-12 h-12 rounded-full bg-white text-brand border border-rose-200 shadow-lg hover:shadow-xl">
+      <i class="fa-solid fa-question"></i>
+    </button>
+    <div x-show="open" x-transition
+      class="mt-3 w-80 max-w-[92vw] bg-white rounded-2xl border border-rose-100 shadow-2xl p-4">
+      <div class="font-extrabold text-brand mb-1">Ayuda rápida</div>
+      <p class="text-sm text-neutral-600">
+        Si algo no carga, prueba actualizar. Las respuestas se envían sin recargar gracias a HTMX.
+      </p>
+      <div class="mt-3 flex justify-end">
+        <button @click="open=false"
+          class="px-3 py-1.5 rounded-full bg-neutral-900 text-white text-sm">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZONA DE TOASTS -->
+  <div id="toasts" class="fixed top-3 right-3 z-50 space-y-2"></div>
+
+  {% block floating %}{% endblock %}
+
+  <!-- Helpers comunes -->
+  <script>
+    // Toast mínimo: úsalo desde tus vistas con HTMX mediante hx-trigger="revealed" + hx-get a un endpoint que devuelva JS,
+    // o llama window.toast('texto','ok'|'bad'|'info')
+    window.toast = function (msg, kind = 'ok') {
+      const host = document.getElementById('toasts');
+      const el = document.createElement('div');
+      const base = 'px-4 py-2 rounded-xl shadow-lg text-sm text-white';
+      const cls = kind === 'bad' ? 'bg-red-600' : (kind === 'info' ? 'bg-blue-600' : 'bg-emerald-600');
+      el.className = base + ' ' + cls;
+      el.textContent = msg;
+      host.appendChild(el);
+      setTimeout(() => { el.classList.add('opacity-0', 'transition'); }, 2800);
+      setTimeout(() => { host.removeChild(el); }, 3200);
+    };
+
+    // Integración básica con HTMX para toasts por cabeceras
+    document.body.addEventListener('htmx:afterOnLoad', (e) => {
+      const ok = e.detail.xhr.getResponseHeader('X-Toast-Ok');
+      const bad = e.detail.xhr.getResponseHeader('X-Toast-Bad');
+      if (ok) toast(ok, 'ok');
+      if (bad) toast(bad, 'bad');
+    });
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+
 </html>

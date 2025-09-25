@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+{% set body_class = 'page-resultados tone-soft' %}
+{% block title %}Historial de Temporadas · Reto Diario{% endblock %}
+
+{% block extra_head %}
+<style>
+  :root { --line:#e8eaf0; --muted:#6b7280; --ink:#111827; --card:#fff; --bg:#f7f8fb; }
+  .hist-shell{ max-width:960px; margin:0 auto; }
+  .season-toolbar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:6px 0 12px }
+  .season-toolbar select{
+    height:40px; padding:0 12px; border:1px solid var(--line); border-radius:10px; background:#fff;
+  }
+  .season-card{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:14px; padding:14px; margin:12px 0;
+  }
+  .season-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .chips{ display:flex; gap:8px; flex-wrap:wrap; }
+  .chip{ background:#f8fafc; border:1px solid var(--line); border-radius:999px; padding:6px 10px; font-size:.93rem }
+  .rank-table{ width:100%; border-collapse:collapse; margin-top:10px; }
+  .rank-table th, .rank-table td{ padding:8px 10px; border-top:1px solid var(--line); text-align:left; }
+  .rank-table th{ font-weight:600; font-size:.92rem; color:var(--muted); }
+  .rank-badge{ font-weight:700; }
+  .muted{ color:var(--muted); }
+  .sep{ border:none; border-top:1px solid var(--line); margin:12px 0 }
+  .fade-in{ animation:fade .25s ease-out both }
+  [x-cloak]{ display:none !important; }
+  @keyframes fade{ from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none} }
+  @media (max-width:640px){
+    .season-toolbar{ gap:8px; }
+    .season-toolbar select{ width:100%; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card fade-in">
+  <div class="hist-shell"
+       x-cloak
+       x-data="historialTemps({
+         idGrupo: {{ id_grupo|int }},
+         nombreGrupo: {{ (nombre_grupo or '')|tojson }},
+         selectedInit: {{ (selected_temporada or 'all')|tojson }},
+         temporadas: {{ (temporadas or [])|tojson }},
+         clasifPorTemp: {{ (clasif_por_temp or {})|tojson }}
+       })"
+       x-init="init()">
+
+    <!-- Header + selector -->
+    <div class="season-toolbar">
+      <h1 style="margin:0">📜 Historial de Temporadas</h1>
+      <div class="spacer" style="flex:1"></div>
+
+      <form method="get"
+            action="{{ url_for('resultados.historial_temporadas') }}"
+            class="inline"
+            style="display:flex; gap:8px; align-items:center;">
+        <input type="hidden" name="id_grupo" value="{{ id_grupo }}">
+        <label for="id_temporada" class="muted"><strong>Temporada:</strong></label>
+
+        <select id="id_temporada" name="id_temporada"
+                x-model="selected"
+                @change.prevent="onChangeSelected()">
+
+          {# ==== Fallback del servidor (SIN Alpine) ==== #}
+          {% if temporadas and temporadas|length > 0 %}
+            <option value="all" {% if selected_temporada == 'all' %}selected{% endif %}>Todas las temporadas</option>
+            {% for t in temporadas %}
+              <option value="{{ t.id }}" {% if selected_temporada|string == t.id|string %}selected{% endif %}>
+                {{ t.nombre or ('Temporada ' ~ t.id) }}
+                {% if t.fecha_inicio %} ({{ t.fecha_inicio }}{% if t.fecha_fin %} → {{ t.fecha_fin }}{% endif %}){% endif %}
+              </option>
+            {% endfor %}
+          {% else %}
+            <option value="">(Sin temporadas)</option>
+          {% endif %}
+
+          {# ==== Render dinámico (CON Alpine) ==== #}
+          <template x-if="(temporadas || []).length > 0">
+            <option value="all">Todas las temporadas</option>
+          </template>
+          <template x-for="t in temporadas" :key="t.id">
+            <option :value="String(t.id)"
+                    x-text="`${t.nombre || ('Temporada ' + t.id)} ${t.fecha_inicio ? '('+t.fecha_inicio+(t.fecha_fin ? ' → '+t.fecha_fin : '')+')' : ''}`">
+            </option>
+          </template>
+          <template x-if="(temporadas || []).length === 0">
+            <option value="">(Sin temporadas)</option>
+          </template>
+        </select>
+
+        <noscript><button class="btn secondary-btn" type="submit">Ver</button></noscript>
+      </form>
+
+      <a class="btn secondary-btn" href="{{ url_for('resultados.ver_resultados', id_grupo=id_grupo) }}">← Volver a resultados</a>
+    </div>
+
+    <!-- Nombre del grupo (fallback servidor + Alpine) -->
+    <p class="muted" style="margin:0 0 10px">
+  Grupo:
+  <strong>{{ nombre_grupo or '—' }}</strong>
+</p>
+
+    <hr class="sep">
+
+    {# ===== Fallback SSR (se ve aunque Alpine no funcione) ===== #}
+<div class="ssr-fallback">
+  {% if temporadas and temporadas|length > 0 %}
+
+    {% if selected_temporada == 'all' %}
+      {# --- Todas las temporadas --- #}
+      {% for t in temporadas %}
+        {% set key = (t.id|string) %}
+        {% set cls = (clasif_por_temp.get(key) or clasif_por_temp.get(t.id) or []) %}
+
+        <section class="season-card">
+          <div class="season-head">
+            <h2 style="margin:0">{{ t.nombre or ('Temporada ' ~ t.id) }}</h2>
+            <div class="chips">
+              {% if t.fecha_inicio %}
+                <span class="chip"><i class="fa-solid fa-calendar-day"></i>
+                  {{ t.fecha_inicio }}{% if t.fecha_fin %} → {{ t.fecha_fin }}{% endif %}
+                </span>
+              {% endif %}
+              <span class="chip"><i class="fa-solid fa-circle-question"></i> {{ t.num_pregs or 0 }} preguntas</span>
+            </div>
+          </div>
+
+          <table class="rank-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Usuario</th>
+                <th>Puntos</th>
+                <th>Aciertos</th>
+                <th>Jugadas</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if cls and cls|length > 0 %}
+                {% for r in cls %}
+                  <tr>
+                    <td class="rank-badge">{{ r.rank }}</td>
+                    <td>{{ r.nombre }}</td>
+                    <td>{{ r.puntos }}</td>
+                    <td>{{ r.aciertos }}</td>
+                    <td>{{ r.jugadas }}</td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr><td colspan="5" class="muted">Sin datos de clasificación en esta temporada.</td></tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </section>
+      {% endfor %}
+
+    {% else %}
+      {# --- Solo una temporada --- #}
+      {% set t = (temporadas | selectattr('id', 'equalto', (selected_temporada|int)) | list | first) %}
+      {% if not t and temporadas %}{% set t = temporadas[0] %}{% endif %}
+      {% if t %}
+        {% set key = (t.id|string) %}
+        {% set cls = (clasif_por_temp.get(key) or clasif_por_temp.get(t.id) or []) %}
+
+        <section class="season-card">
+          <div class="season-head">
+            <h2 style="margin:0">{{ t.nombre or ('Temporada ' ~ t.id) }}</h2>
+            <div class="chips">
+              {% if t.fecha_inicio %}
+                <span class="chip"><i class="fa-solid fa-calendar-day"></i>
+                  {{ t.fecha_inicio }}{% if t.fecha_fin %} → {{ t.fecha_fin }}{% endif %}
+                </span>
+              {% endif %}
+              <span class="chip"><i class="fa-solid fa-circle-question"></i> {{ t.num_pregs or 0 }} preguntas</span>
+            </div>
+          </div>
+
+          <table class="rank-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Usuario</th>
+                <th>Puntos</th>
+                <th>Aciertos</th>
+                <th>Jugadas</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if cls and cls|length > 0 %}
+                {% for r in cls %}
+                  <tr>
+                    <td class="rank-badge">{{ r.rank }}</td>
+                    <td>{{ r.nombre }}</td>
+                    <td>{{ r.puntos }}</td>
+                    <td>{{ r.aciertos }}</td>
+                    <td>{{ r.jugadas }}</td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr><td colspan="5" class="muted">Sin datos de clasificación en esta temporada.</td></tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </section>
+      {% else %}
+        <p class="muted">No se encontró la temporada seleccionada.</p>
+      {% endif %}
+    {% endif %}
+
+  {% else %}
+    <p class="muted">Este grupo aún no tiene temporadas con actividad.</p>
+  {% endif %}
+</div>
+{# ===== /Fallback SSR ===== #}
+
+    <!-- Sin temporadas -->
+    <template x-if="(temporadas || []).length === 0">
+      <p class="muted">Este grupo aún no tiene temporadas con actividad.</p>
+    </template>
+
+    {% raw %}
+    <!-- TODAS las temporadas (SOLO Alpine dentro) -->
+    {% endraw %}
+    <template x-if="selected === 'all' && (temporadas || []).length > 0">
+      <div>
+        <template x-for="t in temporadas" :key="t.id">
+          <section class="season-card fade-in">
+            <div class="season-head">
+              <h2 style="margin:0" x-text="t.nombre || ('Temporada ' + t.id)"></h2>
+              <div class="chips">
+                <template x-if="t.fecha_inicio">
+                  <span class="chip">
+                    <i class="fa-solid fa-calendar-day"></i>
+                    <span style="margin-left:6px" x-text="t.fecha_fin ? `${t.fecha_inicio} → ${t.fecha_fin}` : t.fecha_inicio"></span>
+                  </span>
+                </template>
+                <span class="chip">
+                  <i class="fa-solid fa-circle-question"></i>
+                  <span style="margin-left:6px" x-text="`${t.num_pregs || 0} preguntas`"></span>
+                </span>
+              </div>
+            </div>
+
+            <table class="rank-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Usuario</th>
+                  <th>Puntos</th>
+                  <th>Aciertos</th>
+                  <th>Jugadas</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-if="filas(t.id).length === 0">
+                  <tr><td colspan="5" class="muted">Sin datos de clasificación en esta temporada.</td></tr>
+                </template>
+                <template x-for="r in filas(t.id)" :key="`${t.id}-${r.nombre}-${r.rank}`">
+                  <tr>
+                    <td class="rank-badge" x-text="r.rank"></td>
+                    <td x-text="r.nombre"></td>
+                    <td x-text="r.puntos"></td>
+                    <td x-text="r.aciertos"></td>
+                    <td x-text="r.jugadas"></td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </section>
+        </template>
+      </div>
+    </template>
+
+    {% raw %}
+    <!-- UNA temporada (SOLO Alpine dentro) -->
+    {% endraw %}
+    <template x-if="selected !== 'all' && (temporadas || []).length > 0">
+      <div>
+        <template x-if="current">
+          <section class="season-card fade-in">
+            <div class="season-head">
+              <h2 style="margin:0" x-text="current.nombre || ('Temporada ' + current.id)"></h2>
+              <div class="chips">
+                <template x-if="current.fecha_inicio">
+                  <span class="chip">
+                    <i class="fa-solid fa-calendar-day"></i>
+                    <span style="margin-left:6px" x-text="current.fecha_fin ? `${current.fecha_inicio} → ${current.fecha_fin}` : current.fecha_inicio"></span>
+                  </span>
+                </template>
+                <span class="chip">
+                  <i class="fa-solid fa-circle-question"></i>
+                  <span style="margin-left:6px" x-text="`${current.num_pregs || 0} preguntas`"></span>
+                </span>
+              </div>
+            </div>
+
+            <table class="rank-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Usuario</th>
+                  <th>Puntos</th>
+                  <th>Aciertos</th>
+                  <th>Jugadas</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-if="filasSeleccionadas().length === 0">
+                  <tr><td colspan="5" class="muted">Sin datos de clasificación en esta temporada.</td></tr>
+                </template>
+                <template x-for="r in filasSeleccionadas()" :key="`sel-${r.nombre}-${r.rank}`">
+                  <tr>
+                    <td class="rank-badge" x-text="r.rank"></td>
+                    <td x-text="r.nombre"></td>
+                    <td x-text="r.puntos"></td>
+                    <td x-text="r.aciertos"></td>
+                    <td x-text="r.jugadas"></td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </section>
+        </template>
+        <template x-if="!current">
+          <p class="muted">No se encontró la temporada seleccionada.</p>
+        </template>
+      </div>
+    </template>
+
+  </div>
+</div>
+{% endblock %}

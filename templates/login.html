@@ -2,96 +2,102 @@
 {% set body_class = 'app-shell tone-soft page-auth' %}
 {% block title %}Iniciar sesión · Reto Diario{% endblock %}
 
-{% block extra_head %}
-<style>
-  :root{ --input-h:46px; --input-px:14px; --input-radius:999px; }
-
-  .form-row{ display:grid; gap:6px; margin-top:10px; }
-  .form-row label{ font-weight:700; font-size:.95rem; }
-
-  .input{
-    display:block; width:100%; height:var(--input-h);
-    box-sizing:border-box; padding:0 var(--input-px);
-    border:1px solid var(--line); border-radius:var(--input-radius);
-    background:#fff; font:inherit; outline:none;
-    box-shadow:0 3px 10px rgba(0,0,0,.05);
-  }
-  .input:focus{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(239,68,68,.15); }
-
-  .remember{
-    display:flex; align-items:center; gap:.5rem; margin:.6rem 0 .2rem;
-    font-size:.95rem;
-  }
-  .remember input[type="checkbox"]{ transform:scale(1.1); }
-
-  .actions{ display:grid; gap:10px; margin-top:14px; grid-template-columns:1fr; }
-  .actions .btn.primary-btn{ width:100%; justify-self:stretch; }
-  @media (min-width:780px){ .actions{ grid-template-columns:1fr auto; } }
-
-  .google-btn{
-    border:1px solid #e5e7eb; background:#fff; color:#111827;
-    box-shadow:0 3px 10px rgba(0,0,0,.05);
-  }
-  .google-btn:hover{ background:#f9fafb; }
-  .google-btn i{ color:#ea4335; }
-
-  .divider{ margin:16px 0 12px; border-top:1px solid var(--line); }
-</style>
-{% endblock %}
-
 {% block content %}
-<header class="header">
-  <div class="title">
-    <a class="btn secondary-btn small-btn" href="/">
+  <!-- Header -->
+  <header class="flex items-center justify-between mb-4">
+    <a href="{{ url_for('index') }}"
+       class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rose-100 bg-white hover:bg-neutral-50 text-sm">
       <i class="fa-solid fa-arrow-left"></i> Volver
     </a>
-    <h2>🔐 Iniciar sesión</h2>
+    <h2 class="text-xl sm:text-2xl font-extrabold text-brand">🔐 Iniciar sesión</h2>
+  </header>
+
+  <!-- Flashes -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="space-y-2 mb-4">
+        {% for category, message in messages %}
+          {% set cls = 'bg-emerald-50 text-emerald-800 border-emerald-200' if category=='success'
+                      else ('bg-red-50 text-red-800 border-red-200' if category in ['error','danger']
+                      else 'bg-blue-50 text-blue-800 border-blue-200') %}
+          <div class="px-4 py-2 rounded-xl border {{ cls }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Form -->
+  <form method="POST" action="{{ url_for('auth.login') }}" novalidate class="space-y-4">
+    <!-- Usuario -->
+    <div>
+      <label for="usuario" class="block font-semibold text-sm mb-1">Nombre de usuario</label>
+      <input
+        id="usuario" name="usuario" type="text" required autocomplete="username"
+        value="{{ request.form.get('usuario','') }}"
+        class="w-full h-11 px-4 rounded-full border border-rose-100 bg-white shadow-sm focus:outline-none focus:ring-4 focus:ring-rose-300"
+        placeholder="Tu usuario" />
+    </div>
+
+    <!-- Contraseña (con toggle) -->
+    <div x-data="{show:false}">
+      <label for="contrasena" class="block font-semibold text-sm mb-1">Contraseña</label>
+      <div class="relative">
+        <input
+          :type="show ? 'text' : 'password'"
+          id="contrasena" name="contrasena" required autocomplete="current-password"
+          class="w-full h-11 pl-4 pr-11 rounded-full border border-rose-100 bg-white shadow-sm focus:outline-none focus:ring-4 focus:ring-rose-300"
+          placeholder="••••••••" />
+        <button type="button" @click="show=!show"
+                class="absolute inset-y-0 right-0 px-3 text-neutral-600 hover:text-neutral-900"
+                aria-label="Mostrar u ocultar contraseña">
+          <i class="fa-solid" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Remember me -->
+    <label class="inline-flex items-center gap-2 text-sm select-none">
+      <input type="checkbox" name="remember"
+             class="w-4 h-4 rounded border-neutral-300"
+             {% if request.form.get('remember') %}checked{% endif %}>
+      Recuérdame
+    </label>
+
+    <!-- Acciones -->
+    <div class="grid gap-2 sm:grid-cols-[1fr_auto]">
+      <button type="submit"
+              class="inline-flex items-center justify-center gap-2 px-5 h-11 rounded-full text-white
+                     bg-gradient-to-tr from-brand to-brand-dark shadow-md hover:shadow-lg transition">
+        <i class="fa-solid fa-right-to-bracket"></i> Entrar
+      </button>
+    </div>
+  </form>
+
+  <!-- Divider -->
+  <div class="my-4 border-t border-rose-100"></div>
+  <p class="text-center text-sm text-neutral-600 mb-3">o bien</p>
+
+  <!-- Login alternativo -->
+  <div class="grid gap-2">
+    <a href="{{ url_for('google.login') }}"
+       class="inline-flex items-center justify-center gap-2 px-5 h-11 rounded-full border border-neutral-200 bg-white hover:bg-neutral-50">
+      <i class="fa-brands fa-google text-[#ea4335]"></i> Iniciar sesión con Google
+    </a>
+    <a href="{{ url_for('index') }}"
+       class="inline-flex items-center justify-center gap-2 px-5 h-11 rounded-full border border-rose-100 bg-white hover:bg-neutral-50">
+      ⬅️ Volver al inicio
+    </a>
   </div>
-</header>
+{% endblock %}
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      <div class="flash {{ category }}">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
-
-<form method="POST" action="/login" novalidate>
-  <div class="form-row">
-    <label for="usuario"><strong>Nombre de usuario</strong></label>
-    <input class="input" type="text" name="usuario" id="usuario"
-           required autocomplete="username"
-           value="{{ request.form.get('usuario','') }}">
-  </div>
-
-  <div class="form-row">
-    <label for="contrasena"><strong>Contraseña</strong></label>
-    <input class="input" type="password" name="contrasena" id="contrasena"
-           required autocomplete="current-password">
-  </div>
-
-  <label class="remember">
-    <input type="checkbox" name="remember" {% if request.form.get('remember') %}checked{% endif %}>
-    Recuérdame
-  </label>
-
-  <div class="actions">
-    <button type="submit" class="btn primary-btn">
-      <i class="fa-solid fa-right-to-bracket"></i> Entrar
-    </button>
-  </div>
-</form>
-
-<div class="divider"></div>
-
-<p class="lead" style="text-align:center;margin:0 0 10px;">o bien</p>
-<div class="actions" style="grid-template-columns:1fr;">
-  <a href="/login/google" class="btn google-btn">
-    <i class="fa-brands fa-google"></i> Iniciar sesión con Google
-  </a>
-  <a href="/" class="btn secondary-btn">
-    ⬅️ Volver al inicio
-  </a>
-</div>
+{% block scripts %}
+<script>
+  // Spinner “rápido” al enviar
+  document.addEventListener('submit', (e) => {
+    const btn = e.target?.querySelector('button[type="submit"]');
+    if (!btn) return;
+    btn.insertAdjacentHTML('beforeend',
+      '<span class="ml-2 inline-block w-4 h-4 border-2 border-white border-r-transparent rounded-full animate-spin"></span>');
+  }, {capture:true});
+</script>
 {% endblock %}

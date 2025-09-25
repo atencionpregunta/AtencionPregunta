@@ -22,6 +22,8 @@ app.config.update(
     SESSION_COOKIE_SECURE=False,  # pon True si sirves por HTTPS
 )
 
+from datetime import datetime
+app.jinja_env.globals['now'] = datetime.utcnow
 
 # (Opcional) CORS y cookies cross-site (poner antes de blueprints)
 from flask_cors import CORS

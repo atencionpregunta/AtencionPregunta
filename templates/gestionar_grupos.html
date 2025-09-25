@@ -2,143 +2,80 @@
 {% set body_class = 'app-shell tone-soft page-grupos page-gestionar' %}
 {% block title %}Gestionar grupos · Reto Diario{% endblock %}
 
-{% block extra_head %}
-<style>
-  .list-shell{ max-width:720px; margin:0 auto; }
-
-  .page-gestionar .title h2{
-    margin:0; font-weight:800;
-    font-size:clamp(1.25rem,2.2vw,1.45rem);
-  }
-
-  /* ===== Lista compacta ===== */
-  .group-list{
-    margin:10px 0 0; padding:0; list-style:none;
-    border:1px solid var(--line);
-    border-radius:12px; overflow:hidden; background:#fff;
-  }
-  .group-item{
-    display:grid;
-    grid-template-columns: 1fr auto;
-    align-items:center;
-    gap:10px;
-    padding:8px 12px;
-    border-top:1px solid #eef2f7;
-  }
-  .group-item:first-child{ border-top:0; }
-  .group-item:hover{ background:#fafafa; }
-
-  .group-name{
-    min-width:0;
-    display:inline-flex; align-items:center; gap:8px;
-    font-weight:700; font-size:.95rem;
-  }
-  .group-name i{ color:#64748b; font-size:.95rem; }
-  .group-name span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-
-  /* ===== MODS de botón (respetan tus .btn globales) ===== */
-  :root{ --btn-icon-sz: 36px; }
-
-  /* asegura que .btn calcule bien con ancho/alto fijo */
-  .page-gestionar .btn{ box-sizing: border-box; }
-
-  /* pequeño, como los links “volver” del index */
-  .btn--sm{
-    padding:12x 12px;
-    gap:10px;
-    font-size:.9rem;
-    line-height:1.1;
-    border-radius:12px;
-    margin-top: -6px;   /* sube */
-    margin-left: -6px;  /* pega a la izquierda */
-    margin-bottom: 6px;
-  }
-
-  /* icon-only fijo: sin padding, tamaño exacto, centrado */
-  .btn--icon{
-    width:var(--btn-icon-sz);
-    height:var(--btn-icon-sz);
-    padding:0;
-    border-radius:999px;
-    display:inline-flex; align-items:center; justify-content:center;
-  }
-  .btn--icon i{ font-size:14px; line-height:1; }
-
-  /* variante “danger outline” sobre secondary */
-  .btn--danger{
-    color:#b91c1c;
-    border-color:#fecaca !important;   /* mantiene el borde del secondary */
-  }
-  .btn--danger:hover{ background:#fef2f2; }
-
-  /* ===== Acciones inferiores (mismo comportamiento que index) ===== */
-  .actions-row{
-    margin-top:12px; display:grid; gap:10px;
-    grid-template-columns:1fr;       /* móvil: 100% ancho */
-  }
-  .actions-row .btn{ width:100%; }
-  @media (min-width:720px){
-    .actions-row{ grid-template-columns:auto auto; }
-    .actions-row .btn{ width:auto; }
-  }
-</style>
-{% endblock %}
-
 {% block content %}
-<header class="header">
-  <div class="title">
-    <!-- Volver: secondary pequeño, igual interacción que el index -->
-    <a class="btn secondary-btn btn--sm" href="{{ url_for('index') }}">
+  <!-- Header -->
+  <header class="flex items-center justify-between mb-4">
+    <a href="{{ url_for('index') }}"
+       class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rose-100 bg-white hover:bg-neutral-50 text-sm">
       <i class="fa-solid fa-arrow-left"></i>
     </a>
-    <h2><i class="fa-solid fa-gear"></i> Gestionar grupos</h2>
-  </div>
-</header>
+    <h2 class="text-xl sm:text-2xl font-extrabold text-brand">
+      <i class="fa-solid fa-gear"></i> Gestionar grupos
+    </h2>
+  </header>
 
-<div class="list-shell">
+  <!-- Flashes -->
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-      {% for category, message in messages %}
-        <div class="flash {{ category }}">{{ message }}</div>
-      {% endfor %}
+      <div class="space-y-2 mb-4">
+        {% for category, message in messages %}
+          {% set cls = 'bg-emerald-50 text-emerald-800 border-emerald-200' if category=='success'
+                      else ('bg-red-50 text-red-800 border-red-200' if category in ['error','danger']
+                      else 'bg-blue-50 text-blue-800 border-blue-200') %}
+          <div class="px-4 py-2 rounded-xl border {{ cls }}">{{ message }}</div>
+        {% endfor %}
+      </div>
     {% endif %}
   {% endwith %}
 
-  {% if grupos_usuario and grupos_usuario|length %}
-    <ul class="group-list">
-      {% for grupo in grupos_usuario %}
-      <li class="group-item">
-        <div class="group-name">
-          <i class="fa-solid fa-users"></i>
-          <span>{{ grupo.codigo }}</span>
-        </div>
+  <!-- Lista -->
+  <div class="max-w-3xl mx-auto">
+    {% if grupos_usuario and grupos_usuario|length %}
+      <ul class="border border-rose-100 rounded-2xl overflow-hidden bg-white divide-y divide-rose-100">
+        {% for grupo in grupos_usuario %}
+        <li class="flex items-center justify-between gap-3 px-3 sm:px-4 py-2.5 hover:bg-neutral-50"
+            x-data="{confirm:false}">
+          <div class="min-w-0 flex items-center gap-2 font-semibold text-sm sm:text-base">
+            <i class="fa-solid fa-users text-neutral-500"></i>
+            <span class="truncate">{{ grupo.codigo }}</span>
+          </div>
 
-        <form method="POST"
-              action="{{ url_for('grupos.salir_grupo') }}"
-              onsubmit="return confirm('¿Seguro que quieres salirte del grupo &quot;{{ grupo.codigo }}&quot;?');">
-          <input type="hidden" name="id_grupo" value="{{ grupo.id }}">
-          <!-- Papelera: secondary + icon-only + danger outline -->
-          <button type="submit" class="btn secondary-btn btn--icon btn--danger" title="Salir del grupo">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </form>
-      </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p class="info">No perteneces a ningún grupo todavía.</p>
-  {% endif %}
+          <!-- Acciones -->
+          <div class="flex items-center gap-2">
+            <!-- Borrar con HTMX (progresivo) -->
+            <form method="POST" action="{{ url_for('grupos.salir_grupo') }}"
+                  class="contents"
+                  @submit.prevent=" /* fallback si no hay HTMX */ confirm || (confirm=true)"
+                  hx-post="{{ url_for('grupos.salir_grupo') }}"
+                  hx-vals='{"id_grupo":"{{ grupo.id }}"}'
+                  hx-target="closest li"
+                  hx-swap="outerHTML"
+                  hx-confirm="¿Seguro que quieres salirte del grupo «{{ grupo.codigo }}»?">
+              <input type="hidden" name="id_grupo" value="{{ grupo.id }}">
+              <button type="submit"
+                      class="w-9 h-9 inline-flex items-center justify-center rounded-full border border-rose-200 text-red-700 bg-white hover:bg-red-50"
+                      title="Salir del grupo">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-neutral-700">No perteneces a ningún grupo todavía.</p>
+    {% endif %}
 
-  <div class="actions-row">
-    <a href="{{ url_for('grupos.crear_grupo') }}" class="btn secondary-btn">
-      <i class="fa-solid fa-plus"></i> Crear grupo
-    </a>
-    <a href="{{ url_for('grupos.unirse_grupo') }}" class="btn secondary-btn">
-      <i class="fa-solid fa-right-to-bracket"></i> Unirse a grupo
-    </a>
+    <!-- Acciones inferiores -->
+    <div class="grid gap-2 mt-3 sm:grid-cols-2">
+      <a href="{{ url_for('grupos.crear_grupo') }}"
+         class="inline-flex items-center justify-center gap-2 px-5 h-11 rounded-full border border-rose-100 bg-white hover:bg-neutral-50">
+        <i class="fa-solid fa-plus"></i> Crear grupo
+      </a>
+      <a href="{{ url_for('grupos.unirse_grupo') }}"
+         class="inline-flex items-center justify-center gap-2 px-5 h-11 rounded-full border border-rose-100 bg-white hover:bg-neutral-50">
+        <i class="fa-solid fa-right-to-bracket"></i> Unirse a grupo
+      </a>
+    </div>
   </div>
-</div>
 {% endblock %}
-
-{% block floating %}{% endblock %}
-{% block scripts %}{% endblock %}

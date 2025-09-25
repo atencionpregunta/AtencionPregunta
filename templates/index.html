@@ -2,263 +2,92 @@
 {% set body_class = 'page-index' %}
 {% block title %}Inicio · Reto Diario{% endblock %}
 
-{% block extra_head %}
-<style>
-  .hero{
-    display:grid;
-    gap:10px;
-    justify-items:center;
-    text-align:center;
-    margin-bottom:16px;
-  }
-  .hero .logo{
-    width:140px;
-    filter: drop-shadow(0 6px 14px rgba(0,0,0,.08));
-  }
-  .hero h1{
-    margin:0;
-    font-size:clamp(1.6rem,4.5vw,2.2rem);
-    font-weight:900;
-    color:var(--primary-dark);
-  }
-  .hero .tag{
-    font-size:.95rem;
-    color:var(--muted);
-    display:flex;
-    align-items:center;
-    gap:6px;
-    justify-content:center;
-  }
-
-  .welcome{
-    margin:6px 0 12px;
-    font-size:1rem;
-    text-align:center;
-  }
-
-  /* Bloque de botones */
-  .actions{
-    display:grid;
-    gap:10px;
-    margin-top:12px;
-  }
-  .actions .btn{
-    width:100%;
-    justify-content:center;
-    border-radius:999px;
-    font-size:1rem;
-    font-weight:800;
-    min-height:48px;
-  }
-  .actions .primary-btn{
-    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-    color:#fff;
-    box-shadow:0 8px 18px rgba(239,68,68,.25);
-  }
-  .actions .secondary-btn{
-    background:#fff;
-    border:1.5px solid var(--line);
-    color:var(--text);
-  }
-
-  .actions .secondary-btn {
-  width: auto;              /* se adapta al texto */
-  justify-content: center;  /* centra el contenido */
-  min-width: 250px;         /* opcional: ancho mínimo para consistencia */
-  min-height: 20px;
-  margin-inline: auto;      /* lo centra dentro del contenedor */
-}
-
-/* Micro-interacciones comunes */
-.btn {
-  transition:
-    transform .08s ease,
-    box-shadow .18s ease,
-    filter .18s ease,
-    background-position .25s ease;
-  background-size: 140% 140%; /* para animar el gradiente */
-}
-.btn:hover { transform: translateY(-1px) scale(1.005); }
-.btn:active { transform: translateY(0) scale(.995); }
-
-/* Ring accesible al navegar con teclado */
-.btn:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 3px rgba(255,255,255,.9),
-    0 0 0 6px rgba(239,68,68,.45);
-}
-
-/* Primary con “brillo” al hover */
-.actions .primary-btn {
-  background-image: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  box-shadow: 0 8px 18px rgba(239,68,68,.25);
-}
-.actions .primary-btn:hover {
-  background-position: 20% 20%;
-  box-shadow: 0 12px 26px rgba(239,68,68,.33);
-}
-
-.btn-centrado {
-  display: block;
-  margin: 0 auto;
-}
-
-/* Secondary: levanta sombra y aclara fondo */
-.actions .secondary-btn:hover {
-  background: #fcfcfc;
-  box-shadow: 0 6px 18px rgba(0,0,0,.08);
-}
-
-/* Iconito “empujón” al hover */
-.btn i { transition: transform .18s ease; }
-.btn:hover i { transform: translateX(2px); }
-
-/* Ripple */
-.btn { position: relative; overflow: hidden; }
-.btn .ripple {
-  position: absolute; inset: 0;
-  border-radius: inherit; pointer-events: none;
-  background: radial-gradient(circle, rgba(255,255,255,.5) 10%, transparent 11%) center/10px 10px no-repeat;
-  transform: translate(-50%,-50%);
-  opacity: 0; animation: ripple .6s ease;
-}
-@keyframes ripple {
-  0%   { opacity:.45; background-size:0 0; }
-  100% { opacity:0;   background-size:220% 220%; }
-}
-
-/* Loading spinner en botón */
-.btn[data-loading="true"] { pointer-events:none; opacity:.8; }
-.btn[data-loading="true"] i { display:none; }
-.btn[data-loading="true"]::after{
-  content:""; width:18px; height:18px; margin-left:8px;
-  border-radius:50%; border:2px solid #fff; border-right-color:transparent;
-  display:inline-block; vertical-align:middle; animation: spin .7s linear infinite;
-}
-@keyframes spin { to{ transform: rotate(360deg); } }
-
-@media (hover:hover){
-  .card{ transition: transform .2s ease, box-shadow .2s ease; }
-  .card:hover{ transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0,0,0,.10); }
-}
-
-/* -- Fijar el botón Salir en la esquina (por si el base no lo trae) -- */
-.logout-float{
-  position: fixed !important;
-  top: max(12px, env(safe-area-inset-top)) !important;
-  right: max(12px, env(safe-area-inset-right)) !important;
-  z-index: 1100 !important;
-  width: auto !important;   /* evita que se estire */
-}
-.logout-float i{ margin-right:6px; }
-
-/* 🔥 Uniformizar botones */
-/* — Botones responsivos ligados al ancho del contenedor — */
-.actions{
-  /* controla el ancho máximo común de TODOS los botones */
-  --btn-max: 520px;                 /* cámbialo a tu gusto */
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.actions .btn{
-  width: min(100%, var(--btn-max)); /* NUNCA más ancho que el contenedor */
-  justify-self: center;             /* centra dentro de .actions */
-  box-sizing: border-box;           /* padding/borde no suman ancho extra */
-  padding: 10px 14px;
-  min-height: 44px;
-  border-radius: 999px;
-  font-size: .95rem;
-  font-weight: 800;
-  overflow: hidden;                 /* por si el ripple o sombras sobresalen */
-}
-
-/* Estilos de variante (iguales para todos) */
-.actions .primary-btn{
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: #fff;
-  border: 0;
-  box-shadow: 0 6px 14px rgba(239,68,68,.25);
-}
-.actions .primary-btn:hover{
-  background-position: 20% 20%;
-  box-shadow: 0 8px 18px rgba(239,68,68,.33);
-}
-
-.actions .secondary-btn{
-  background:#fff;
-  border:1.5px solid var(--line);
-  color:var(--text);
-  box-shadow: 0 2px 6px rgba(0,0,0,.05);
-}
-.actions .secondary-btn:hover{
-  background:#fafafa;
-  box-shadow: 0 4px 10px rgba(0,0,0,.08);
-}
-
-</style>
-{% endblock %}
+{% block extra_head %}{% endblock %}
 
 {% block content %}
-  <div class="hero">
-    <img class="logo" src="{{ url_for('static', filename='img/ATPPet-180.png') }}" alt="Mascota">
-    <h1>🚨 Atención Pregunta</h1>
-    <div class="tag"><i class="fa-solid fa-calendar-day"></i> ¡Reto diario!</div>
-  </div>
+  <!-- HERO -->
+  <section class="grid place-items-center text-center gap-2 mb-3">
+    <img class="w-28 drop-shadow-md" src="{{ url_for('static', filename='img/ATPPet-180.png') }}" alt="Mascota">
+    <h1 class="m-0 text-2xl sm:text-3xl font-extrabold text-brand">🚨 Atención Pregunta</h1>
+    <div class="text-sm text-neutral-600 flex items-center justify-center gap-2">
+      <i class="fa-solid fa-calendar-day"></i>
+      <span>¡Reto diario!</span>
+    </div>
+  </section>
 
   {% if session.get("usuario_id") %}
-    <p class="welcome">Bienvenido, <strong>{{ session["usuario_nombre"] }}</strong> 👋</p>
+    <p class="text-center text-neutral-700 mb-2">
+      Bienvenido, <strong>{{ session["usuario_nombre"] }}</strong> 👋
+    </p>
 
     {% if grupo_actual %}
       {% if ya_respondido %}
-        <p style="text-align:center">✅ Ya has respondido a la pregunta de hoy.</p>
-        <div class="actions">
-          <a href="{{ url_for('resultados.ver_resultados', id_grupo=id_grupo) }}" class="btn primary-btn">
+        <p class="text-center">✅ Ya has respondido a la pregunta de hoy.</p>
+        <div class="grid gap-2 mt-3">
+          <a href="{{ url_for('resultados.ver_resultados', id_grupo=id_grupo) }}"
+             class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-white
+                    bg-gradient-to-tr from-brand to-brand-dark shadow-md hover:shadow-lg transition">
             <i class="fa-solid fa-chart-simple"></i> Ver resultados
           </a>
-          <a href="{{ url_for('grupos.gestionar_grupos') }}" class="btn secondary-btn">
+          <a href="{{ url_for('grupos.gestionar_grupos') }}"
+             class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full
+                    bg-white border border-rose-100 text-neutral-900 hover:bg-neutral-50 transition">
             <i class="fa-solid fa-gear"></i> Grupos
           </a>
         </div>
       {% else %}
-        <div class="actions">
-          <form method="GET" action="{{ url_for('preguntas.ver_pregunta') }}">
-            <button class="btn primary-btn btn-centrado" type="submit">
+        <div class="grid gap-2 mt-3">
+          <form method="GET" action="{{ url_for('preguntas.ver_pregunta') }}" class="contents">
+            <button type="submit"
+                    class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-white
+                           bg-gradient-to-tr from-brand to-brand-dark shadow-md hover:shadow-lg transition"
+                    x-data @click="$el.dataset.loading='true'">
               <i class="fa-solid fa-bolt"></i> Vamos a por esa preguntilla
             </button>
           </form>
-          <a href="{{ url_for('grupos.gestionar_grupos') }}" class="btn secondary-btn">
+          <a href="{{ url_for('grupos.gestionar_grupos') }}"
+             class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full
+                    bg-white border border-rose-100 text-neutral-900 hover:bg-neutral-50 transition">
             <i class="fa-solid fa-gear"></i> Grupos
           </a>
         </div>
       {% endif %}
     {% else %}
-      <p style="text-align:center">⚠️ Únete o crea un grupo para participar.</p>
-      <div class="actions">
-        <a href="{{ url_for('auth.login_form') }}" class="btn primary-btn">
+      <p class="text-center">⚠️ Únete o crea un grupo para participar.</p>
+      <div class="grid gap-2 mt-3">
+        <a href="{{ url_for('auth.login_form') }}"
+           class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-white
+                  bg-gradient-to-tr from-brand to-brand-dark shadow-md hover:shadow-lg transition">
           <i class="fa-solid fa-user-lock"></i> Iniciar sesión
         </a>
-        <a href="{{ url_for('google.login') }}" class="btn secondary-btn">
+        <a href="{{ url_for('google.login') }}"
+           class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full
+                  bg-white border border-rose-100 text-neutral-900 hover:bg-neutral-50 transition">
           <i class="fa-brands fa-google"></i> Iniciar con Google
         </a>
-        <a href="{{ url_for('auth.crear_usuario') }}" class="btn secondary-btn">
+        <a href="{{ url_for('auth.crear_usuario') }}"
+           class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full
+                  bg-white border border-rose-100 text-neutral-900 hover:bg-neutral-50 transition">
           <i class="fa-solid fa-user-plus"></i> Crear cuenta
         </a>
       </div>
     {% endif %}
   {% else %}
-    <p class="welcome">Inicia sesión para continuar</p>
-    <div class="actions">
-      <a href="{{ url_for('auth.login_form') }}" class="btn primary-btn">
+    <p class="text-center text-neutral-700 mb-2">Inicia sesión para continuar</p>
+    <div class="grid gap-2">
+      <a href="{{ url_for('auth.login_form') }}"
+         class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-white
+                bg-gradient-to-tr from-brand to-brand-dark shadow-md hover:shadow-lg transition">
         <i class="fa-solid fa-user-lock"></i> Iniciar sesión
       </a>
-      <a href="{{ url_for('google.login') }}" class="btn secondary-btn">
+      <a href="{{ url_for('google.login') }}"
+         class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full
+                bg-white border border-rose-100 text-neutral-900 hover:bg-neutral-50 transition">
         <i class="fa-brands fa-google"></i> Iniciar con Google
       </a>
-      <a href="{{ url_for('auth.crear_usuario') }}" class="btn secondary-btn">
+      <a href="{{ url_for('auth.crear_usuario') }}"
+         class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full
+                bg-white border border-rose-100 text-neutral-900 hover:bg-neutral-50 transition">
         <i class="fa-solid fa-user-plus"></i> Crear cuenta
       </a>
     </div>
@@ -266,58 +95,38 @@
 {% endblock %}
 
 {% block floating %}
-  <!-- Botón ayuda (?) izquierda -->
-  <div class="help" id="helpRoot">
-    <button class="btn help-btn" id="helpBtn" title="Ayuda"><span>?</span></button>
-    <div class="help-card" id="helpCard" role="dialog" aria-label="Ayuda">
-      <div class="help-header"><strong>¿Cómo funciona?</strong></div>
-      <div class="help-content">
-        <ul>
-          <li><b>Pregunta diaria</b> (hora Madrid).</li>
-          <li>Respondes una vez; cambiar no puntúa.</li>
-          <li>Mira la <b>clasificación</b> en tu grupo.</li>
-        </ul>
-      </div>
-      <div class="help-footer">
-        <button class="help-close btn small-btn secondary-btn" id="helpClose">Cerrar</button>
+  {# El base.html ya incluye un botón de ayuda Alpine reutilizable;
+     si quieres un texto específico aquí, descomenta y personaliza: #}
+  {#
+  <div x-data="{open:false}" class="fixed left-3 bottom-3 z-50">
+    <button @click="open=!open" class="w-12 h-12 rounded-full bg-white text-brand border border-rose-200 shadow-lg hover:shadow-xl">
+      <i class="fa-solid fa-question"></i>
+    </button>
+    <div x-show="open" x-transition
+         class="mt-3 w-80 max-w-[92vw] bg-white rounded-2xl border border-rose-100 shadow-2xl p-4">
+      <div class="font-extrabold text-brand mb-1">¿Cómo funciona?</div>
+      <ul class="text-sm text-neutral-600 space-y-1">
+        <li>• <b>Pregunta diaria</b> (hora Madrid).</li>
+        <li>• Respondes una vez; cambiar no puntúa.</li>
+        <li>• Mira la <b>clasificación</b> en tu grupo.</li>
+      </ul>
+      <div class="mt-3 flex justify-end">
+        <button @click="open=false" class="px-3 py-1.5 rounded-full bg-neutral-900 text-white text-sm">Entendido</button>
       </div>
     </div>
   </div>
-
-  <!-- Botón salir derecha -->
-  {% if session.get("usuario_id") %}
-    <a href="{{ url_for('auth.logout') }}" class="btn secondary-btn small-btn logout-float">
-      <i class="fa-solid fa-right-from-bracket"></i> Salir
-    </a>
-  {% endif %}
+  #}
 {% endblock %}
 
 {% block scripts %}
 <script>
-  // Toggle ayuda
-  (function(){
-    const root = document.getElementById('helpRoot');
-    const btn  = document.getElementById('helpBtn');
-    const card = document.getElementById('helpCard');
-    const closeB = document.getElementById('helpClose');
-    function openH(){ card.classList.add('is-open'); btn.setAttribute('aria-expanded','true'); }
-    function closeH(){ card.classList.remove('is-open'); btn.setAttribute('aria-expanded','false'); }
-    function toggleH(){ card.classList.contains('is-open') ? closeH() : openH(); }
-    btn.addEventListener('click', toggleH);
-    closeB.addEventListener('click', closeH);
-    document.addEventListener('click', e => { if(!root.contains(e.target)) closeH(); });
-    document.addEventListener('keydown', e => { if(e.key==='Escape') closeH(); });
-  })();
-
-
-(function(){
-  // Marca el botón principal como "loading" al enviar el form
-  const form = document.querySelector('form[action="{{ url_for("preguntas.ver_pregunta") }}"]');
-  if(form){
-    const submitBtn = form.querySelector('.primary-btn');
-    form.addEventListener('submit', ()=>{ if(submitBtn) submitBtn.setAttribute('data-loading','true'); });
-  }
-})();
-
+  // Efecto "loading" en el botón principal (usa dataset.loading en Tailwind si lo quieres cambiar)
+  document.addEventListener('submit', (e) => {
+    const btn = e.target?.querySelector('button[type="submit"]');
+    if (!btn) return;
+    btn.dataset.loading = 'true';
+    // Spinner visual simple
+    btn.insertAdjacentHTML('beforeend', '<span class="ml-2 inline-block w-4 h-4 border-2 border-white border-r-transparent rounded-full animate-spin"></span>');
+  }, {capture:true});
 </script>
 {% endblock %}

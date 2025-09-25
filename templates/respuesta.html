@@ -2,194 +2,139 @@
 
 {% block title %}Resultado · Reto Diario{% endblock %}
 
-{% block extra_head %}
-<style>
-  :root{ --line:#e5e7eb; --muted:#6b7280; --ink:#111827; }
-
-  .result-shell{ max-width:760px; margin:0 auto; }
-  .result-shell h1{ margin:0 0 8px; }
-
-  /* --- Bloque principal (mascota + bocadillo) --- */
-  .reveal{ display:flex; align-items:flex-start; gap:clamp(10px,2.5vw,20px); margin:8px 0 16px; }
-  .mascota{ width:clamp(72px,16vw,120px); height:auto; filter:drop-shadow(0 4px 10px rgba(0,0,0,.12)); flex-shrink:0; }
-  .bocadillo{
-    flex:1; background:#fff; border:1px solid var(--line); border-radius:16px;
-    padding:clamp(10px,2.2vh,16px) clamp(12px,2.6vw,18px);
-    box-shadow:0 6px 24px rgba(2,6,23,.06); position:relative;
-  }
-  .bocadillo::before{
-    content:""; position:absolute; left:-10px; top:18px;
-    border:10px solid transparent; border-right-color:var(--line);
-  }
-  .bocadillo::after{
-    content:""; position:absolute; left:-8px; top:20px;
-    border:8px solid transparent; border-right-color:#fff;
-  }
-
-  .big{ font-weight:800; margin:0 0 6px; }
-  .subtitle{ margin:0 0 6px; color:#334155; font-weight:700; }
-  .correctas{ margin:.25rem 0 .25rem 1rem; padding:0; }
-  .correctas li{ list-style:none; margin:2px 0; color:#065f46; font-weight:700; }
-
-  .elegidas{
-    display:flex; gap:12px; align-items:flex-start;
-    background:#fff7ed; border:1px solid #fed7aa; color:#9a3412;
-    border-radius:14px; padding:10px 12px; margin-top:8px;
-  }
-  .elegidas .ff-title{ font-weight:800; margin-bottom:2px; }
-
-  .funfact{
-    display:flex; gap:12px; align-items:flex-start;
-    background:#f8fafc; border:1px solid var(--line);
-    border-radius:14px; padding:12px 14px; margin-top:10px;
-  }
-  .ff-icon{ font-size:1.3rem; line-height:1; }
-  .ff-title{ font-weight:800; margin-bottom:2px; }
-  .ff-text{ color:#334155; }
-
-  /* --- Relámpago: pila de 3 bloques --- */
-  .relampago-stack{ display:grid; gap:14px; margin:8px 0 16px; }
-  .relampago-item .header-row{ display:flex; align-items:center; gap:10px; margin:0 0 4px; }
-  .tag{
-    display:inline-flex; align-items:center; gap:.4rem;
-    border:1px solid var(--line); border-radius:999px;
-    padding:.18rem .6rem; font-weight:800; font-size:.75rem; color:#334155; background:#f8fafc;
-  }
-  .ok { color:#065f46; }
-  .bad{ color:#b91c1c; }
-
-  /* --- CTA / acciones --- */
-  .actions{ display:grid; grid-template-columns:1fr; gap:10px; margin-top:16px; }
-  .actions .btn{
-    width:100%; box-sizing:border-box; display:flex; align-items:center; justify-content:center; gap:8px;
-    min-height:48px; font-weight:800; font-size:.95rem; border-radius:12px;
-  }
-
-  @media (max-width:560px){
-    .reveal{ flex-direction:column; align-items:center; }
-    .bocadillo::before, .bocadillo::after{ display:none; }
-  }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="result-shell">
-
-  {# ================= MODO RELÁMPAGO ================= #}
+<div class="max-w-3xl mx-auto">
   {% if bloques_relampago %}
-    <h1>⚡ Ronda relámpago</h1>
+    <!-- ===== RONDA RELÁMPAGO ===== -->
+    <h1 class="text-2xl font-extrabold text-brand mb-3">⚡ Ronda relámpago</h1>
 
-    <div class="relampago-stack" aria-label="Resumen de tus resultados por pregunta">
+    <div class="grid gap-4" aria-label="Resumen de tus resultados por pregunta">
       {% for b in bloques_relampago %}
-        <section class="relampago-item">
-          <div class="header-row">
-            <span class="tag">{{ b.titulo }}</span>
-            {% if b.correcto is not none %}
-              <span class="{{ 'ok' if b.correcto else 'bad' }}">
-                {% if b.correcto %}✅ ¡Correcto!{% else %}❌ No era esa…{% endif %}
-              </span>
+      <section class="bg-white border border-rose-100 rounded-2xl p-4 shadow-sm">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-extrabold border border-neutral-200 bg-neutral-50 text-neutral-700">
+            {{ b.titulo }}
+          </span>
+          {% if b.correcto is not none %}
+            {% if b.correcto %}
+              <span class="text-emerald-700 font-semibold">✅ ¡Correcto!</span>
+            {% else %}
+              <span class="text-red-700 font-semibold">❌ No era esa…</span>
+            {% endif %}
+          {% endif %}
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-start gap-4">
+          <img class="w-24 sm:w-28 rounded-xl shadow-md mx-auto sm:mx-0"
+               src="{{ ruta_mascota or url_for('static', filename='img/ATPPet-nerd-180.png') }}"
+               alt="Mascota">
+          <div class="flex-1 space-y-3">
+            {% if b.correcto %}
+              <p class="text-lg font-extrabold">¡Bien hecho! 👏</p>
+            {% else %}
+              <p class="text-lg font-extrabold">La respuesta correcta es:</p>
+            {% endif %}
+
+            {% if b.correctas %}
+              <ul class="space-y-1 pl-0">
+                {% for t in b.correctas %}
+                  <li class="list-none text-emerald-700 font-semibold">✔ {{ t }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            {% if b.elegidas and not b.correcto %}
+            <div class="flex items-start gap-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-3">
+              <div class="text-lg leading-none">📝</div>
+              <div>
+                <div class="font-extrabold">Tus elecciones</div>
+                <div class="text-sm">{{ b.elegidas | join(', ') }}</div>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if b.fun_fact %}
+            <div class="flex items-start gap-3 bg-neutral-50 border border-neutral-200 rounded-xl p-3">
+              <div class="text-lg leading-none">💡</div>
+              <div>
+                <div class="font-extrabold">Dato curioso</div>
+                <div class="text-sm text-neutral-700">{{ b.fun_fact }}</div>
+              </div>
+            </div>
             {% endif %}
           </div>
-
-          <div class="reveal">
-            <img class="mascota" src="{{ ruta_mascota or url_for('static', filename='img/ATPPet-nerd-180.png') }}" alt="Mascota">
-            <div class="bocadillo">
-              {% if b.correcto %}
-                <p class="big">¡Bien hecho! 👏</p>
-              {% else %}
-                <p class="big">La respuesta correcta es:</p>
-              {% endif %}
-
-              {% if b.correctas %}
-                <ul class="correctas">
-                  {% for t in b.correctas %}
-                    <li>✔ {{ t }}</li>
-                  {% endfor %}
-                </ul>
-              {% endif %}
-
-              {% if b.elegidas and not b.correcto %}
-              <div class="elegidas">
-                <div class="ff-icon">📝</div>
-                <div>
-                  <div class="ff-title">Tus elecciones</div>
-                  <div class="ff-text">{{ b.elegidas | join(', ') }}</div>
-                </div>
-              </div>
-              {% endif %}
-
-              {% if b.fun_fact %}
-              <div class="funfact">
-                <div class="ff-icon">💡</div>
-                <div>
-                  <div class="ff-title">Dato curioso</div>
-                  <div class="ff-text">{{ b.fun_fact }}</div>
-                </div>
-              </div>
-              {% endif %}
-            </div>
-          </div>
-        </section>
+        </div>
+      </section>
       {% endfor %}
     </div>
 
     {% if mostrar_cta %}
-    <div class="actions">
-      <a class="btn primary-btn" href="{{ url_for('resultados.ver_resultados') }}">
+    <div class="mt-4 grid">
+      <a class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 h-12 rounded-xl text-white
+                 bg-gradient-to-tr from-brand to-brand-dark shadow-md hover:shadow-lg"
+         href="{{ url_for('resultados.ver_resultados') }}">
         <i class="fa-solid fa-ranking-star"></i> Ver clasificación
       </a>
     </div>
     {% endif %}
 
-  {# ================= MODO NORMAL ================= #}
   {% else %}
-    <h1>{% if correcto %}✅ ¡Correcto!{% else %}❌ No era esa…{% endif %}</h1>
+    <!-- ===== MODO NORMAL ===== -->
+    <h1 class="text-2xl font-extrabold mb-3">
+      {% if correcto %}<span class="text-emerald-700">✅ ¡Correcto!</span>
+      {% else %}<span class="text-red-700">❌ No era esa…</span>{% endif %}
+    </h1>
 
-    <div class="reveal">
-      <img class="mascota" src="{{ ruta_mascota or url_for('static', filename='img/ATPPet-nerd-180.png') }}" alt="Mascota">
-      <div class="bocadillo">
-        {% if correcto %}
-          <p class="big">¡Bien hecho! 👏</p>
-        {% else %}
-          <p class="big">La respuesta correcta es:</p>
-        {% endif %}
+    <div class="bg-white border border-rose-100 rounded-2xl p-4 shadow-sm">
+      <div class="flex flex-col sm:flex-row items-start gap-4">
+        <img class="w-24 sm:w-32 rounded-xl shadow-md mx-auto sm:mx-0"
+             src="{{ ruta_mascota or url_for('static', filename='img/ATPPet-nerd-180.png') }}"
+             alt="Mascota">
+        <div class="flex-1 space-y-3">
+          {% if correcto %}
+            <p class="text-lg font-extrabold">¡Bien hecho! 👏</p>
+          {% else %}
+            <p class="text-lg font-extrabold">La respuesta correcta es:</p>
+          {% endif %}
 
-        {% if correctas %}
-        <ul class="correctas">
-          {% for t in correctas %}
-            <li>✔ {{ t }}</li>
-          {% endfor %}
-        </ul>
-        {% endif %}
+          {% if correctas %}
+          <ul class="space-y-1 pl-0">
+            {% for t in correctas %}
+              <li class="list-none text-emerald-700 font-semibold">✔ {{ t }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
 
-        {% if elegidas and not correcto %}
-        <div class="elegidas">
-          <div class="ff-icon">📝</div>
-          <div>
-            <div class="ff-title">Tu elección</div>
-            <div class="ff-text">{{ elegidas | join(', ') }}</div>
+          {% if elegidas and not correcto %}
+          <div class="flex items-start gap-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-3">
+            <div class="text-lg leading-none">📝</div>
+            <div>
+              <div class="font-extrabold">Tu elección</div>
+              <div class="text-sm">{{ elegidas | join(', ') }}</div>
+            </div>
           </div>
-        </div>
-        {% endif %}
+          {% endif %}
 
-        {% if fun_fact %}
-        <div class="funfact">
-          <div class="ff-icon">💡</div>
-          <div>
-            <div class="ff-title">Dato curioso</div>
-            <div class="ff-text">{{ fun_fact }}</div>
+          {% if fun_fact %}
+          <div class="flex items-start gap-3 bg-neutral-50 border border-neutral-200 rounded-xl p-3">
+            <div class="text-lg leading-none">💡</div>
+            <div>
+              <div class="font-extrabold">Dato curioso</div>
+              <div class="text-sm text-neutral-700">{{ fun_fact }}</div>
+            </div>
           </div>
+          {% endif %}
         </div>
-        {% endif %}
       </div>
     </div>
 
-    <div class="actions">
-      <a class="btn primary-btn" href="{{ url_for('resultados.ver_resultados') }}">
+    <div class="mt-4 grid">
+      <a class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 h-12 rounded-xl text-white
+                 bg-gradient-to-tr from-brand to-brand-dark shadow-md hover:shadow-lg"
+         href="{{ url_for('resultados.ver_resultados') }}">
         <i class="fa-solid fa-ranking-star"></i> Ver clasificación
       </a>
     </div>
   {% endif %}
-
 </div>
 {% endblock %}

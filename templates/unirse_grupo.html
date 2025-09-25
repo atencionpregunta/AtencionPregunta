@@ -2,927 +2,269 @@
 {% set body_class = 'app-shell tone-soft page-grupos' %}
 {% block title %}Unirse a Grupo · Reto Diario{% endblock %}
 
-{% block extra_head %}
-<style>
-  :root {
-    --line: #e8eaf0;
-    --muted: #6b7280;
-    --ink: #111827;
-    --chip: #f6f8ff;
-    --chip-b: #e6eafe;
-    --ok: #16a34a;
-    --bad: #dc2626;
-  }
-
-  .shell {
-    max-width: 960px;
-    margin: 0 auto;
-  }
-
-  /* ---------- Header ----------- */
-  .header .title h2 {
-    margin: 0;
-    font-size: 1.6rem;
-  }
-
-  .chips .chip {
-    background: #f8fafc;
-    border: 1px solid var(--line);
-  }
-
-  /* ---------- Filter bar (pill) ----------- */
-  .filterbar {
-    background: #fafbff;
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 12px;
-    margin: 10px 0 14px;
-    box-shadow: 0 8px 22px rgba(2, 6, 23, .04) inset;
-  }
-
-  .filters {
-    display: grid;
-    grid-template-columns: 1.2fr .7fr .8fr .9fr .9fr;
-    gap: 10px;
-    align-items: end;
-  }
-
-  .field {
-    display: grid;
-    gap: 6px;
-  }
-
-  .field label {
-    font-weight: 800;
-    font-size: .92rem;
-    color: #1f2937;
-  }
-
-  /* Inputs coherentes con tu sistema */
-  .input {
-    height: 46px;
-    padding: 12px 12px;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    background: #fff;
-    color: var(--ink);
-    transition: border-color .15s, box-shadow .18s, background-color .18s;
-    font: inherit;
-    outline: 0;
-  }
-
-  .input:focus {
-    border-color: #d6dae3;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, .10);
-  }
-
-  .input::placeholder {
-    color: #9ca3af;
-  }
-
-  @media (max-width:900px) {
-    .filters {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .field.range {
-      grid-column: 1 / -1;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-  }
-
-  /* ---------- Tabla de grupos ----------- */
-  .gtable {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    overflow: hidden;
-    background: #fff;
-  }
-
-  .gtable thead th {
-    text-align: left;
-    font-weight: 900;
-    font-size: .78rem;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: #64748b;
-    padding: 10px;
-    background: #fafafa;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .gtable tbody tr {
-    transition: background .15s ease, transform .03s ease;
-  }
-
-  .gtable tbody td {
-    padding: 12px 10px;
-    border-bottom: 1px solid #f1f4f8;
-    vertical-align: middle;
-  }
-
-  .gtable tbody tr:last-child td {
-    border-bottom: 0;
-  }
-
-  .gtable tbody tr:hover {
-    background: #fbfdff;
-  }
-
-  .gtable tbody tr:active {
-    transform: scale(.999);
-  }
-
-  .gname {
-    display: flex;
-    align-items: center;
-    gap: .6rem;
-    font-weight: 800;
-  }
-
-  .gname .icon {
-    width: 26px;
-    height: 26px;
-    display: grid;
-    place-items: center;
-    border-radius: 999px;
-    border: 1px solid;
-  }
-
-  .gname .icon.public {
-    background: #e7f2ff;
-    color: #1d4ed8;
-    border-color: #cfe4ff;
-  }
-
-  .gname .icon.private {
-    background: #fde8e8;
-    color: #b91c1c;
-    border-color: #f5c2c2;
-  }
-
-  .badge-type {
-    margin-left: .3rem;
-    font-size: .68rem;
-    font-weight: 800;
-    padding: .14rem .45rem;
-    border-radius: 999px;
-    border: 1px solid var(--line);
-    background: #f8fafc;
-    color: #475569;
-  }
-
-  .meta {
-    color: #334155;
-    font-weight: 700;
-    font-size: .95rem;
-    white-space: nowrap;
-  }
-
-  .duration {
-    color: #0f172a;
-    font-weight: 800;
-  }
-
-  .inf {
-    color: #64748b;
-    font-weight: 700;
-  }
-
-  .actions-cell {
-    text-align: right;
-  }
-
-  .join-btn.btn {
-    padding: 10px 14px;
-    border-radius: 999px;
-    font-weight: 900;
-  }
-
-  .join-btn i {
-    font-size: .95rem;
-  }
-
-  .hint {
-    color: var(--muted);
-    text-align: center;
-    padding: 12px;
-  }
-
-  .hint.bad {
-    color: #b91c1c;
-  }
-
-  /* ---------- Modal contraseña ----------- */
-  .modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(2, 6, 23, .45);
-    display: none;
-    z-index: 90;
-  }
-
-  .modal-backdrop.is-open {
-    display: grid;
-    place-items: center;
-    padding: 16px;
-  }
-
-  .modal {
-    width: min(92vw, 420px);
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    box-shadow: 0 22px 60px rgba(2, 6, 23, .25);
-    padding: 16px;
-  }
-
-  .modal h3 {
-    margin: 0 0 6px;
-    font-size: 1.18rem;
-  }
-
-  .modal .row {
-    display: grid;
-    gap: 6px;
-    margin-top: 8px;
-  }
-
-  .modal .actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-    margin-top: 12px;
-    flex-wrap: wrap;
-  }
-
-/* --- Layout de la filterbar --- */
-.filterbar .filters {
-  display: grid;
-  gap: 12px;
-  grid-template-areas:
-    "f1 f2"
-    "search search";
-  grid-template-columns: 1fr 1fr; /* dos columnas iguales */
-}
-
-/* Asignamos cada field a su área */
-.filterbar .filters .field:nth-child(1) { grid-area: f1; }
-.filterbar .filters .field:nth-child(2) { grid-area: f2; }
-.filterbar .filters .field.search       { grid-area: search; }
-
-.filterbar .filters .field .input { width: 100%; }
-
-/* --- Responsive: en móvil, todo en vertical --- */
-@media (max-width: 680px) {
-  .filterbar .filters {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "f1"
-      "f2"
-      "search";
-  }
-}
-
-
-/* --- Responsive (móvil): todo en una columna --- */
-@media (max-width: 680px){
-  .filterbar .filters{
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "f1"
-      "f2"
-      "search";
-  }
-}
-
-
-  .field {
-    display: grid;
-    gap: 6px;
-  }
-
-  .field label {
-    font-weight: 800;
-    font-size: .92rem;
-    color: #1f2937;
-  }
-
-  .range-inputs {
-    display: flex;
-    gap: 8px;
-  }
-
-  .range-inputs .input {
-    flex: 1;
-  }
-
-  /* El campo búsqueda que ocupe toda la fila */
-  .field.search {
-    grid-column: 1 / -1;
-  }
-
-  .slider-wrap {
-    position: relative;
-    width: 100%;
-    height: 36px;
-  }
-
-  /* Ocultamos el track nativo */
-  .slider-wrap input[type=range] {
-    position: absolute;
-    width: 100%;
-    top: 12px;
-    pointer-events: none;
-    /* ambos solapados, sólo arrastramos thumbs */
-    background: none;
-    -webkit-appearance: none;
-  }
-
-  .slider-wrap input[type=range]::-webkit-slider-runnable-track {
-    background: transparent;
-    height: 4px;
-  }
-
-  .slider-wrap input[type=range]::-moz-range-track {
-    background: transparent;
-    height: 4px;
-  }
-
-  /* Pulgar (thumb) */
-  .slider-wrap input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    pointer-events: auto;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #2563eb;
-    border: 2px solid #fff;
-    box-shadow: 0 0 4px rgba(0, 0, 0, .25);
-    cursor: pointer;
-  }
-
-  .slider-wrap input[type=range]::-moz-range-thumb {
-    pointer-events: auto;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #2563eb;
-    border: 2px solid #fff;
-    box-shadow: 0 0 4px rgba(0, 0, 0, .25);
-    cursor: pointer;
-  }
-
-  /* Barra de fondo */
-  .slider-track {
-    position: absolute;
-    top: 16px;
-    left: 0;
-    right: 0;
-    height: 4px;
-    border-radius: 4px;
-    background: #d1d5db;
-
-    .field.range {
-      grid-column: 1 / -1;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-  
-    /* Pill de progreso compacta */
-    .temp-pill {
-      display: inline-grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      gap: 8px;
-      min-width: 160px;
-    }
-
-    .temp-bar {
-      position: relative;
-      height: 8px;
-      background: #e5e7eb;
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .temp-fill {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      width: 0%;
-      background: linear-gradient(90deg, #16a34a, #22c55e);
-      border-radius: 999px;
-      transition: width .4s ease;
-    }
-
-    .temp-label {
-      font-weight: 800;
-      font-size: .9rem;
-      color: #111827;
-    }
-
-    .temp-hint {
-      color: #64748b;
-      font-weight: 700;
-      font-size: .82rem;
-    }
-
-    /* estados */
-    .temp--ongoing .temp-fill {
-      background: linear-gradient(90deg, #2563eb, #1d4ed8);
-    }
-
-    .temp--done .temp-fill {
-      background: linear-gradient(90deg, #dc2626, #ef4444);
-    }
-
-  }
-  /* --- FIX: cierra correctamente slider-track y saca reglas sueltas --- */
-.slider-track {
-  position: absolute;
-  top: 16px;
-  left: 0;
-  right: 0;
-  height: 4px;
-  border-radius: 4px;
-  background: #d1d5db;
-}
-
-/* Estas reglas NO deben ir dentro de .slider-track */
-.field.range {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-/* Pill de progreso compacta */
-.temp-pill {
-  display: inline-grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 8px;
-  min-width: 140px;
-}
-
-.temp-bar {
-  position: relative;
-  height: 8px;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-  min-width: 90px;
-}
-
-.temp-fill {
-  position: absolute;
-  top: 0; left: 0; bottom: 0;
-  width: 0%;
-  background: linear-gradient(90deg, #16a34a, #22c55e);
-  border-radius: 999px;
-  transition: width .4s ease;
-}
-
-.temp-label {
-  font-weight: 800;
-  font-size: .9rem;
-  color: #111827;
-}
-
-/* estados */
-.temp--ongoing .temp-fill { background: linear-gradient(90deg, #2563eb, #1d4ed8); }
-.temp--done    .temp-fill { background: linear-gradient(90deg, #dc2626, #ef4444); }
-
-/* ===========================
-   📱 Ajustes móviles (<640px)
-   =========================== */
-@media (max-width: 640px) {
-  /* Tabla más compacta */
-  .gtable { table-layout: fixed; }
-  .gtable thead th { font-size: .72rem; padding: 8px; }
-  .gtable tbody td { padding: 10px 8px; }
-  .gtable .meta { font-size: .9rem; }
-
-  /* Limita el ancho del nombre y evita desbordes */
-  .gname { gap: .5rem; }
-  .gname span {
-    display: inline-block;
-    max-width: 56vw;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  /* Oculta badge Público/Privado para ganar espacio */
-  .badge-type { display: none; }
-
-  /* Botón sólo con icono (oculta texto) y hazlo más estrecho */
-  .join-btn.btn {
-    padding: 10px;
-    min-width: 40px;
-    width: 40px; /* evita que crezca si hay traducciones largas */
-    display: inline-grid;
-    place-items: center;
-  }
-  .join-btn .txt { display: none; }
-  .join-btn i { margin: 0; }
-
-  /* Cols más proporcionadas en móvil */
-  .gtable colgroup col:nth-child(1) { width: 60% !important; }
-  .gtable colgroup col:nth-child(2) { width: 18% !important; }
-  .gtable colgroup col:nth-child(3) { width: 14% !important; }
-  .gtable colgroup col:nth-child(4) { width: 8%  !important; }
-
-  /* Temporizador más compacto */
-  .temp-label { font-size: .82rem; }
-  .temp-bar { min-width: 72px; height: 6px; }
-
-/* ======= Progreso: sin barra, sólo punto + texto (en TODAS las vistas) ======= */
-.temp-bar { display: none !important; }
-.temp-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0; /* deja que se adapte */
-}
-.temp-pill::before{
-  content: "";
-  width: 8px; height: 8px;
-  border-radius: 999px;
-  background: #10b981; /* verde neutro */
-  display: inline-block;
-}
-.temp--done::before    { background: #ef4444; } /* rojo si terminó */
-.temp--ongoing::before { background: #2563eb; } /* azul si en curso */
-.temp-label{ font-weight: 800; font-size: .9rem; color: #111827; }
-
-/* ===================== MÓVIL ===================== */
-@media (max-width: 640px){
-  /* Tabla estable y compacta */
-  .gtable{ table-layout: fixed; }
-  .gtable thead th{ font-size:.72rem; padding:8px; }
-  .gtable tbody td{ padding:10px 8px; }
-  .badge-type {
-  display: none !important;
-  
-}
-
-  /* Oculta el chip Público/Privado para ganar espacio */
-  .badge-type{ display:none; }
-
-  /* Quita COMPLETAMENTE el botón y su columna */
-  .actions-cell,
-  .gtable thead th:last-child { display: none; }
-
-  /* Nombre del grupo sin desbordes */
-  .gname{ gap:.5rem; }
-  .gname span{
-    display:inline-block;
-    max-width: 62vw;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  /* Haz que toda la fila “invite” al clic */
-  #g_list tr[data-code] { cursor: pointer; }
-
-  /* Rebalancea columnas (ya sin la de acciones) */
-  .gtable colgroup col:nth-child(1){ width: 50% !important; }
-  .gtable colgroup col:nth-child(2){ width: 25% !important; }
-  .gtable colgroup col:nth-child(3){ width: 25% !important; }
-
-  /* Progreso compacto en móvil */
-  .temp-label{ font-size:.82rem; }
-    .gtable thead th {
-    font-size: 0.7rem;
-    letter-spacing: .05em;
-  }
-
-  .gtable tbody td {
-    font-size: 0.7rem;
-  }
-
-  .gname span {
-    font-size: 0.7rem;
-  }
-
-  .temp-label {
-    font-size: 0.7rem;
-  }
-}
-}
-
-  .btn--sm{
-    padding:12px 12px;
-    gap:10px;
-    font-size:.9rem;
-    line-height:1.1;
-    border-radius:12px;
-    margin-top: -6px;   /* sube */
-    margin-left: -6px;  /* pega a la izquierda */
-    margin-bottom: 6px;
-  }
-
-/* Asegura que todos los inputs tengan la misma altura */
-.filterbar .filters .input {
-  width: 100%;
-  height: 46px;           /* igual que tus selects */
-  padding: 0 14px;
-  box-sizing: border-box; /* evita que el borde/padding lo hagan crecer */
-  border-radius: 999px;   /* mismo estilo pill */
-}
-
-/* Ajuste específico para el input de búsqueda */
-.filterbar .filters .field.search .input {
-  height: 46px;           /* más fino (no textarea) */
-  resize: none;           /* evita que el navegador lo trate como textarea */
-}
-
-</style>
-{% endblock %}
-
 {% block content %}
-<header class="header">
-  <div class="title">
-    <a class="btn secondary-btn btn--sm" href="{{ url_for('index') }}">
-      <i class="fa-solid fa-arrow-left"></i>
+  <!-- Header -->
+  <header class="flex items-center justify-between mb-4">
+    <a href="{{ url_for('index') }}"
+       class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rose-100 bg-white hover:bg-neutral-50 text-sm">
+      <i class="fa-solid fa-arrow-left"></i> Volver
     </a>
-    <h2><i class="fa-solid fa-users"></i> Unirse a grupo</h2>
-  </div>
-  <div class="chips">
-    <span class="chip"><i class="fa-solid fa-filter"></i> Filtra y únete con 1 clic</span>
-  </div>
-</header>
+    <h2 class="text-xl sm:text-2xl font-extrabold text-brand">
+      <i class="fa-solid fa-users"></i> Unirse a grupo
+    </h2>
+  </header>
 
-<div class="shell">
+  <!-- Flashes -->
   {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-  {% for category, message in messages %}
-  <div class="flash {{ category }}">{{ message }}</div>
-  {% endfor %}
-  {% endif %}
+    {% if messages %}
+      <div class="space-y-2 mb-4">
+        {% for category, message in messages %}
+          {% set cls = 'bg-emerald-50 text-emerald-800 border-emerald-200' if category=='success'
+                      else ('bg-red-50 text-red-800 border-red-200' if category in ['error','danger']
+                      else 'bg-blue-50 text-blue-800 border-blue-200') %}
+          <div class="px-4 py-2 rounded-xl border {{ cls }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
   {% endwith %}
 
-  <!-- Filter bar -->
-  <div class="filterbar">
-    <div class="filters" id="filters">
-      <div class="field">
-        <label><strong>Tipo</strong></label>
-        <select class="input" id="f_tipo">
-          <option value="">Todos</option>
-          <option value="publico">Público</option>
-          <option value="privado">Privado</option>
-        </select>
+  <div x-data="unirseGrupo()" x-init="init()" class="max-w-5xl mx-auto">
+    <!-- Filter bar -->
+    <div class="bg-white/90 backdrop-blur border border-rose-100 rounded-2xl p-4 shadow-sm mb-3">
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div>
+          <label class="block font-semibold text-sm mb-1">Tipo</label>
+          <select x-model="f_tipo"
+                  @change="apply()"
+                  class="w-full h-11 px-3 rounded-xl border border-neutral-200 bg-white focus:outline-none focus:ring-4 focus:ring-rose-300">
+            <option value="">Todos</option>
+            <option value="publico">Público</option>
+            <option value="privado">Privado</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-sm mb-1">Ordenar por</label>
+          <select x-model="f_sort"
+                  @change="apply()"
+                  class="w-full h-11 px-3 rounded-xl border border-neutral-200 bg-white focus:outline-none focus:ring-4 focus:ring-rose-300">
+            <option value="miembros_desc">Miembros ↓</option>
+            <option value="miembros_asc">Miembros ↑</option>
+            <option value="duracion_asc">Duración ↑</option>
+            <option value="duracion_desc">Duración ↓</option>
+          </select>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block font-semibold text-sm mb-1">Búsqueda</label>
+          <input x-model.trim="f_q"
+                 @input="applyDebounced()"
+                 type="text" autocomplete="off" placeholder="Buscar por nombre o código…"
+                 class="w-full h-11 px-3 rounded-xl border border-neutral-200 bg-white focus:outline-none focus:ring-4 focus:ring-rose-300" />
+        </div>
       </div>
+    </div>
 
-      <div class="field">
-        <label><strong>Ordenar por</strong></label>
-        <select class="input" id="f_sort">
-          <option value="miembros_desc">Miembros ↓</option>
-          <option value="miembros_asc">Miembros ↑</option>
-          <option value="duracion_asc">Duración ↑</option>
-          <option value="duracion_desc">Duración ↓</option>
-        </select>
-      </div>
+    <!-- Tabla -->
+    <div class="overflow-x-auto bg-white border border-rose-100 rounded-2xl">
+      <table class="min-w-full">
+        <colgroup>
+          <col class="w-[54%] sm:w-[60%]">
+          <col class="w-[16%] sm:w-[15%]">
+          <col class="w-[16%] sm:w-[17%]">
+          <col class="w-[14%] sm:w-[8%]">
+        </colgroup>
+        <thead class="bg-neutral-50 border-b border-rose-100">
+          <tr class="text-left text-xs font-extrabold tracking-wide uppercase text-neutral-500">
+            <th class="px-3 py-2.5">Grupo</th>
+            <th class="px-3 py-2.5">Miembros</th>
+            <th class="px-3 py-2.5">Duración</th>
+            <th class="px-3 py-2.5 text-right hidden sm:table-cell"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Estado / vacío -->
+          <template x-if="state==='loading'">
+            <tr><td colspan="4" class="px-3 py-4 text-center text-neutral-600">Cargando…</td></tr>
+          </template>
+          <template x-if="state==='error'">
+            <tr><td colspan="4" class="px-3 py-4 text-center text-red-700">No se pudo cargar la lista.</td></tr>
+          </template>
+          <template x-if="state==='ok' && rows.length===0">
+            <tr><td colspan="4" class="px-3 py-4 text-center text-neutral-600">Sin resultados.</td></tr>
+          </template>
 
+          <!-- Filas -->
+          <template x-for="g in rows" :key="g.codigo">
+            <tr class="border-b border-rose-50 hover:bg-neutral-50 text-sm"
+                :data-code="g.codigo" :data-tipo="g._tipo"
+                @click="onRowClick($event, g)">
+              <td class="px-3 py-2.5">
+                <div class="flex items-center gap-2 font-semibold">
+                  <span class="inline-grid place-items-center w-7 h-7 rounded-full border"
+                        :class="g._tipo==='privado' ? 'text-red-700 bg-rose-50 border-rose-200' : 'text-blue-700 bg-blue-50 border-blue-200'">
+                    <i class="fa-solid" :class="g._tipo==='privado' ? 'fa-lock' : 'fa-unlock'"></i>
+                  </span>
+                  <span class="truncate" x-text="g.codigo"></span>
+                  <span class="hidden sm:inline text-[.68rem] font-extrabold px-2 py-0.5 rounded-full border border-neutral-200 bg-neutral-50 text-neutral-600"
+                        x-text="g._tipo==='privado' ? 'Privado' : 'Público'"></span>
+                </div>
+              </td>
+              <td class="px-3 py-2.5 font-bold text-neutral-800" x-text="g._miem"></td>
+              <td class="px-3 py-2.5">
+                <div class="inline-flex items-center gap-2">
+                  <div class="hidden sm:block relative h-2 w-24 rounded-full bg-neutral-200 overflow-hidden">
+                    <div class="absolute inset-y-0 left-0 rounded-full"
+                         :style="`width:${g._pct}%;`"
+                         :class="g._estado==='done' ? 'bg-red-500' : (g._estado==='ongoing' ? 'bg-blue-600' : 'bg-emerald-600')">
+                    </div>
+                  </div>
+                  <span class="font-semibold text-neutral-900 text-sm" x-text="g._label"></span>
+                </div>
+              </td>
+              <td class="px-3 py-2.5 text-right hidden sm:table-cell">
+                <button type="button"
+                        class="inline-flex items-center justify-center gap-2 px-4 h-9 rounded-full text-white bg-gradient-to-tr from-brand to-brand-dark shadow-sm hover:shadow-md"
+                        @click.stop="join(g)">
+                  <i class="fa-solid fa-door-open"></i>
+                  <span class="txt" x-text="g._tipo==='privado' ? 'Entrar' : 'Unirse'"></span>
+                </button>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
 
-      <div class="field search">
-        <label><strong>Búsqueda</strong></label>
-        <input class="input" type="text" id="f_q" placeholder="Buscar por nombre o código…" autocomplete="off">
+    <!-- Form “silencioso” para unirse -->
+    <form id="joinForm" method="POST" action="{{ url_for('grupos.unirse_grupo') }}" class="hidden">
+      <input type="hidden" name="codigo_grupo" x-model="join_code">
+      <input type="hidden" name="contrasena_grupo" x-model="join_pass">
+    </form>
+
+    <!-- Modal contraseña -->
+    <div x-show="modalOpen" x-transition.opacity
+         class="fixed inset-0 z-50 grid place-items-center p-4 bg-black/45">
+      <div @click.outside="modalOpen=false"
+           class="w-full max-w-md bg-white rounded-2xl border border-rose-100 shadow-2xl p-5">
+        <h3 class="text-lg font-extrabold mb-1">
+          <i class="fa-solid fa-lock"></i> Este grupo es privado
+        </h3>
+        <p class="text-sm text-neutral-600 mb-3">
+          Introduce la contraseña para <b x-text="modal_group"></b>
+        </p>
+        <label class="block font-semibold text-sm mb-1" for="pwInput">Contraseña</label>
+        <input id="pwInput" type="password" x-model="join_pass"
+               class="w-full h-11 px-4 rounded-full border border-neutral-200 bg-white focus:outline-none focus:ring-4 focus:ring-rose-300"
+               placeholder="••••••••" autocomplete="off" />
+        <div class="mt-4 flex justify-end gap-2">
+          <button type="button" @click="modalOpen=false"
+                  class="inline-flex items-center justify-center px-4 h-10 rounded-full border border-rose-100 bg-white hover:bg-neutral-50">
+            Cancelar
+          </button>
+          <button type="button" @click="confirmJoin()"
+                  class="inline-flex items-center justify-center gap-2 px-5 h-10 rounded-full text-white bg-gradient-to-tr from-brand to-brand-dark">
+            <i class="fa-solid fa-door-open"></i> Unirse
+          </button>
+        </div>
       </div>
     </div>
   </div>
-
-
-
-  <!-- Tabla -->
-  <table class="gtable">
-    <colgroup>
-      <col style="width:54%">
-      <col style="width:16%">
-      <col style="width:16%">
-      <col style="width:14%">
-    </colgroup>
-    <thead>
-      <tr>
-        <th>Grupo</th>
-        <th>Miembros</th>
-        <th>Duración</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody id="g_list">
-      <tr>
-        <td colspan="4" class="hint neutral">Cargando…</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <!-- Form “silencioso” para unirse -->
-  <form id="joinForm" method="POST" action="{{ url_for('grupos.unirse_grupo') }}" style="display:none;">
-    <input type="hidden" name="codigo_grupo" id="join_code">
-    <input type="hidden" name="contrasena_grupo" id="join_pass">
-  </form>
-</div>
-
-<!-- Modal contraseña -->
-<div class="modal-backdrop" id="pwModal">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
-    <h3 id="pwTitle"><i class="fa-solid fa-lock"></i> Este grupo es privado</h3>
-    <p class="hint" id="pwSubtitle">Introduce la contraseña para <b id="pwGroup">…</b></p>
-    <div class="row">
-      <label for="pwInput"><strong>Contraseña</strong></label>
-      <input class="input" type="password" id="pwInput" placeholder="••••••" autocomplete="off">
-    </div>
-    <div class="actions">
-      <button type="button" class="btn secondary-btn small-btn" id="pwCancel">Cancelar</button>
-      <button type="button" class="btn primary-btn small-btn" id="pwOk">
-        <i class="fa-solid fa-door-open"></i> Unirse
-      </button>
-    </div>
-  </div>
-</div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-  (function () {
-    const listEl = document.getElementById('g_list');
+function unirseGrupo(){
+  const URL_BUSCAR = "{{ url_for('grupos.buscar_grupos') }}";
 
-    // Filtros
-    const f_q = document.getElementById('f_q');
-    const f_tipo = document.getElementById('f_tipo');
-    const f_sort = document.getElementById('f_sort');
+  const debounce = (fn, d=250) => { let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), d); }; };
+  const clampPct = (n)=> Math.max(0, Math.min(100, Number(n||0)));
 
+  return {
+    // estado UI
+    state: 'loading', // loading | ok | error
+    base: [],
+    rows: [],
 
-    // Modal
-    const modal = document.getElementById('pwModal');
-    const pwInput = document.getElementById('pwInput');
-    const pwOk = document.getElementById('pwOk');
-    const pwCancel = document.getElementById('pwCancel');
-    const pwGroupEl = document.getElementById('pwGroup');
+    // filtros
+    f_q: '',
+    f_tipo: '',
+    f_sort: 'miembros_desc',
+    applyDebounced: debounce(function(){ this.apply(); }, 200),
 
-    // Join form oculto
-    const joinForm = document.getElementById('joinForm');
-    const joinCode = document.getElementById('join_code');
-    const joinPass = document.getElementById('join_pass');
+    // join
+    join_code: '',
+    join_pass: '',
+    modalOpen: false,
+    modal_group: '',
 
-    const URL_BUSCAR = "{{ url_for('grupos.buscar_grupos') }}";
-
-    function escapeHtml(s) { return (s ?? '').toString().replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])); }
-
-    function renderRows(items) {
-      if (!items || !items.length) {
-        listEl.innerHTML = '<tr><td colspan="4" class="hint neutral">Sin resultados.</td></tr>';
-        return;
-      }
-      listEl.innerHTML = items.map(g => {
-        const nombre = escapeHtml(g.codigo);
-        const tipo = (g.tipo || (g.requiere_password ? 'privado' : 'publico')) || 'publico';
-        const icon = tipo === 'privado'
-          ? '<span class="icon private"><i class="fa-solid fa-lock"></i></span>'
-          : '<span class="icon public"><i class="fa-solid fa-unlock"></i></span>';
-        const badge = tipo === 'privado' ? '<span class="badge-type">Privado</span>' : '<span class="badge-type">Público</span>';
-        const miembros = Number(g.miembros ?? 0);
-
-        // --- TEMPORADA ---
-        const estado = g.estado_temp || (g.duracion_dias == null ? 'ongoing' : 'active');
-        const pct = (g.progreso_pct == null) ? 0 : Math.max(0, Math.min(100, g.progreso_pct));
-        const label = g.progreso_label || (g.duracion_dias == null ? `${g.dias_transcurridos || 0} d · ∞` : '');
-        const hint = (g.duracion_dias == null)
-          ? 'Temporada sin límite'
-          : (g.dias_restantes === 0 ? 'Finalizada' : `${g.dias_restantes}`);
-
-
-        const tempHtml = `
-      <div class="temp-pill temp--${estado}" title="${hint}">
-  
-        <div class="temp-bar"><div class="temp-fill" style="width:${pct}%;"></div></div>
-        <span class="temp-label">${label}</span>
-      </div>`;
-
-        const btnTxt = (tipo === 'privado') ? 'Entrar' : 'Unirse';
-
-        return `
-      <tr data-code="${nombre}" data-tipo="${tipo}">
-        <td>
-          <div class="gname">${icon}<span>${nombre}</span>${badge}</div>
-        </td>
-        <td class="meta">${miembros}</td>
-        <td class="meta">${tempHtml}</td>
-        <td class="actions-cell">
-          <button type="button" class="btn primary-btn join-btn">
-            <i class="fa-solid fa-door-open"></i> ${btnTxt}
-          </button>
-        </td>
-      </tr>
-    `;
-      }).join('');
-    }
-
-
-    // Clic unirse
-    listEl.addEventListener('click', (e) => {
-      const tr = e.target.closest('tr[data-code]');
-      if (!tr) return;
-      const code = tr.getAttribute('data-code');
-      const tipo = tr.getAttribute('data-tipo');
-      if (tipo === 'privado') {
-        pwGroupEl.textContent = code;
-        joinCode.value = code;
-        joinPass.value = '';
-        modal.classList.add('is-open');
-        pwInput.value = '';
-        setTimeout(() => pwInput.focus(), 20);
-      } else {
-        joinCode.value = code;
-        joinPass.value = '';
-        joinForm.submit();
-      }
-    });
-
-    pwCancel.addEventListener('click', () => modal.classList.remove('is-open'));
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('is-open'); });
-    pwOk.addEventListener('click', () => { joinPass.value = pwInput.value || ''; joinForm.submit(); });
-
-    // Filtros (cliente)
-    function debounce(fn, ms = 300) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
-
-    let baseItems = [];
-    function applyFilters(){
-  const q = (f_q.value || '').trim().toLowerCase();
-  const tipo = f_tipo.value;
-  const sort = f_sort.value;
-
-  let arr = baseItems.slice().map(g => ({
-    ...g,
-    _tipo: (g.tipo || (g.requiere_password ? 'privado' : 'publico')) || 'publico',
-    _dur : (g.duracion_dias != null) ? Number(g.duracion_dias) : Infinity,
-    _name: (g.codigo || '').toString().toLowerCase(),
-    _miem: Number(g.miembros ?? 0)
-  }));
-
-  if(q) arr = arr.filter(g => g._name.includes(q));
-  if(tipo) arr = arr.filter(g => g._tipo === tipo);
-
-  const cmp = {
-    'miembros_desc': (a,b)=> b._miem - a._miem,
-    'miembros_asc' : (a,b)=> a._miem - b._miem,
-    'duracion_asc' : (a,b)=> a._dur - b._dur,
-    'duracion_desc': (a,b)=> b._dur - a._dur,
-  }[sort] || ((a,b)=> b._miem - a._miem);
-
-  arr.sort(cmp);
-  renderRows(arr);
-}
-const rerender = debounce(applyFilters, 120);
-f_q.addEventListener('input', rerender);
-[f_tipo, f_sort].forEach(el => el.addEventListener('change', rerender));
-
-    // Carga del backend
-    async function fetchGroups() {
-      listEl.innerHTML = '<tr><td colspan="4" class="hint neutral">Cargando…</td></tr>';
-      try {
-        const u = new URL(URL_BUSCAR, window.location.origin);
-        const res = await fetch(u, { headers: { 'Accept': 'application/json' } });
+    // init
+    async init(){
+      try{
+        const res = await fetch(URL_BUSCAR, { headers: { 'Accept':'application/json' }});
         const data = await res.json();
-        baseItems = data.items || [];
-        applyFilters();
-      } catch (e) {
+        this.base = (data.items || []).map(g => ({
+          ...g,
+          _tipo: (g.tipo || (g.requiere_password ? 'privado' : 'publico')) || 'publico',
+          _miem: Number(g.miembros ?? 0),
+          _dur : (g.duracion_dias != null) ? Number(g.duracion_dias) : Infinity,
+          _label: g.progreso_label ?? (g.duracion_dias == null ? `${g.dias_transcurridos || 0} d · ∞` : `${g.dias_restantes ?? ''} d`),
+          _estado: g.estado_temp || ((g.dias_restantes===0) ? 'done' : 'ongoing'),
+          _pct: clampPct(g.progreso_pct)
+        }));
+        this.state = 'ok';
+        this.apply();
+      }catch(e){
         console.error(e);
-        listEl.innerHTML = '<tr><td colspan="4" class="hint bad">No se pudo cargar la lista.</td></tr>';
+        this.state = 'error';
       }
+    },
+
+    apply(){
+      let arr = this.base.slice();
+
+      // búsqueda
+      const q = this.f_q.trim().toLowerCase();
+      if(q) arr = arr.filter(g => (g.codigo||'').toString().toLowerCase().includes(q));
+
+      // tipo
+      if(this.f_tipo) arr = arr.filter(g => g._tipo === this.f_tipo);
+
+      // orden
+      const cmp = {
+        'miembros_desc': (a,b)=> b._miem - a._miem,
+        'miembros_asc' : (a,b)=> a._miem - b._miem,
+        'duracion_asc' : (a,b)=> a._dur - b._dur,
+        'duracion_desc': (a,b)=> b._dur - a._dur,
+      }[this.f_sort] || ((a,b)=> b._miem - a._miem);
+
+      arr.sort(cmp);
+      this.rows = arr;
+    },
+
+    onRowClick(ev, g){
+      // en móvil, toda la fila sirve (pero evitamos doble submit con el botón)
+      if (window.innerWidth >= 640) return;
+      this.join(g);
+    },
+
+    join(g){
+      if(g._tipo === 'privado'){
+        this.modal_group = g.codigo;
+        this.join_code = g.codigo;
+        this.join_pass = '';
+        this.modalOpen = true;
+        this.$nextTick(()=>{ document.getElementById('pwInput')?.focus(); });
+      } else {
+        this.join_code = g.codigo;
+        this.join_pass = '';
+        document.getElementById('joinForm').submit();
+      }
+    },
+
+    confirmJoin(){
+      if(!this.join_pass){ return; }
+      document.getElementById('joinForm').submit();
     }
-    fetchGroups();
-
-    // Ayuda (?)
-    (function () {
-      const root = document.getElementById('helpRoot');
-      const btn = document.getElementById('helpBtn');
-      const card = document.getElementById('helpCard');
-      const close = document.getElementById('helpClose');
-      if (!root || !btn || !card || !close) return;
-      function open() { card.classList.add('is-open'); btn.setAttribute('aria-expanded', 'true'); }
-      function closeH() { card.classList.remove('is-open'); btn.setAttribute('aria-expanded', 'false'); }
-      function toggle() { card.classList.contains('is-open') ? closeH() : open(); }
-      btn.addEventListener('click', toggle);
-      close.addEventListener('click', closeH);
-      document.addEventListener('click', e => { if (!root.contains(e.target)) closeH(); });
-      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeH(); });
-    })();
-  })();
-
-
-
+  }
+}
 </script>
 {% endblock %}

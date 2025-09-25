@@ -6,7 +6,7 @@ cursor = conn.cursor()
 
 
 
-cursor.execute("select * from preguntas order by  id desc")
+cursor.execute("select * from usuarios order by  id desc")
 a = cursor.fetchall()
 print("Usuarios en la base de datos:")
 for u in a:
@@ -17,9 +17,7 @@ for u in a:
 
 
 
-print("Usuarios en la base de datos:")
-for u in a:
-    print(u)
+
     
 # for u in respuestas:
 #  print(u)

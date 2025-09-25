@@ -3,54 +3,83 @@
 {% block title %}Chat del grupo · Reto Diario{% endblock %}
 
 {% block content %}
-<div class="chat-shell fade-in" role="application" aria-label="Chat del grupo">
-  <header class="chat-header">
-    <a class="btn-icon" href="{{ url_for('resultados.ver_resultados', id_grupo=id_grupo) }}"
-       aria-label="Volver a resultados"><i class="fa-solid fa-arrow-left"></i></a>
-    <h1>💬 Chat del grupo</h1>
-    <span></span>
+<div class="max-w-4xl mx-auto" role="application" aria-label="Chat del grupo">
+  <!-- Header -->
+  <header class="flex items-center justify-between gap-2 mb-3">
+    <a href="{{ url_for('resultados.ver_resultados', id_grupo=id_grupo) }}"
+       class="inline-grid place-items-center w-10 h-10 rounded-full border border-rose-100 bg-white hover:bg-neutral-50"
+       aria-label="Volver a resultados">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <h1 class="text-lg sm:text-xl font-extrabold text-brand">💬 Chat del grupo</h1>
+    <span class="w-10 h-10"></span>
   </header>
 
-  <div id="chat-box" class="chat-box" role="log" aria-live="polite" aria-relevant="additions text">
-    {% set badges = badges|default({}) %}
-    {% if mensajes and mensajes|length %}
-      {% for m in mensajes %}
-        {% set b = badges.get(m['id_usuario'], {}) %}
-        {% set ac = b.get('acierto') %}
-        {% set rk = b.get('rank') %}
-        {% set nombre = (m['usuario_nombre'] or ('Usuario ' ~ m['id_usuario'])) %}
-        {% set own = (session.get('usuario_id') == m['id_usuario']) %}
-        <div class="msg {{ 'mine' if own else 'theirs' }}" data-id="{{ m['id'] }}">
-          <div class="avatar {{ 'ok' if ac is true else ('ko' if ac is false else 'na') }}">
-            {% if m['foto_url'] %}
-              <img src="{{ m['foto_url'] }}" alt="avatar" loading="lazy">
-            {% else %}
-              <span aria-hidden="true">{{ (nombre|trim|upper)[:2] }}</span>
-              <span class="sr-only">Sin foto</span>
-            {% endif %}
-          </div>
-          <div class="bubble" tabindex="0">
-            <div class="head">
-              <span class="name">{{ nombre }}</span>
-              {% if rk %}<span class="rankchip">#{{ rk }}</span>{% endif %}
-            </div>
-            <p class="text">{{ m['contenido'] }}</p>
-          </div>
-        </div>
-      {% endfor %}
-    {% else %}
-      <p id="empty-hint" class="empty-hint">Aún no hay mensajes. ¡Escribe el primero!</p>
-    {% endif %}
-  </div>
+  <!-- Shell fijo -->
+  <div class="bg-white border border-rose-100 rounded-2xl shadow-xl p-2 sm:p-3 grid
+              grid-rows-[1fr_auto]
+              h-[65vh] sm:h-[70vh] lg:h-[80vh]">
 
-  <form action="{{ url_for('chat.enviar_mensaje', id_grupo=id_grupo) }}"
-        method="POST" class="composer" novalidate>
-    <label class="sr-only" for="contenido">Escribe un mensaje</label>
-    <textarea id="contenido" name="contenido" class="input chat-input"
-              placeholder="Escribe un mensaje…"
-              required autocomplete="off" maxlength="500"></textarea>
-    <button class="btn primary-btn send" type="submit" aria-label="Enviar mensaje">Enviar</button>
-  </form>
+    <!-- Log con scroll interno -->
+    <div id="chat-box"
+         class="bg-neutral-50/60 border border-rose-100 rounded-xl p-2 sm:p-3 overflow-y-auto space-y-2 h-full"
+         role="log" aria-live="polite" aria-relevant="additions text">
+      {% set badges = badges|default({}) %}
+      {% if mensajes and mensajes|length %}
+        {% for m in mensajes %}
+          {% set b = badges.get(m['id_usuario'], {}) %}
+          {% set ac = b.get('acierto') %}
+          {% set rk = b.get('rank') %}
+          {% set nombre = (m['usuario_nombre'] or ('Usuario ' ~ m['id_usuario'])) %}
+          {% set own = (session.get('usuario_id') == m['id_usuario']) %}
+
+          <div class="msg flex items-end gap-2 {{ 'justify-end' if own else '' }}" data-id="{{ m['id'] }}">
+            <!-- Avatar -->
+            <div class="avatar shrink-0 w-8 h-8 rounded-full ring-2 ring-offset-2 overflow-hidden
+                        {{ 'ring-emerald-400' if ac is true else ('ring-red-400' if ac is false else 'ring-neutral-300') }}">
+              {% if m['foto_url'] %}
+                <img src="{{ m['foto_url'] }}" alt="avatar" class="w-full h-full object-cover" loading="lazy">
+              {% else %}
+                <div class="w-full h-full grid place-items-center bg-rose-50 text-rose-700 font-bold text-xs">
+                  {{ (nombre|trim|upper)[:2] }}
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- Burbuja -->
+            <div class="bubble max-w-[88%] md:max-w-[72%] lg:max-w-[62%]
+                        rounded-xl border px-3 py-2 shadow-sm
+                        {{ 'bg-emerald-50 border-emerald-200' if own else 'bg-white border-neutral-200' }}">
+              <div class="meta flex items-center gap-2 mb-0.5">
+                <span class="name text-[.78rem] font-semibold text-neutral-800 opacity-80">{{ nombre }}</span>
+                {% if rk %}
+                  <span class="rankchip text-[.68rem] font-extrabold px-2 py-0.5 rounded-full border border-neutral-200 bg-neutral-50 text-neutral-700">#{{ rk }}</span>
+                {% endif %}
+              </div>
+              <p class="text m-0 text-sm text-neutral-900 whitespace-pre-line break-words">{{ m['contenido'] }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p id="empty-hint" class="text-center text-neutral-600 py-6">Aún no hay mensajes. ¡Escribe el primero!</p>
+      {% endif %}
+    </div>
+
+    <!-- Composer fijo -->
+    <form action="{{ url_for('chat.enviar_mensaje', id_grupo=id_grupo) }}"
+          method="POST" class="grid grid-cols-[1fr_auto] gap-2 items-center pt-2" novalidate>
+      <label class="sr-only" for="contenido">Escribe un mensaje</label>
+      <textarea id="contenido" name="contenido"
+                class="input chat-input w-full h-12 sm:h-14 resize-none overflow-y-auto rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-4 focus:ring-rose-300"
+                placeholder="Escribe un mensaje…" required autocomplete="off" maxlength="500"></textarea>
+      <button class="btn primary-btn send inline-flex items-center justify-center h-12 sm:h-14 px-4 rounded-xl text-white
+                     bg-gradient-to-tr from-brand to-brand-dark shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              type="submit" aria-label="Enviar mensaje" disabled>
+        <i class="fa-solid fa-paper-plane"></i>
+        <span class="ml-2 hidden sm:inline">Enviar</span>
+      </button>
+    </form>
+  </div>
 </div>
 {% endblock %}
 
@@ -58,9 +87,10 @@
 <script>
 (function(){
   const box   = document.getElementById('chat-box');
-  const form  = document.querySelector('.composer');
-  const input = form.querySelector('.chat-input');
+  const form  = document.querySelector('form[method="POST"].grid');
+  const input = form.querySelector('#contenido');
   const send  = form.querySelector('.send');
+  const userId = {{ session.get('usuario_id', 0) }};
 
   // última id pintada
   let lastId = (() => {
@@ -68,45 +98,51 @@
     return last ? Number(last.dataset.id) || 0 : 0;
   })();
 
-  // utilidades
-  const escapeHtml = (s) => {
-    const d = document.createElement('div'); d.innerText = s ?? '';
-    return d.innerHTML;
-  };
-  const avatarHtml = (foto_url, nombre, acierto) => {
-    const cls = (acierto === true) ? "ok" : (acierto === false) ? "ko" : "na";
-    if (foto_url){
-      return `<div class="avatar ${cls}"><img src="${foto_url}" alt="avatar" loading="lazy"></div>`;
-    } else {
-      const initials = (nombre || "U").trim().toUpperCase().slice(0,2);
-      return `<div class="avatar ${cls}"><span aria-hidden="true">${initials}</span></div>`;
-    }
-  };
-  const atBottom = () => (box.scrollHeight - box.scrollTop - box.clientHeight) < 80;
+  // helpers
+  const escapeHtml = (s) => { const d = document.createElement('div'); d.innerText = s ?? ''; return d.innerHTML; };
+  const atBottom   = () => (box.scrollHeight - box.scrollTop - box.clientHeight) < 80;
   const scrollBottom = () => { box.scrollTop = box.scrollHeight; };
 
-  const appendMessage = (m) => {
-    const own = {{ session.get('usuario_id', 0) }} === m.id_usuario;
-    const el  = document.createElement('div');
-    el.className = 'msg ' + (own ? 'mine' : 'theirs');
+  const avatarHtml = (foto_url, nombre, acierto) => {
+    const ring = (acierto === true) ? "ring-emerald-400" : (acierto === false) ? "ring-red-400" : "ring-neutral-300";
+    if (foto_url){
+      return `<div class="avatar shrink-0 w-8 h-8 rounded-full ring-2 ring-offset-2 overflow-hidden ${ring}">
+                <img src="${foto_url}" alt="avatar" class="w-full h-full object-cover" loading="lazy">
+              </div>`;
+    } else {
+      const initials = (nombre || "U").trim().toUpperCase().slice(0,2);
+      return `<div class="avatar shrink-0 w-8 h-8 rounded-full ring-2 ring-offset-2 overflow-hidden ${ring}">
+                <div class="w-full h-full grid place-items-center bg-rose-50 text-rose-700 font-bold text-xs">${initials}</div>
+              </div>`;
+    }
+  };
+
+  function appendMessage(m){
+    const own = userId === m.id_usuario;
+    const safeNombre = escapeHtml(m.usuario_nombre || ('Usuario ' + m.id_usuario));
+    const side = own ? 'justify-end' : '';
+    const bubbleCls = own ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-neutral-200';
+
+    const el = document.createElement('div');
+    el.className = `msg flex items-end gap-2 ${side}`;
     el.dataset.id = m.id;
 
-    const safeNombre = escapeHtml(m.usuario_nombre || ('Usuario ' + m.id_usuario));
     el.innerHTML = `
       ${avatarHtml(m.foto_url, m.usuario_nombre, m.acierto)}
-      <div class="bubble" tabindex="0">
-        <div class="head">
-          <span class="name">${safeNombre}</span>
-          ${m.rank ? `<span class="rankchip">#${m.rank}</span>` : ''}
+      <div class="bubble max-w-[88%] md:max-w-[72%] lg:max-w-[62%] rounded-xl border px-3 py-2 shadow-sm ${bubbleCls}">
+        <div class="meta flex items-center gap-2 mb-0.5">
+          <span class="name text-[.78rem] font-semibold text-neutral-800 opacity-80">${safeNombre}</span>
+          ${m.rank ? `<span class="rankchip text-[.68rem] font-extrabold px-2 py-0.5 rounded-full border border-neutral-200 bg-neutral-50 text-neutral-700">#${m.rank}</span>` : ''}
         </div>
-        <p class="text"></p>
+        <p class="text m-0 text-sm text-neutral-900 whitespace-pre-line break-words"></p>
       </div>
     `;
     el.querySelector('.text').textContent = m.contenido || '';
 
     document.getElementById('empty-hint')?.remove();
     box.appendChild(el);
-  };
+    compactThreads();
+  }
 
   // autoscroll inicial
   scrollBottom();
@@ -131,24 +167,15 @@
       if (keep) scrollBottom();
     }catch(_e){ /* silencioso */ }
   }
-  const POLL_MS = 3000;
-  setInterval(poll, POLL_MS);
+  setInterval(poll, 3000);
 
-  // textarea auto-creciente + trim
-  function autoResize(){
-    input.style.height = 'auto';
-    input.style.height = Math.min(input.scrollHeight, 160) + 'px';
-  }
+  // Activar/desactivar botón enviar
   input.addEventListener('input', () => {
-    autoResize();
-    // botón activo sólo si hay texto útil
-    const hasText = input.value.trim().length > 0;
-    send.disabled = !hasText;
+    send.disabled = input.value.trim().length === 0;
   });
-  autoResize();
   send.disabled = true;
 
-  // Enter envía, Shift+Enter = salto
+  // Enter = enviar; Shift+Enter = salto
   input.addEventListener('keydown', (ev) => {
     if (ev.key === 'Enter' && !ev.shiftKey){
       ev.preventDefault();
@@ -156,128 +183,29 @@
     }
   });
 
-  // evita dobles envíos y hace scroll tras enviar
+  // Evita dobles envíos y baja scroll
   form.addEventListener('submit', () => {
     send.disabled = true;
-    // pequeño retraso para dejar pintar el mensaje resultado
     setTimeout(scrollBottom, 120);
   });
-})();
-  // --- agrupa consecutivos del mismo autor (como WhatsApp)
+
+  // Agrupar consecutivos
   function compactThreads(){
     const nodes = [...box.querySelectorAll('.msg')];
     for (let i = 1; i < nodes.length; i++){
       const prev = nodes[i-1], cur = nodes[i];
-      const sameSide = prev.classList.contains('mine') === cur.classList.contains('mine');
-      // si mismo lado, marca como continuación
-      if (sameSide) cur.classList.add('cont');
+      const prevMine = prev.classList.contains('justify-end');
+      const curMine  = cur.classList.contains('justify-end');
+      if (prevMine === curMine) {
+        cur.classList.add('cont');
+        const av = cur.querySelector('.avatar');
+        const meta = cur.querySelector('.meta');
+        if (av){ av.style.visibility='hidden'; av.style.width='0'; av.style.height='0'; av.style.margin='0'; }
+        if (meta){ meta.style.display='none'; }
+      }
     }
   }
   compactThreads();
-
-  // tras nuevos mensajes
-  const _oldAppend = appendMessage;
-  appendMessage = (m) => { _oldAppend(m); compactThreads(); };
-
+})();
 </script>
-{% endblock %}
-
-{% block extra_head %}
-<style>
-/* ===== fuera “doble card” ===== */
-.page-chat main.center-wrapper > .card{background:transparent;border:0;box-shadow:none;padding:0;margin:0}
-
-/* ===== contenedor ===== */
-.chat-shell{
-  --ring: var(--line,#e5e7eb);
-  --mine: #e2ffd5;         /* verde WhatsApp suave */
-  --theirs: #ffffff;       /* gris/blanco para ajenos */
-  --text: #0f172a;
-  --muted: #6b7280;
-
-  max-width:980px;margin:12px auto;background:#fff;
-  border:1px solid var(--ring);border-radius:18px;
-  box-shadow:0 12px 32px rgba(2,6,23,.06);padding:12px 12px 8px;
-  display:grid;grid-template-rows:auto minmax(320px,1fr) auto;gap:10px;
-}
-
-/* header */
-.chat-header{display:grid;grid-template-columns:40px 1fr 40px;align-items:center;gap:8px}
-.chat-header h1{margin:0;text-align:center;font-size:1.12rem;font-weight:800;letter-spacing:.2px}
-.btn-icon{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:999px;border:1px solid var(--ring);background:#fff;color:#111827}
-
-/* caja de mensajes (fondo tipo chat) */
-.chat-box{
-  background:linear-gradient(180deg,#f8fafc, #f6f7fb);
-  border:1px solid var(--ring);border-radius:14px;
-  padding:8px;height:min(66vh,680px);overflow:auto;scroll-behavior:smooth;
-}
-
-/* mensaje base */
-.msg{display:flex;align-items:flex-end;gap:6px;margin:4px 2px;max-width:100%}
-.msg.mine{justify-content:flex-end}
-.msg .avatar{
-  width:28px;height:28px;border-radius:999px;overflow:hidden;flex:0 0 auto;
-  display:grid;place-items:center;background:#eef2ff;color:#3730a3;font-weight:800;font-size:.72rem;
-  border:2px solid #dbeafe;
-}
-.msg .avatar img{width:100%;height:100%;object-fit:cover}
-
-/* burbuja tamaño WhatsApp */
-.bubble{
-  position:relative;display:inline-block;max-width:75%;
-  padding:6px 9px;border-radius:10px;border:1px solid #e6e9f2;
-  background:var(--theirs);color:var(--text);
-  line-height:1.28;font-size:.92rem;box-shadow:0 1px 3px rgba(2,6,23,.06);
-}
-.msg.mine .bubble{background:var(--mine);border-color:#c6f2b7}
-.head{display:flex;align-items:center;gap:6px;margin:0 0 2px}
-.name{font-weight:700;font-size:.78rem;color:#111827;opacity:.85}
-.rankchip{font-size:.64rem;font-weight:800;padding:0 5px;border-radius:999px;border:1px solid #e5e7eb;background:#f1f5f9;color:#0f172a}
-.text{margin:0}
-
-/* colas (tails) tipo WhatsApp */
-.bubble:after{
-  content:"";position:absolute;bottom:0;width:10px;height:10px;background:inherit;border:inherit;
-  border-left:none;border-top:none;transform:rotate(45deg);
-}
-.msg.theirs .bubble:after{left:-4px;box-shadow:-1px 1px 0 rgba(0,0,0,.02)}
-.msg.mine   .bubble:after{right:-4px}
-
-/* agrupación: si es continuación (.cont), ocultar avatar y cabecera y reducir margen */
-.msg.cont .avatar{visibility:hidden;width:0;height:0;margin:0;overflow:hidden}
-.msg.cont .head{display:none}
-.msg.cont{margin-top:2px}
-
-/* composer pegado abajo */
-.composer{position:sticky;bottom:0;left:0;right:0;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:#fff;padding-top:4px}
-.input.chat-input{min-height:40px;max-height:140px;resize:none;overflow:auto;border-radius:12px;padding:9px 12px;font-size:.95rem}
-.send{height:40px;padding:0 16px;border-radius:12px;font-weight:800}
-
-/* tamaños aún más compactos en móvil */
-@media (max-width:520px){
-  .chat-shell{padding:10px}
-  .chat-header h1{font-size:1rem}
-  .bubble{max-width:84%;font-size:.9rem}
-}
-
-.chat-shell{
-  max-width:980px;
-  margin:12px auto;
-  padding:12px;
-  /* quita: border, box-shadow, background extra */
-}
-
-.avatar{
-  width:32px; height:32px; border-radius:50%;
-  overflow:hidden; display:grid; place-items:center;
-  font-weight:700; font-size:.75rem;
-  background:#eef2ff; color:#3730a3;
-  border:2px solid #d1d5db;
-}
-.avatar.ok{ border-color:#22c55e; }  /* verde = acierto */
-.avatar.ko{ border-color:#ef4444; }  /* rojo = fallo */
-.avatar.na{ border-color:#9ca3af; }  /* gris = sin info */
-
-</style>
 {% endblock %}

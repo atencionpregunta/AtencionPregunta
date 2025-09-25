@@ -72,14 +72,21 @@ def autologin_from_cookie():
 # Utilidades BD
 # -----------------------------
 def _ensure_user_in_general(cur, user_id: int):
-    """Mete al usuario en el grupo 'general' evitando duplicados."""
-    # Si usas búsqueda por nombre:
-    # grupo_id = _get_general_id(cur)
-    grupo_id = GENERAL_GROUP_ID
+    """Mete al usuario en el grupo 'general' sin asumir id y evitando duplicados."""
+    cur.execute("SELECT id FROM Grupos WHERE codigo = 'General' LIMIT 1")
+    row = cur.fetchone()
+    if row:
+        grupo_id = row["id"]
+    else:
+        cur.execute("INSERT INTO Grupos (codigo) VALUES ('general')")
+        grupo_id = cur.lastrowid
+
+    # Requiere que exista la tabla Grupo_usuario con FK válidas
     cur.execute("""
         INSERT OR IGNORE INTO Grupo_usuario (id_usuario, id_grupo)
         VALUES (?, ?)
     """, (user_id, grupo_id))
+
 
 # -----------------------------
 # Validaciones / utilidades
@@ -129,13 +136,12 @@ def crear_usuario():
     if request.method == "GET":
         return render_template("crear_usuario.html")
 
-    usuario   = (request.form.get("usuario") or "").strip()
-    mail      = (request.form.get("mail") or "").strip()
-    contrasena= (request.form.get("contrasena") or "")
-    edad      = int(edad_raw) if edad_raw.isdigit() else None
-    hashed = generate_password_hash(contrasena, method="pbkdf2:sha256", salt_length=16)
+    usuario    = (request.form.get("usuario") or "").strip()
+    mail       = (request.form.get("mail") or "").strip()
+    contrasena = (request.form.get("contrasena") or "")
+    hashed     = generate_password_hash(contrasena, method="pbkdf2:sha256", salt_length=16)
 
-    # Validaciones servidor
+    # --- Validaciones ---
     errores = []
     if not usuario:
         errores.append("El nombre de usuario es obligatorio.")
@@ -155,6 +161,7 @@ def crear_usuario():
             flash(e, "error")
         return render_template("crear_usuario.html")
 
+    # --- Inserción en BD ---
     try:
         with db_lock:
             with get_conn() as conn:
@@ -162,34 +169,44 @@ def crear_usuario():
                 cur.execute("""
                     INSERT INTO Usuarios (usuario, mail, contrasena, fec_ini)
                     VALUES (?, ?, ?, ?)
-                """, (
-                    usuario, mail, hashed,
-                    datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                ))
+                """, (usuario, mail, hashed, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
                 user_id = cur.lastrowid
 
-                # ✅ Asegurar pertenencia a 'general'
+                # Mete al usuario en el grupo 'general'
                 _ensure_user_in_general(cur, user_id)
 
                 conn.commit()
-    except sqlite3.IntegrityError:
-        # Por si hay UNIQUE en BD o carrera entre dos altas
-        flash("El usuario o email ya existe.", "error")
+    except sqlite3.IntegrityError as e:
+        msg = str(e)
+        if "Usuarios.usuario" in msg:
+            flash("Ese nombre de usuario ya está en uso.", "error")
+        elif "Usuarios.mail" in msg:
+            flash("Ese email ya está en uso.", "error")
+        elif "Grupos.codigo" in msg:
+            flash("El grupo 'general' necesita un código único.", "error")
+        else:
+            flash("No se pudo crear el usuario: " + msg, "error")
         return render_template("crear_usuario.html")
 
+    # --- Si todo va bien ---
+    flash("Usuario creado correctamente. Ya puedes iniciar sesión.", "success")
     return redirect(url_for("auth.login_form"))
+
 
 # -----------------------------
 # Login (con sesión persistente + remember opcional)
 # -----------------------------
-@auth_bp.route("/login", methods=["GET", "POST"])
+# ---- GET: muestra el formulario ----
+@auth_bp.get("/login")
 def login_form():
-    if request.method == "GET":
-        return render_template("login.html")  # añade <input type="checkbox" name="remember">
+    return render_template("login.html")
 
-    usuario = request.form["usuario"]
-    contrasena = request.form["contrasena"]
-    remember = request.form.get("remember")  # checkbox opcional
+# ---- POST: procesa login (endpoint = 'auth.login') ----
+@auth_bp.post("/login", endpoint="login")
+def login_post():
+    usuario   = request.form["usuario"]
+    contrasena= request.form["contrasena"]
+    remember  = request.form.get("remember")
 
     with db_lock:
         with get_conn() as conn:
@@ -200,12 +217,8 @@ def login_form():
     ok = False
     if user:
         stored = user["contrasena"]
-
-        # Caso 1: hash correcto (werkzeug)
         if stored and isinstance(stored, str) and stored.startswith("pbkdf2:"):
             ok = check_password_hash(stored, contrasena)
-
-        # Caso 2: cuentas antiguas con texto plano -> aceptar una vez y migrar a hash
         elif stored and isinstance(stored, str) and not stored.startswith("pbkdf2:"):
             if stored == contrasena:
                 ok = True
@@ -216,18 +229,15 @@ def login_form():
                         c2.execute("UPDATE Usuarios SET contrasena=? WHERE id=?", (new_h, user["id"]))
                         conn.commit()
 
-        # Caso 3: usuarios OAuth (stored es NULL) -> no pasan por este login
-        else:
-            ok = False
-
     if not ok:
-        return "Usuario o contraseña incorrectos"
+        flash("Usuario o contraseña incorrectos", "error")
+        return redirect(url_for("auth.login_form"))
 
-    # 1) Cookie de sesión persistente
+    # 1) sesión
     session.permanent = True
     _set_session_for(user)
 
-    # 2) Cookie remember opcional
+    # 2) remember opcional
     if remember:
         token = secrets.token_urlsafe(32)
         exp = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
@@ -239,18 +249,12 @@ def login_form():
                 conn.commit()
 
         resp = make_response(redirect(url_for("index")))
-        resp.set_cookie(
-            "remember_token",
-            token,
-            max_age=30*24*60*60,  # 30 días
-            httponly=True,
-            samesite="Lax",
-            secure=False,  # True si usas HTTPS
-            path="/"
-        )
+        resp.set_cookie("remember_token", token, max_age=30*24*60*60,
+                        httponly=True, samesite="Lax", secure=False, path="/")
         return resp
 
     return redirect(url_for("index"))
+
 
 # -----------------------------
 # Google OAuth (crea remember siempre)

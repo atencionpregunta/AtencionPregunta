@@ -2,243 +2,244 @@
 {% set body_class = 'app-shell tone-soft page-auth' %}
 {% block title %}Crear Usuario · Reto Diario{% endblock %}
 
-{% block extra_head %}
-<style>
-  :root{
-    --input-h: 46px;
-    --input-px: 14px;
-    --input-radius: 999px;
-  }
-
-  /* Encabezado */
-  .page-auth .header .title h2{ display:flex; align-items:center; gap:8px; }
-
-  /* Inputs y filas */
-  .form-row{ display:grid; gap:6px; margin-top:10px; }
-  .form-row label{ font-weight:700; font-size:.95rem; }
-
-  .input{
-    display:block; width:100%;
-    height:var(--input-h);
-    box-sizing:border-box;
-    padding:0 var(--input-px);
-    border:1px solid var(--line);
-    border-radius:var(--input-radius);
-    background:#fff;
-    font:inherit; line-height:normal; outline:none;
-    box-shadow:0 3px 10px rgba(0,0,0,.05);
-  }
-  .input:focus{
-    border-color:var(--primary);
-    box-shadow:0 0 0 3px rgba(239,68,68,.15);
-  }
-  /* email/number/password son inputs también */
-  input[type="number"].input{ padding-right: 10px; }
-  input[type="password"].input{ letter-spacing: .02em; }
-
-  /* Tips/estados */
-  .hint{ font-size:.95rem; margin-top:6px; min-height:1.2em; }
-  .hint.ok{ color:#1e8543; }
-  .hint.bad{ color:#c62828; }
-  .hint.neutral{ color:#6b7280; }
-
-  /* Botón crear + volver */
-  .form-actions{
-    display:grid; grid-template-columns:1fr; gap:10px; margin-top:12px;
-  }
-  .form-actions .primary-btn{ width:100%; justify-self:stretch; }
-  .form-actions .secondary-btn{ width:auto; justify-self:start; }
-
-  @media (min-width:769px){
-    .form-actions{ grid-template-columns:1fr auto; }
-  }
-
-  .btn[disabled]{ opacity:.5; cursor:not-allowed; box-shadow:none; }
-
-  /* Botones apilados, limpios y consistentes */
-.actions{
-  display:grid; grid-template-columns:1fr; gap:10px; margin-top:16px;
-}
-
-.actions .btn{
-  display:flex; align-items:center; justify-content:center; gap:10px;
-  width:100%; min-height:48px;
-  border-radius:12px;
-  font-weight:800;
-  box-shadow:0 6px 16px rgba(2,6,23,.06);
-  transition:background .18s ease, color .18s ease, border-color .18s ease, transform .08s ease;
-}
-
-/* Primario estilo outline (menos “bloque rojo”) */
-.actions .primary-btn{
-  background:#fff;
-  color:#b91c1c;                 /* rojo texto */
-  border:1px solid #f3b4b4;      /* borde suave */
-}
-.actions .primary-btn:hover{
-  background:#fee2e2;            /* se “rellena” suave al hover */
-  border-color:#fca5a5;
-}
-.actions .primary-btn:active{ transform: translateY(1px); }
-
-/* Secundario neutro */
-.actions .secondary-btn{
-  background:#fff;
-  color:#111827;
-  border:1px solid var(--line);
-}
-.actions .secondary-btn:hover{
-  background:#f8fafc;
-  border-color:#d6dae3;
-}
-.actions .secondary-btn:active{ transform: translateY(1px); }
-
-/* Asegura que los iconos no agranden el botón */
-.actions .btn i{ font-size:1rem; line-height:1; }
-
-/* ===== Botones de acciones en resultados ===== */
-.actions{
-  display: grid;
-  gap: 12px;
-  margin-top: 18px;
-}
-
-/* Contenedor de acciones igual al bloque "funfact" */
-
-</style>
-{% endblock %}
-
 {% block content %}
-<header class="header">
-  <div class="title">
-    <a class="btn-link" href="{{ url_for('auth.login_form') }}" title="Volver al inicio de sesión">
-      <i class="fa-solid fa-arrow-left"></i>
+  <!-- Header -->
+  <header class="flex items-center justify-between mb-4">
+    <a href="{{ url_for('auth.login_form') }}"
+       class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-rose-100 bg-white hover:bg-neutral-50 text-sm">
+      <i class="fa-solid fa-arrow-left"></i> Volver
     </a>
-    <h2><i class="fa-solid fa-user-plus"></i> Crear usuario</h2>
-  </div>
-  <div class="chips">
-    <span class="chip"><i class="fa-solid fa-shield-halved"></i> Revisión de disponibilidad en vivo</span>
-  </div>
-</header>
+    <h2 class="text-xl sm:text-2xl font-extrabold text-brand">
+      <i class="fa-solid fa-user-plus"></i> Crear usuario
+    </h2>
+  </header>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      <div class="flash {{ category }}">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
-
-<form method="POST"
-      action="{{ url_for('auth.crear_usuario') }}"
-      id="form-crear-usuario"
-      novalidate>
-  <div class="form-row">
-    <label for="usuario"><strong>Nombre de usuario</strong></label>
-    <input class="input" type="text" name="usuario" id="usuario"
-           required autocomplete="off" value="{{ request.form.get('usuario','') }}">
-    <div id="usuario_hint" class="hint neutral">Elige tu nombre de usuario.</div>
+  <!-- Chip info -->
+  <div class="mb-3">
+    <span class="inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-full bg-white border border-rose-100">
+      <i class="fa-solid fa-shield-halved"></i> Revisión de disponibilidad en vivo
+    </span>
   </div>
 
-  <div class="form-row">
-    <label for="mail"><strong>Email</strong></label>
-    <input class="input" type="email" name="mail" id="mail"
-           required autocomplete="off" value="{{ request.form.get('mail','') }}">
-    <div id="mail_hint" class="hint neutral">Introduce tu email.</div>
-  </div>
+  <!-- Flashes -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="space-y-2 mb-4">
+        {% for category, message in messages %}
+          {% set cls = 'bg-emerald-50 text-emerald-800 border-emerald-200' if category=='success'
+                      else ('bg-red-50 text-red-800 border-red-200' if category in ['error','danger']
+                      else 'bg-blue-50 text-blue-800 border-blue-200') %}
+          <div class="px-4 py-2 rounded-xl border {{ cls }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
 
-  <div class="form-row">
-    <label for="contrasena"><strong>Contraseña</strong></label>
-    <input class="input" type="password" name="contrasena" id="contrasena" required>
-    <div id="pass_hint" class="hint neutral">Mínimo 4 caracteres.</div>
-  </div>
+  <!-- Form -->
+  <form method="POST"
+        action="{{ url_for('auth.crear_usuario') }}"
+        id="form-crear-usuario"
+        novalidate
+        x-data="{ usuarioOK:false, mailOK:false, passOK:false }"
+        class="space-y-4">
 
-  <div class="form-actions">
-    <button type="submit" class="btn primary-btn" id="btn-crear" disabled>
-      <i class="fa-solid fa-check"></i> Crear usuario
-    </button>
-  </div>
-</form>
+    <!-- Usuario -->
+    <div>
+      <label for="usuario" class="block font-semibold text-sm mb-1">Nombre de usuario</label>
+      <input id="usuario" name="usuario" type="text" required autocomplete="off"
+             value="{{ request.form.get('usuario','') }}"
+             class="w-full h-11 px-4 rounded-full border border-rose-100 bg-white shadow-sm focus:outline-none focus:ring-4 focus:ring-rose-300"
+             placeholder="p.ej. iker_l">
+      <div id="usuario_hint" class="text-sm mt-1 text-neutral-600">Elige tu nombre de usuario.</div>
+    </div>
+
+    <!-- Email -->
+    <div>
+      <label for="mail" class="block font-semibold text-sm mb-1">Email</label>
+      <input id="mail" name="mail" type="email" required autocomplete="off"
+             value="{{ request.form.get('mail','') }}"
+             class="w-full h-11 px-4 rounded-full border border-rose-100 bg-white shadow-sm focus:outline-none focus:ring-4 focus:ring-rose-300"
+             placeholder="tucorreo@dominio.com">
+      <div id="mail_hint" class="text-sm mt-1 text-neutral-600">Introduce tu email.</div>
+    </div>
+
+    <!-- Contraseña -->
+    <div x-data="{show:false}">
+      <label for="contrasena" class="block font-semibold text-sm mb-1">Contraseña</label>
+      <div class="relative">
+        <input :type="show ? 'text' : 'password'"
+               id="contrasena" name="contrasena" required
+               class="w-full h-11 pl-4 pr-11 rounded-full border border-rose-100 bg-white shadow-sm focus:outline-none focus:ring-4 focus:ring-rose-300"
+               placeholder="mínimo 4 caracteres">
+        <button type="button" @click="show=!show"
+                class="absolute inset-y-0 right-0 px-3 text-neutral-600 hover:text-neutral-900"
+                aria-label="Mostrar u ocultar contraseña">
+          <i class="fa-solid" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+        </button>
+      </div>
+      <div id="pass_hint" class="text-sm mt-1 text-neutral-600">Mínimo 4 caracteres.</div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="grid gap-2 sm:grid-cols-[1fr_auto] mt-2">
+      <button id="btn-crear" type="submit"
+              :disabled="!(usuarioOK && mailOK && passOK)"
+              class="inline-flex items-center justify-center gap-2 px-5 h-11 rounded-full text-white
+                     bg-gradient-to-tr from-brand to-brand-dark shadow-md hover:shadow-lg transition
+                     disabled:opacity-50 disabled:cursor-not-allowed">
+        <i class="fa-solid fa-check"></i> Crear usuario
+      </button>
+      <a href="{{ url_for('auth.login_form') }}"
+         class="inline-flex items-center justify-center gap-2 px-4 h-11 rounded-full border border-rose-100 bg-white hover:bg-neutral-50">
+        <i class="fa-solid fa-arrow-left"></i> Volver
+      </a>
+    </div>
+  </form>
 {% endblock %}
 
 {% block scripts %}
 <script>
-(function(){
-  function debounce(fn, delay=300){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),delay); }; }
-
-  const el = {
-    form: document.getElementById("form-crear-usuario"),
-    usuario: document.getElementById("usuario"),
-    usuarioHint: document.getElementById("usuario_hint"),
-    mail: document.getElementById("mail"),
-    mailHint: document.getElementById("mail_hint"),
-    pass: document.getElementById("contrasena"),
-    passHint: document.getElementById("pass_hint"),
-    submit: document.getElementById("btn-crear"),
-  };
-
-  let usuarioOK = false, mailOK = false, passOK = false;
-
-  const setHint = (node, state, msg="")=>{
-    node.className = "hint " + (state || "neutral");
-    node.textContent = msg;
-  };
+(() => {
+  const form   = document.getElementById('form-crear-usuario');
+  const $u     = document.getElementById('usuario');
+  const $uHint = document.getElementById('usuario_hint');
+  const $m     = document.getElementById('mail');
+  const $mHint = document.getElementById('mail_hint');
+  const $p     = document.getElementById('contrasena');
+  const $pHint = document.getElementById('pass_hint');
+  const $btn   = document.getElementById('btn-crear');   // <- asegúrate de que el botón tiene este id
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const debounce = (fn, d=300) => { let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), d); }; };
 
+  // ===== Alpine helpers (v2/v3) + fallback =====
+  const getAlpineData = () => {
+    if (!form) return null;
+    // v3
+    if (form._x_dataStack && form._x_dataStack.length) return form._x_dataStack[0];
+    // v2
+    if (form.__x && form.__x.$data) return form.__x.$data;
+    return null;
+  };
+  const setAlpine = (key, val) => {
+    const d = getAlpineData();
+    if (d) d[key] = val;
+    recompute();   // <- cada vez que cambie una bandera, reevalúa el botón
+  };
+  const recompute = () => {
+    const d = getAlpineData();
+    if ($btn) {
+      // si hay Alpine, respeta su estado; si no, usa estas flags en fallback
+      const uOK = d ? !!d.usuarioOK : ($uHint?.className.includes('text-emerald-600'));
+      const mOK = d ? !!d.mailOK    : ($mHint?.className.includes('text-emerald-600'));
+      const pOK = d ? !!d.passOK    : ($pHint?.className.includes('text-emerald-600'));
+      $btn.disabled = !(uOK && mOK && pOK);
+    }
+  };
 
-  const refreshSubmit = ()=>{ el.submit.disabled = !(usuarioOK && mailOK && passOK); };
-
-  const checkUsuario = debounce(async ()=>{
-    const v = (el.usuario.value||"").replace(/\\s+/g,' ').trim();
-    el.usuario.value = v;
-    if(!v){ usuarioOK=false; setHint(el.usuarioHint,"neutral","Elige tu nombre de usuario."); return refreshSubmit(); }
-    setHint(el.usuarioHint,"neutral","Comprobando disponibilidad…");
+  // ===== Usuario =====
+  const checkUsuario = debounce(async () => {
+    const v = ($u.value || "").replace(/\s+/g,' ').trim();
+    $u.value = v;
+    if(!v){
+      $uHint.textContent = "Elige tu nombre de usuario.";
+      $uHint.className = "text-sm mt-1 text-neutral-600";
+      setAlpine('usuarioOK', false); return;
+    }
+    $uHint.textContent = "Comprobando disponibilidad…";
+    $uHint.className = "text-sm mt-1 text-neutral-600";
     try{
       const url = new URL("{{ url_for('auth.check_usuario') }}", window.location.origin);
       url.searchParams.set("usuario", v);
-      const res = await fetch(url, { credentials:"same-origin" });
+      const res = await fetch(url, { credentials: "same-origin" });
       const data = await res.json();
-      if(data.available){ usuarioOK = true; setHint(el.usuarioHint,"ok","Nombre disponible ✔"); }
-      else { usuarioOK=false; setHint(el.usuarioHint,"bad","Ese usuario ya existe."); }
-    }catch{ usuarioOK=false; setHint(el.usuarioHint,"bad","No se pudo comprobar ahora."); }
-    refreshSubmit();
+      if(data.available){
+        $uHint.textContent = "Nombre disponible ✔";
+        $uHint.className = "text-sm mt-1 text-emerald-600";
+        setAlpine('usuarioOK', true);
+      } else {
+        $uHint.textContent = "Ese usuario ya existe.";
+        $uHint.className = "text-sm mt-1 text-red-600";
+        setAlpine('usuarioOK', false);
+      }
+    } catch {
+      $uHint.textContent = "No se pudo comprobar ahora.";
+      $uHint.className = "text-sm mt-1 text-red-600";
+      setAlpine('usuarioOK', false);
+    }
   }, 350);
 
-  const checkMail = debounce(async ()=>{
-    const v = (el.mail.value||"").trim();
-    if(!v){ mailOK=false; setHint(el.mailHint,"neutral","Introduce tu email."); return refreshSubmit(); }
-    if(!emailRegex.test(v)){ mailOK=false; setHint(el.mailHint,"bad","Formato de email no válido."); return refreshSubmit(); }
-
-    setHint(el.mailHint,"neutral","Comprobando disponibilidad…");
+  // ===== Mail =====
+  const checkMail = debounce(async () => {
+    const v = ($m.value || "").trim();
+    if(!v){
+      $mHint.textContent = "Introduce tu email.";
+      $mHint.className = "text-sm mt-1 text-neutral-600";
+      setAlpine('mailOK', false); return;
+    }
+    if(!emailRegex.test(v)){
+      $mHint.textContent = "Formato de email no válido.";
+      $mHint.className = "text-sm mt-1 text-red-600";
+      setAlpine('mailOK', false); return;
+    }
+    $mHint.textContent = "Comprobando disponibilidad…";
+    $mHint.className = "text-sm mt-1 text-neutral-600";
     try{
       const url = new URL("{{ url_for('auth.check_mail') }}", window.location.origin);
       url.searchParams.set("mail", v);
-      const res = await fetch(url, { credentials:"same-origin" });
+      const res = await fetch(url, { credentials: "same-origin" });
       const data = await res.json();
-      if(data.available){ mailOK = true; setHint(el.mailHint,"ok","Email disponible ✔"); }
-      else { mailOK=false; setHint(el.mailHint,"bad","Ese email ya está en uso."); }
-    }catch{ mailOK=false; setHint(el.mailHint,"bad","No se pudo comprobar ahora."); }
-    refreshSubmit();
+      if(data.available){
+        $mHint.textContent = "Email disponible ✔";
+        $mHint.className = "text-sm mt-1 text-emerald-600";
+        setAlpine('mailOK', true);
+      } else {
+        $mHint.textContent = "Ese email ya está en uso.";
+        $mHint.className = "text-sm mt-1 text-red-600";
+        setAlpine('mailOK', false);
+      }
+    } catch {
+      $mHint.textContent = "No se pudo comprobar ahora.";
+      $mHint.className = "text-sm mt-1 text-red-600";
+      setAlpine('mailOK', false);
+    }
   }, 350);
 
-  const checkPass = ()=>{
-    const v = el.pass.value || "";
-    if(v.length >= 4){ passOK = true; setHint(el.passHint,"ok","OK ✔"); }
-    else { passOK=false; setHint(el.passHint,"neutral","Mínimo 4 caracteres."); }
-    refreshSubmit();
+  // ===== Password =====
+  const checkPass = () => {
+    const v = $p.value || "";
+    if(v.length >= 4){
+      $pHint.textContent = "OK ✔";
+      $pHint.className = "text-sm mt-1 text-emerald-600";
+      setAlpine('passOK', true);
+    } else {
+      $pHint.textContent = "Mínimo 4 caracteres.";
+      $pHint.className = "text-sm mt-1 text-neutral-600";
+      setAlpine('passOK', false);
+    }
   };
 
-  el.usuario.addEventListener("input", checkUsuario);
-  el.mail.addEventListener("input", checkMail);
-  el.pass.addEventListener("input", checkPass);
+  // Listeners
+  $u.addEventListener('input', checkUsuario);
+  $m.addEventListener('input', checkMail);
+  $p.addEventListener('input', checkPass);
 
-  el.form.addEventListener("submit",(e)=>{
-    if(el.submit.disabled) e.preventDefault();
-  });
+  // Spinner en submit
+  if (form) {
+    form.addEventListener('submit', () => {
+      if($btn){
+        $btn.insertAdjacentHTML('beforeend',
+          '<span class="ml-2 inline-block w-4 h-4 border-2 border-white border-r-transparent rounded-full animate-spin"></span>');
+      }
+    });
+  }
 
   // Estado inicial
-  refreshSubmit();
+  setAlpine('usuarioOK', false);
+  setAlpine('mailOK', false);
+  setAlpine('passOK', false);
+  recompute();
 })();
 </script>
+
 {% endblock %}
